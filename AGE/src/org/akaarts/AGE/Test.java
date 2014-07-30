@@ -18,6 +18,8 @@ public class Test {
 		
 		Console.info("is in shape: "+ray.isInShape(shape));
 		
+		/*test*/
+		
 		Engine engine = new Engine();
 		engine.start();
 		engine.stop();
