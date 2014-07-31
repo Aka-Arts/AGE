@@ -5,27 +5,28 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 public class Engine {
-	final int DEF_WIDTH = 1280;
-	final int DEF_HEIGHT = 720;
+	final static int AVG_FPS = 60;
+	final static int DEF_WIDTH = 1280;
+	final static int DEF_HEIGHT = 720;
+	
+	protected static boolean  closeRequested = false;
 
-	int initWidth;
-	int initHeight;
-
-	public Engine() {
-
-		initWidth = DEF_WIDTH;
-		initHeight = DEF_HEIGHT;
+	private Engine() {
 		
 	}
-
-	public void start() {
+	/**
+	 * Starts the engine and enters loop
+	 */
+	public static void start() {
+		
 		Console.info("Starting AGE...");
 		try {
-			Display.setDisplayMode(new DisplayMode(initWidth, initHeight));
+			Display.setDisplayMode(new DisplayMode(DEF_WIDTH, DEF_HEIGHT));
 		} catch (LWJGLException e) {
 			Console.error("Error at setting DisplayMode");
 			e.printStackTrace();
 		}
+			Display.setTitle("AGE Launcher");
 		try {
 			Display.create();
 		} catch (LWJGLException e) {
@@ -33,19 +34,34 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Engine.loop();
+		Engine.stop();
+		
 	}
-
-	public void stop() {
+	/**
+	 * Stops engine and cleans up
+	 */
+	private static void stop() {
 		Console.info("Stopping AGE...");
 		Display.destroy();
 		
 		Console.info("Bye!");
+	}
+	
+	/**
+	 * the main loop of the engine
+	 */
+	private static void loop(){
+		Console.info("Entering loop...");
+		while(!(closeRequested||Display.isCloseRequested())){
+			Display.update();
+			Display.sync(AVG_FPS);
+		}
+		Console.info("Leaving loop...");
+	}
+	
+	public static void main(String[] args) {
+		Engine.start();
 	}
 
 }
