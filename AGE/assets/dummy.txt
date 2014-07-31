@@ -1,0 +1,4 @@
+subfolders:
+  - audio
+  - textures
+  - models
