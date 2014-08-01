@@ -9,6 +9,8 @@ public class Engine {
 	final static int DEF_WIDTH = 1280;
 	final static int DEF_HEIGHT = 720;
 	
+	private static byte mode;
+	
 	protected static boolean  closeRequested = false;
 
 	private Engine() {
@@ -56,6 +58,10 @@ public class Engine {
 		while(!(closeRequested||Display.isCloseRequested())){
 			Display.update();
 			Display.sync(AVG_FPS);
+			
+			switch(mode){
+			
+			}
 		}
 		Console.info("Leaving loop...");
 	}
