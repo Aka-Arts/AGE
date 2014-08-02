@@ -14,7 +14,7 @@ public abstract class module{
 		
 	}
 	
-	private stop{
+	private stop(){
 		
 	}
 	
