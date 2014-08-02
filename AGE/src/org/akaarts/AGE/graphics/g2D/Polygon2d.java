@@ -1,4 +1,4 @@
-package org.akaarts.AGE.graphics2d;
+package org.akaarts.AGE.graphics.g2D;
 
 public class Polygon2d {
 
