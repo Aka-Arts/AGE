@@ -6,15 +6,15 @@ public abstract class module{
 		
 	}
 	
-	public start(){
+	public void start(){
 		
 	}
 	
-	private loop(){
+	private void loop(){
 		
 	}
 	
-	private stop(){
+	private void stop(){
 		
 	}
 	
