@@ -1,0 +1,18 @@
+{
+        "hudObjects": [
+                {
+                        "backgroundImg": "img/back.png",
+                        "hudObjectID": "AGE_LAUNCHER_EXIT",
+                        "width":128,
+                        "height":64,
+                        "xPos":0,
+                        "xAlign":"AGE_HUD_CENTER",
+                        "yPos":40,
+                        "yAlign":"AGE_HUD_BOTTOM",
+                        "zPos":1.0,
+                        "font":"fonts/arial.ttf",
+                        "fontColor":"FF1100"
+                        "fontAlpha":"FF"
+                }
+        ]
+}
