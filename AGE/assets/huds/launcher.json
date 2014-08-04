@@ -1,18 +1,20 @@
 {
-        "hudObjects": [
-                {
-                        "backgroundImg": "img/back.png",
-                        "hudObjectID": "AGE_LAUNCHER_EXIT",
-                        "width":128,
+        "hudElements": {
+                "AGE_LAUNCHER_EXIT": {
+                        "backgroundImg": "launcher/aka.png",
+                        "width":64,
                         "height":64,
                         "xPos":0,
                         "xAlign":"AGE_HUD_CENTER",
                         "yPos":40,
-                        "yAlign":"AGE_HUD_BOTTOM",
+                        "yAlign":"AGE_HUD_TOP",
                         "zPos":1.0,
-                        "font":"fonts/arial.ttf",
-                        "fontColor":"FF1100"
-                        "fontAlpha":"FF"
+                        "font":"",
+                        "fontColorR":255,
+                        "fontColorG":16,
+                        "fontColorB":0,
+                        "fontColorA":255,
+                        "fontSize": 12
                 }
-        ]
+        }
 }

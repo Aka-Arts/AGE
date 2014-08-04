@@ -1,8 +1,10 @@
 package org.akaarts.AGE;
 
+import org.akaarts.AGE.graphics.gui.Hud;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 
 public class Engine {
 	final static int AVG_FPS = 60;
@@ -36,8 +38,25 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
+		Hud.loadHudJSON("assets/huds/launcher.json");
+		
+		Engine.setupGL();
+		
 		Engine.loop();
 		Engine.stop();
+		
+	}
+	private static void setupGL() {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);               
+        
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
+        
+        // enable alpha blending
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        
+        GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 	}
 	/**
@@ -56,12 +75,12 @@ public class Engine {
 	private static void loop(){
 		Console.info("Entering loop...");
 		while(!(closeRequested||Display.isCloseRequested())){
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			
+			Hud.draw();
+			
 			Display.update();
 			Display.sync(AVG_FPS);
-			
-			switch(mode){
-			
-			}
 		}
 		Console.info("Leaving loop...");
 	}
