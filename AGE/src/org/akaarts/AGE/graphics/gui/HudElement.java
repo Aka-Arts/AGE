@@ -81,7 +81,6 @@ public class HudElement {
 	}
 
 	public void draw(){
-		Console.info("Draw element");
 		Color.magenta.bind();
 		this.texture.bind();
 		
@@ -89,11 +88,11 @@ public class HudElement {
 			GL11.glTexCoord2f(0,0);
 			GL11.glVertex2f(100,100);
 			GL11.glTexCoord2f(1,0);
-			GL11.glVertex2f(100+texture.getTextureWidth(),100);
+			GL11.glVertex2f(100+this.width,100);
 			GL11.glTexCoord2f(1,1);
-			GL11.glVertex2f(100+texture.getTextureWidth(),100+texture.getTextureHeight());
+			GL11.glVertex2f(100+this.width,100+this.height);
 			GL11.glTexCoord2f(0,1);
-			GL11.glVertex2f(100,100+texture.getTextureHeight());
+			GL11.glVertex2f(100,100+this.height);
 		GL11.glEnd();
 		
 

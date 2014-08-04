@@ -38,7 +38,7 @@ public class Hud {
 		if(hudElements.contains(elem)){
 			return;
 		}
-		Console.info("Add element");
+
 		hudElements.add(elem);
 		
 		return;

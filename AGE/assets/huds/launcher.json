@@ -2,8 +2,8 @@
         "hudElements": {
                 "AGE_LAUNCHER_EXIT": {
                         "backgroundImg": "launcher/aka.png",
-                        "width":64,
-                        "height":64,
+                        "width":128,
+                        "height":128,
                         "xPos":0,
                         "xAlign":"AGE_HUD_CENTER",
                         "yPos":40,
