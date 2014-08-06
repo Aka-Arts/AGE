@@ -34,7 +34,16 @@ public class HudElement {
 	private HudElement(JSONObject jsonObject){
 		String path = currentJSONPath.getParent().toString()+"/"+jsonObject.getString("backgroundImg");
 		try {
-			this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path));
+			switch(jsonObject.getString("glTexFilter")){
+			case "LINEAR":
+				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_LINEAR);
+				break;
+			case "NEAREST":
+			default:		
+				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_NEAREST);
+				break;
+			}
+			this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_NEAREST);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Console.warning("Could not find texture: "+path);
@@ -45,6 +54,7 @@ public class HudElement {
 				Console.error("Could not find NOTEX.png? Ah, rubbish...");
 			}
 		}
+		
 		this.width = jsonObject.getInt("width");
 		this.height = jsonObject.getInt("height");
 		this.xPos = jsonObject.getInt("xPos");

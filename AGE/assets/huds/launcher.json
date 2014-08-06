@@ -1,7 +1,8 @@
 {
         "hudElements": {
                 "AGE_LAUNCHER_EXIT": {
-                        "backgroundImg": "launcher/aka.png",
+                        "backgroundImg": "launcher/aka_64.png",
+                        "glTexFilter" : "NEAREST",
                         "width":128,
                         "height":128,
                         "xPos":0,
