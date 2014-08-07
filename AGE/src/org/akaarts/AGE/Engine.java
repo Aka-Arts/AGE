@@ -23,6 +23,9 @@ public class Engine {
 	final static int AVG_FPS = 120;
 	final static int DEF_WIDTH = 1280;
 	final static int DEF_HEIGHT = 720;
+	final static String LAUNCHER_TITLE = "AGE - ";
+	
+	static boolean showSysInf = true;
 	
 	static long lastFrame = getTime();
 	
@@ -45,7 +48,7 @@ public class Engine {
 			Console.error("Error at setting DisplayMode");
 			e.printStackTrace();
 		}
-			Display.setTitle("AGE Launcher");
+			setTitle("Launcher");
 			setIcons(new String[]{"assets/AGE_128.png","assets/AGE_32.png","assets/AGE_16.png"});
 		try {
 			Display.create();
@@ -94,6 +97,15 @@ public class Engine {
 		while(!(closeRequested||Display.isCloseRequested())){
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			long delta = getDelta();
+			
+			if(showSysInf){
+				if(delta <= 0){
+					setTitle("FPS: "+1000/1);
+				} else {
+					setTitle("FPS: "+1000/delta);
+				}
+			}
+			
 			Hud.update(delta, Display.wasResized());
 			Hud.draw();
 			
@@ -154,6 +166,9 @@ public class Engine {
 			ct++;
 		}
 		Display.setIcon(icons);
+	}
+	public static void setTitle(String title){
+		Display.setTitle(LAUNCHER_TITLE+title);
 	}
 
 }
