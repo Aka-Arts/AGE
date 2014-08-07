@@ -1,10 +1,10 @@
 {
 	"hudElements": {
     	"AGE_ELEM_EXIT": {
-			"backgroundImg": "launcher/aka_64.png",
+			"backgroundImg": "../AGE.png",
 			"glTexFilter" : "NEAREST",
-			"width":128,
-			"height":128,
+			"width":256,
+			"height":256,
 			"xPos":0,
 			"xAlign":"AGE_HUD_CENTER",
 			"yPos":40,
