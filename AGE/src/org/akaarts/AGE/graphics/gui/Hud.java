@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.akaarts.AGE.Console;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.opengl.Display;
@@ -15,8 +16,9 @@ import org.lwjgl.opengl.GL11;
 
 public class Hud {
 	
-	private static ArrayList<HudElement> hudElements = new ArrayList<HudElement>(30);
-	private static Iterator<HudElement> iterator = hudElements.iterator();
+	private static Map<String,HudView> allViews = new HashMap<String,HudView>(10);
+	private static ArrayList<String> currentViews = new ArrayList<String>(4);
+	private static Iterator<String> iterator;
 	
 	private Hud(){}
 	
@@ -25,27 +27,41 @@ public class Hud {
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		iterator = hudElements.iterator();
+		iterator = currentViews.iterator();
 		while(iterator.hasNext()){
-			HudElement elem = iterator.next();
-			if(elem!=null){
-				elem.draw();
+			String view = iterator.next();
+			if(view!=null){
+				allViews.get(view).draw();
 			}
 		}
 	}
 	
-	private static void addElement(HudElement elem){
-		if(hudElements.contains(elem)){
-			return;
+	
+	public static boolean activateView(String viewName){
+		if(currentViews.contains(viewName)){
+			return true;
+		} else if(allViews.get(viewName)==null){
+			return false;
+		} else {
+			currentViews.add(viewName);
+			return true;
 		}
+	}
 
-		hudElements.add(elem);
-		
-		return;
+	
+	public static void clearCurrentView(){
+		currentViews.clear();
 	}
 	
-	public static void clearElements(){
-		hudElements.clear();
+	private static void cleanMem(){
+		for(Map.Entry<String, HudView> entry : allViews.entrySet()){
+			entry.getValue().destroy();
+		}
+	}
+	
+	public static void destroy(){
+		cleanMem();
+		Console.info("Hud destroyed");
 	}
 	
 	/**
@@ -54,10 +70,14 @@ public class Hud {
 	 * @return - true on success, else false
 	 */
 	public static boolean loadHudJSON(String path){
-		hudElements.clear();
+		cleanMem();
+		allViews.clear();
+		currentViews.clear();
+		
+		String parentPath = Paths.get(path).getParent().toString()+"/";
 		String RawJSON;
 		JSONObject jsonObj;
-		JSONObject jsonSub;
+		JSONObject jsonViews,jsonElements;
 		try {
 			RawJSON = new String(Files.readAllBytes(Paths.get(path)));
 		} catch (IOException e) {
@@ -75,19 +95,25 @@ public class Hud {
 		}
 		
 		try {
-			jsonSub = jsonObj.getJSONObject("hudElements");
+			jsonViews = jsonObj.getJSONObject("hudViews");
+			jsonElements = jsonObj.getJSONObject("hudElements");
 		} catch(JSONException e){
 			e.printStackTrace();
-			Console.error("Error at finding 'hudElements' in: "+path);
+			Console.error("Error at finding 'hudViews'/'hudElements' in: "+path);
 			return false;
 		}
 		
 		
+		Iterator<?> keys = jsonViews.keys();
 		
+		while(keys.hasNext()){
+			String key = keys.next().toString();
+			Console.info("Loading view: "+key);
+			allViews.put(key, HudView.loadView(jsonViews.getJSONObject(key),jsonElements, parentPath));
+		}
 		
-		boolean success = HudElement.loadElements(jsonSub,Paths.get(path));
-		addElement(HudElement.AGE_LAUNCHER_EXIT);
-		return success;
+
+		return true;
 	}
 	
 }

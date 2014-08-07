@@ -2,18 +2,21 @@ package org.akaarts.AGE;
 
 import org.akaarts.AGE.graphics.gui.Hud;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 public class Engine {
-	final static int AVG_FPS = 60;
+	final static int AVG_FPS = 120;
 	final static int DEF_WIDTH = 1280;
 	final static int DEF_HEIGHT = 720;
 	
-	private static byte mode;
+	static long lastFrame = getTime();
+	
 	
 	protected static boolean  closeRequested = false;
+
 
 	private Engine() {
 		
@@ -36,15 +39,14 @@ public class Engine {
 		} catch (LWJGLException e) {
 			Console.error("Error at creating Display");
 			e.printStackTrace();
-		}
-		
-		Hud.loadHudJSON("assets/huds/launcher.json");
-		
+		}		
 		Engine.setupGL();
 		
-		Engine.loop();
-		Engine.stop();
+		Hud.loadHudJSON("assets/huds/launcher.json");
+		Hud.activateView("AGE_VIEW_HOME");
 		
+		Engine.loop();
+		Engine.stop();		
 	}
 	private static void setupGL() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);               
@@ -64,8 +66,10 @@ public class Engine {
 	 */
 	private static void stop() {
 		Console.info("Stopping AGE...");
-		Display.destroy();
 		
+		Hud.destroy();
+		
+		Display.destroy();
 		Console.info("Bye!");
 	}
 	
@@ -76,13 +80,29 @@ public class Engine {
 		Console.info("Entering loop...");
 		while(!(closeRequested||Display.isCloseRequested())){
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			
+			long delta = getDelta();
 			Hud.draw();
 			
 			Display.update();
 			Display.sync(AVG_FPS);
+
+			
 		}
 		Console.info("Leaving loop...");
+	}
+	
+
+	
+	public static long getDelta(){
+		long time = getTime();
+		int delta = (int) (time - lastFrame);
+		lastFrame = time;
+		 
+		return delta;
+	}
+	
+	public static long getTime() {
+	    return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 	
 	public static void main(String[] args) {

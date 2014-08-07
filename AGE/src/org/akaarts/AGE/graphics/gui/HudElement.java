@@ -22,8 +22,6 @@ public class HudElement {
 	public static String NOTEX = "assets/NOTEX.png";
 	public static String NOFONT = "Arial";
 
-	private static Path currentJSONPath;
-
 	private int xPos, yPos, width, height;
 	private Texture texture;
 	private String xAlign, yAlign;
@@ -31,22 +29,22 @@ public class HudElement {
 	private float zPos;
 	private Color fontColor;
 
-	private HudElement(JSONObject jsonObject){
-		String path = currentJSONPath.getParent().toString()+"/"+jsonObject.getString("backgroundImg");
+	private HudElement(JSONObject jsonObject, String path){
+		String imgPath = path+jsonObject.getString("backgroundImg");
 		try {
 			switch(jsonObject.getString("glTexFilter")){
 			case "LINEAR":
-				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_LINEAR);
+				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
 				break;
 			case "NEAREST":
 			default:		
-				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_NEAREST);
+				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_NEAREST);
 				break;
 			}
-			this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_NEAREST);
+			this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_NEAREST);
 		} catch (IOException e) {
 			e.printStackTrace();
-			Console.warning("Could not find texture: "+path);
+			Console.warning("Could not find texture: "+imgPath);
 			try {
 				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
 			} catch (IOException e1) {
@@ -61,8 +59,8 @@ public class HudElement {
 		this.xAlign = jsonObject.getString("xAlign");
 		this.zPos = (float) jsonObject.getDouble("zPos");
 
-		String fontPath = jsonObject.getString("font");
-		if(!fontPath.equals("")){
+		String fontPath = path+jsonObject.getString("font");
+		if(!jsonObject.getString("font").equals("")){
 			try {
 				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) jsonObject.getDouble("fontSize")), false);
 			} catch (IOException e) {
@@ -108,17 +106,22 @@ public class HudElement {
 
 	}
 
-	public static boolean loadElements(JSONObject jsonObject, Path path) {
-		currentJSONPath = path;
+	public static HudElement loadElement(JSONObject jsonObject, String path) {
+		HudElement newElem;
 		try{
-			HudElement.AGE_LAUNCHER_EXIT = new HudElement(jsonObject.getJSONObject("AGE_LAUNCHER_EXIT"));
+			newElem = new HudElement(jsonObject, path);
 		} catch(JSONException e){
 			e.printStackTrace();
 			Console.info("Could not load AGE_LAUNCHER_EXIT hudElement");
-			return false;
+			return null;
 		}
 
-		return true;
+		return newElem;
+	}
+
+	public void destroy() {
+		this.texture.release();
+		Console.info("Release the texture!");
 	}
 
 }
