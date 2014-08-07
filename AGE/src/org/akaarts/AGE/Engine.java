@@ -1,6 +1,18 @@
 package org.akaarts.AGE;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
+import javax.imageio.ImageIO;
+
 import org.akaarts.AGE.graphics.gui.Hud;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -34,6 +46,7 @@ public class Engine {
 			e.printStackTrace();
 		}
 			Display.setTitle("AGE Launcher");
+			setIcons(new String[]{"assets/AGE_128.png","assets/AGE_32.png","assets/AGE_16.png"});
 		try {
 			Display.create();
 		} catch (LWJGLException e) {
@@ -107,6 +120,39 @@ public class Engine {
 	
 	public static void main(String[] args) {
 		Engine.start();
+	}
+	
+	public static void setIcons(String[] paths){
+		ByteBuffer[] icons = new ByteBuffer[paths.length];
+		int ct = 0;
+		for(String path:paths){
+			BufferedImage img = null;
+			try {
+			    img = ImageIO.read(new File(path));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
+			int[] pixels = new int[img.getWidth() * img.getHeight()];
+	        img.getRGB(0, 0, img.getWidth(), img.getHeight(), pixels, 0, img.getWidth());
+
+	        ByteBuffer buffer = BufferUtils.createByteBuffer(img.getWidth() * img.getHeight() * 4); //4 for RGBA, 3 for RGB
+	        
+	        for(int y = 0; y < img.getHeight(); y++){
+	            for(int x = 0; x < img.getWidth(); x++){
+	                int pixel = pixels[y * img.getWidth() + x];
+	                buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
+	                buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
+	                buffer.put((byte) (pixel & 0xFF));               // Blue component
+	                buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
+	            }
+	        }
+
+	        buffer.flip();
+			icons[ct] = buffer;
+			ct++;
+		}
+		Display.setIcon(icons);
 	}
 
 }
