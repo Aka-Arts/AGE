@@ -94,6 +94,7 @@ public class Engine {
 		while(!(closeRequested||Display.isCloseRequested())){
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			long delta = getDelta();
+			Hud.update(delta, Display.wasResized());
 			Hud.draw();
 			
 			Display.update();

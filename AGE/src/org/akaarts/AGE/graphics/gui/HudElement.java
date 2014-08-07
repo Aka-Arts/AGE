@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.akaarts.AGE.Console;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
@@ -21,7 +22,7 @@ public class HudElement {
 	public static String NOTEX = "assets/NOTEX.png";
 	public static String NOFONT = "Arial";
 
-	private int xPos, yPos, width, height;
+	private int xPos, yPos, width, height, compX, compY;
 	private Texture texture;
 	private String xAlign, yAlign;
 	private TrueTypeFont font;
@@ -54,8 +55,12 @@ public class HudElement {
 		this.width = jsonObject.getInt("width");
 		this.height = jsonObject.getInt("height");
 		this.xPos = jsonObject.getInt("xPos");
+		this.yPos = jsonObject.getInt("yPos");
 		this.xAlign = jsonObject.getString("xAlign");
+		this.yAlign = jsonObject.getString("yAlign");
 		this.zPos = (float) jsonObject.getDouble("zPos");
+		
+		computePos();
 
 		String fontPath = path+jsonObject.getString("font");
 		if(!jsonObject.getString("font").equals("")){
@@ -83,7 +88,37 @@ public class HudElement {
 		int a = jsonObject.getInt("fontColorA");
 
 		this.fontColor = new Color(r, g, b, a);
+		
 
+
+	}
+	
+	private void computePos(){
+		switch(this.xAlign){
+		case "AGE_HUD_CENTER":
+			this.compX = (Display.getWidth()/2+this.xPos)-this.width/2;
+			break;
+		case "AGE_HUD_RIGHT":
+			this.compX = (Display.getWidth()-(this.xPos+this.width));
+			break;
+		case "AGE_HUD_LEFT":
+		default:
+			this.compX = this.xPos;
+			break;
+		}
+		
+		switch(this.yAlign){
+		case "AGE_HUD_CENTER":
+			this.compY = (Display.getHeight()/2+this.yPos)-this.height/2;
+			break;
+		case "AGE_HUD_BOTTOM":
+			this.compY = (Display.getHeight()-(this.yPos+this.height));
+			break;
+		case "AGE_HUD_TOP":
+		default:
+			this.compY = this.yPos;
+			break;
+		}
 	}
 
 	public void draw(){
@@ -93,13 +128,13 @@ public class HudElement {
 		GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor3f(1f, 1f, 1f);
 			GL11.glTexCoord2f(0,0);
-			GL11.glVertex2f(100,100);
+			GL11.glVertex2f(this.compX,this.compY);
 			GL11.glTexCoord2f(1,0);
-			GL11.glVertex2f(100+this.width,100);
+			GL11.glVertex2f(this.compX+this.width,compY);
 			GL11.glTexCoord2f(1,1);
-			GL11.glVertex2f(100+this.width,100+this.height);
+			GL11.glVertex2f(this.compX+this.width,this.compY+this.height);
 			GL11.glTexCoord2f(0,1);
-			GL11.glVertex2f(100,100+this.height);
+			GL11.glVertex2f(this.compX,this.compY+this.height);
 		GL11.glEnd();
 		
 
@@ -116,6 +151,10 @@ public class HudElement {
 		}
 
 		return newElem;
+	}
+	
+	public void update(long delta){
+		computePos();
 	}
 
 	public void destroy() {

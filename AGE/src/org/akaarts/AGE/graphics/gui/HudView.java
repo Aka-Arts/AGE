@@ -42,6 +42,13 @@ public class HudView {
 		}
 	}
 
+	public void update(long delta) {
+		for(HudElement elem:this.hudElements){
+			elem.update(delta);
+		}
+		
+	}
+
 	
 	
 	

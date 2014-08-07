@@ -36,6 +36,12 @@ public class Hud {
 		}
 	}
 	
+	public static void update(long delta, boolean wasResized){
+		for(Map.Entry<String, HudView> entry : allViews.entrySet()){
+			entry.getValue().update(delta);
+		}
+	}
+	
 	
 	public static boolean activateView(String viewName){
 		if(currentViews.contains(viewName)){
