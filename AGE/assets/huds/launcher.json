@@ -10,6 +10,7 @@
 			"yPos":50,
 			"yAlign":"AGE_HUD_TOP",
 			"zPos":1.0,
+			"opacity":0.5,
 			"font":"",
 			"fontColorR":255,
 			"fontColorG":16,

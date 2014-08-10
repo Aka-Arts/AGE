@@ -26,7 +26,7 @@ public class HudElement {
 	private Texture texture;
 	private String xAlign, yAlign;
 	private TrueTypeFont font;
-	private float zPos;
+	private float zPos, opacity;
 	private Color fontColor;
 
 	private HudElement(JSONObject jsonObject, String path){
@@ -59,6 +59,7 @@ public class HudElement {
 		this.xAlign = jsonObject.getString("xAlign");
 		this.yAlign = jsonObject.getString("yAlign");
 		this.zPos = (float) jsonObject.getDouble("zPos");
+		this.opacity = (float) jsonObject.getDouble("opacity");
 		
 		computePos();
 
@@ -126,7 +127,7 @@ public class HudElement {
 		this.texture.bind();
 		
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor3f(1f, 1f, 1f);
+			GL11.glColor4f(1f, 1f, 1f, this.opacity);
 			GL11.glTexCoord2f(0,0);
 			GL11.glVertex2f(this.compX,this.compY);
 			GL11.glTexCoord2f(1,0);
