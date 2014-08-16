@@ -24,15 +24,15 @@ public class HudElement {
 
 	private int xPos, yPos, width, height, compX, compY;
 	private Texture texture;
-	private String xAlign, yAlign;
+	private String xAlign, yAlign, textContent;
 	private TrueTypeFont font;
-	private float zPos, opacity;
+	private float zPos, opacity, uvTop, uvLeft, uvBottom, uvRight;
 	private Color fontColor;
 
-	private HudElement(JSONObject jsonObject, String path){
-		String imgPath = path+jsonObject.getString("backgroundImg");
+	private HudElement(JSONObject hudConfig, String path){
+		String imgPath = path+hudConfig.getString("backgroundImg");
 		try {
-			switch(jsonObject.getString("glTexFilter")){
+			switch(hudConfig.optString("glTexFilter","NEAREST")){
 			case "LINEAR":
 				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
 				break;
@@ -43,7 +43,7 @@ public class HudElement {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			Console.warning("Could not find texture: "+imgPath);
+			Console.warning("Could not load texture: "+imgPath);
 			try {
 				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
 			} catch (IOException e1) {
@@ -52,25 +52,30 @@ public class HudElement {
 			}
 		}
 		
-		this.width = jsonObject.getInt("width");
-		this.height = jsonObject.getInt("height");
-		this.xPos = jsonObject.getInt("xPos");
-		this.yPos = jsonObject.getInt("yPos");
-		this.xAlign = jsonObject.getString("xAlign");
-		this.yAlign = jsonObject.getString("yAlign");
-		this.zPos = (float) jsonObject.getDouble("zPos");
-		this.opacity = (float) jsonObject.getDouble("opacity");
+		this.width = hudConfig.getInt("width");
+		this.height = hudConfig.getInt("height");
+		this.xPos = hudConfig.getInt("xPos");
+		this.yPos = hudConfig.getInt("yPos");
+		this.xAlign = hudConfig.getString("xAlign");
+		this.yAlign = hudConfig.getString("yAlign");
+		this.zPos = (float) hudConfig.getDouble("zPos");
+		this.opacity = (float) hudConfig.getDouble("opacity");
 		
 		computePos();
+		
+		this.uvTop = (float) hudConfig.optDouble("uvTop", 0);
+		this.uvLeft = (float) hudConfig.optDouble("uvLeft",0);
+		this.uvBottom = (float) hudConfig.optDouble("uvBottom",1);
+		this.uvRight = (float) hudConfig.optDouble("uvRight", 0);
 
-		String fontPath = path+jsonObject.getString("font");
-		if(!jsonObject.getString("font").equals("")){
+		String fontPath = path+hudConfig.getString("font");
+		if(!hudConfig.getString("font").equals("")){
 			try {
-				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) jsonObject.getDouble("fontSize")), false);
+				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) hudConfig.getDouble("fontSize")), false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				Console.warning("Could not find font: "+fontPath);
-				this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) jsonObject.getDouble("fontSize")),false);
+				this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.getDouble("fontSize")),false);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -80,17 +85,17 @@ public class HudElement {
 				Console.error("something with the font format went wrong...");
 			}
 		} else {
-			this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) jsonObject.getDouble("fontSize")),false);
+			this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.getDouble("fontSize")),hudConfig.optBoolean("fontAntiAlias", true));
 		}
 
-		int r = jsonObject.getInt("fontColorR");
-		int g = jsonObject.getInt("fontColorG");
-		int b = jsonObject.getInt("fontColorB");
-		int a = jsonObject.getInt("fontColorA");
+		int r = hudConfig.getInt("fontColorR");
+		int g = hudConfig.getInt("fontColorG");
+		int b = hudConfig.getInt("fontColorB");
+		int a = hudConfig.getInt("fontColorA");
 
 		this.fontColor = new Color(r, g, b, a);
 		
-
+		this.textContent = hudConfig.optString("textContent", "");
 
 	}
 	
@@ -123,28 +128,29 @@ public class HudElement {
 	}
 
 	public void draw(){
-		Color.magenta.bind();
 		this.texture.bind();
 		
 		GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor4f(1f, 1f, 1f, this.opacity);
-			GL11.glTexCoord2f(0,0);
+			GL11.glTexCoord2f(this.uvLeft,this.uvTop);
 			GL11.glVertex2f(this.compX,this.compY);
-			GL11.glTexCoord2f(1,0);
+			GL11.glTexCoord2f(this.uvRight,this.uvTop);
 			GL11.glVertex2f(this.compX+this.width,compY);
-			GL11.glTexCoord2f(1,1);
+			GL11.glTexCoord2f(this.uvRight,this.uvBottom);
 			GL11.glVertex2f(this.compX+this.width,this.compY+this.height);
-			GL11.glTexCoord2f(0,1);
+			GL11.glTexCoord2f(this.uvLeft,this.uvBottom);
 			GL11.glVertex2f(this.compX,this.compY+this.height);
 		GL11.glEnd();
+		
+		this.font.drawString(this.compX, this.compY, textContent, fontColor);
 		
 
 	}
 
-	public static HudElement loadElement(JSONObject jsonObject, String path) {
+	public static HudElement loadElement(JSONObject hudConfig, String path) {
 		HudElement newElem;
 		try{
-			newElem = new HudElement(jsonObject, path);
+			newElem = new HudElement(hudConfig, path);
 		} catch(JSONException e){
 			e.printStackTrace();
 			Console.info("Could not load AGE_LAUNCHER_EXIT hudElement");

@@ -2,6 +2,10 @@
 	"hudElements": {
     	"AGE_ELEM_EXIT": {
 			"backgroundImg": "../AGE.png",
+			"uvTop":0,
+			"uvLeft":0,
+			"uvBottom":2,
+			"uvRight":2,
 			"glTexFilter" : "NEAREST",
 			"width":256,
 			"height":256,
@@ -16,7 +20,9 @@
 			"fontColorG":16,
 			"fontColorB":0,
 			"fontColorA":255,
-			"fontSize": 12
+			"fontSize": 40,
+			"fontAntiAlias": true,
+			"textContent":"Test Text long long long long"
 		}
 	},
 	"hudViews": {
