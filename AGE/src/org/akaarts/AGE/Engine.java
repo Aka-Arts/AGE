@@ -12,6 +12,7 @@ import java.nio.IntBuffer;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.graphics.gui.Hud;
+import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -105,6 +106,8 @@ public class Engine {
 					setTitle("FPS: "+1000/delta);
 				}
 			}
+			
+			InputHandler.update();
 			
 			Hud.update(delta, Display.wasResized());
 			Hud.draw();
