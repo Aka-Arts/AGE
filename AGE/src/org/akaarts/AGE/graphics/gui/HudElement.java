@@ -15,7 +15,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-public class HudElement {
+public class HudElement{
 
 	public static HudElement AGE_LAUNCHER_EXIT;
 

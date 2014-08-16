@@ -53,4 +53,27 @@ public class Console {
 	public static void error(String msg){
 		Console.log(msg, 2);
 	}
+	
+	/**
+	 * Executes AGE console commands
+	 * @param commandString - the command string
+	 * Each command line must end with a semicolon (;)
+	 */
+	public static void execute(String commandString){
+		//Drop all chars except a-z, A-Z, 0-9 and _SPACE-+;
+		commandString = commandString.replaceAll("[^a-zA-Z0-9_ \\-\\+;]|(\\A )|( \\z)", "");
+		//Drop multiple spaces
+		commandString = commandString.replaceAll("[ ]{2,}", " ");
+		//split command string at ;
+		String[] commands = commandString.split("[;]");
+		
+		info(commandString);
+		
+		for(String command:commands){
+			switch(command){
+			
+			}
+		}
+		
+	}
 }

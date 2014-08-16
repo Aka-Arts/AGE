@@ -62,6 +62,8 @@ public class Engine {
 		Hud.loadHudJSON("assets/huds/launcher.json");
 		Hud.activateView("AGE_VIEW_HOME");
 		
+		Console.execute(" hello-world_test -1 and now  2 spaces \n\r newline cmdend   ; \n new cmd");
+		
 		Engine.loop();
 		Engine.stop();		
 	}
