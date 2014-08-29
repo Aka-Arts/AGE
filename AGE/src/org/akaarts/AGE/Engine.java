@@ -31,12 +31,10 @@ public class Engine {
 	static long lastFrame = getTime();
 	
 	
-	protected static boolean  closeRequested = false;
+	private static boolean  closeRequested = false;
 
 
-	private Engine() {
-		
-	}
+	private Engine() {}
 	/**
 	 * Starts the engine and enters loop
 	 */
@@ -60,13 +58,12 @@ public class Engine {
 		Engine.setupGL();
 		
 		Hud.loadHudJSON("assets/huds/launcher.json");
-		Hud.activateView("AGE_VIEW_HOME");
-		
-		Console.execute(" hello-world_test -1 and now  2 spaces \n\r newline cmdend   ; \n new cmd");
+		Hud.showView("AGE_VIEW_HOME");
 		
 		Engine.loop();
 		Engine.stop();		
 	}
+	
 	private static void setupGL() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);               
         
@@ -80,6 +77,7 @@ public class Engine {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 	}
+	
 	/**
 	 * Stops engine and cleans up
 	 */
@@ -124,7 +122,7 @@ public class Engine {
 	
 
 	
-	public static long getDelta(){
+	private static long getDelta(){
 		long time = getTime();
 		int delta = (int) (time - lastFrame);
 		lastFrame = time;
@@ -172,8 +170,13 @@ public class Engine {
 		}
 		Display.setIcon(icons);
 	}
+	
 	public static void setTitle(String title){
 		Display.setTitle(LAUNCHER_TITLE+title);
+	}
+	
+	public static void requestExit(){
+		closeRequested = true;
 	}
 
 }

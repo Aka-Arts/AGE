@@ -1,11 +1,13 @@
 package org.akaarts.AGE.graphics.gui;
 
 import org.akaarts.AGE.Console;
+import org.akaarts.AGE.input.InputListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lwjgl.util.Point;
 
-public class HudView {
+public class HudView implements InputListener {
 	
 	private HudElement[] hudElements;
 
@@ -49,7 +51,18 @@ public class HudView {
 		
 	}
 
-	
-	
+	@Override
+	public boolean keyEvent(int lwjglKey, boolean keyState) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseEvent(int x, int y, int lwjglButton, boolean buttonState) {
+		for(HudElement elem:hudElements){
+			elem.pushMouse(x, y, lwjglButton, buttonState);
+		}
+		return false;
+	}	
 	
 }

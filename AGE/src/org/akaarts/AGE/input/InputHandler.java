@@ -2,8 +2,11 @@ package org.akaarts.AGE.input;
 
 import java.util.ArrayList;
 
+import org.akaarts.AGE.Console;
+import org.akaarts.AGE.graphics.gui.HudView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 public class InputHandler {
 
@@ -21,18 +24,24 @@ public class InputHandler {
 			boolean state = Keyboard.getEventKeyState();
 			//broadcast
 			for(InputListener l:listeners){
-				l.keyEvent(key, state);
+				if(l.keyEvent(key, state)){
+					//stop propagation
+					break;
+				}
 			}
 		}
 		//check mouse buffer
 		while(Mouse.next()){
 			int x = Mouse.getEventX();
-			int y = Mouse.getEventY();
+			int y = Display.getHeight() - Mouse.getEventY();
 			int button = Mouse.getEventButton();
 			boolean state = Mouse.getEventButtonState();
 			//broadcast
 			for(InputListener l:listeners){
-				l.mouseEvent(x, y, button, state);
+				if(l.mouseEvent(x, y, button, state)){
+					//stop propagation
+					break;
+				}
 			}
 		}
 	}
@@ -44,6 +53,17 @@ public class InputHandler {
 	
 	public static void addListener(InputListener listener){	
 		listeners.add(listener);
+		Console.info("InputHandler - Status: "+listeners.size());
+	}
+	
+	public static void clearListeners(){
+		listeners.clear();
+		Console.info("InputHandler - Status: "+listeners.size());
+	}
+
+	public static void removeListener(HudView hudView) {
+		listeners.remove(hudView);
+		Console.info("InputHandler - Status: "+listeners.size());
 	}
 	
 }

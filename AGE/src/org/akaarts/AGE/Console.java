@@ -59,7 +59,19 @@ public class Console {
 	 * @param commandString - the command string
 	 * Each command line must end with a semicolon (;)
 	 */
-	public static void execute(String commandString){
+	public static void execute(String commandString){		
+		for(Command command:parseCommands(commandString)){
+			switch(command.func){
+			case "exit":
+				Engine.requestExit();
+				break;
+			default:
+				Console.info("Command not found: "+command.func);
+			}
+		}
+	}
+	
+	private static Command[] parseCommands(String commandString){
 		//Drop all chars except a-z, A-Z, 0-9 and _SPACE-+;
 		commandString = commandString.replaceAll("[^a-zA-Z0-9_ \\-\\+;]|(\\A )|( \\z)", "");
 		//Drop multiple spaces
@@ -67,13 +79,12 @@ public class Console {
 		//split command string at ;
 		String[] commands = commandString.split("[;]");
 		
-		info(commandString);
+		Command[] cmd = new Command[commands.length];
 		
-		for(String command:commands){
-			switch(command){
-			
-			}
+		for(int ct = 0;ct<commands.length;ct++){
+			cmd[ct] = new Command(commands[ct]);
 		}
 		
+		return cmd;
 	}
 }

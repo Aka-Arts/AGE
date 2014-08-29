@@ -9,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Point;
+import org.lwjgl.util.Rectangle;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
@@ -17,33 +19,42 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class HudElement{
 
-	public static HudElement AGE_LAUNCHER_EXIT;
-
 	public static String NOTEX = "assets/NOTEX.png";
 	public static String NOFONT = "Arial";
 
 	private int xPos, yPos, width, height, compX, compY;
-	private Texture texture;
-	private String xAlign, yAlign, textContent;
+	private Texture texture,hoverTexture;
+	private String xAlign, yAlign, textContent, clickCommand;
 	private TrueTypeFont font;
 	private float zPos, opacity, uvTop, uvLeft, uvBottom, uvRight;
 	private Color fontColor;
+	private Rectangle aabb;
+	private boolean hover,click,press;
 
 	private HudElement(JSONObject hudConfig, String path){
-		String imgPath = path+hudConfig.getString("backgroundImg");
-		try {
-			switch(hudConfig.optString("glTexFilter","NEAREST")){
-			case "LINEAR":
-				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
-				break;
-			case "NEAREST":
-			default:		
-				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_NEAREST);
-				break;
+		if(!hudConfig.getString("image").isEmpty()){
+			String imgPath = path+hudConfig.getString("image");
+			try {
+				switch(hudConfig.optString("glTexFilter","NEAREST")){
+				case "LINEAR":
+					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
+					break;
+				case "NEAREST":
+				default:		
+					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_NEAREST);
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				Console.warning("Could not load texture: "+imgPath);
+				try {
+					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					Console.error("Could not find NOTEX.png? Ah, rubbish...");
+				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			Console.warning("Could not load texture: "+imgPath);
+		}else{
 			try {
 				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
 			} catch (IOException e1) {
@@ -52,13 +63,41 @@ public class HudElement{
 			}
 		}
 		
+		if(!hudConfig.getString("hoverImage").isEmpty()){
+			String imgPath = path+hudConfig.getString("hoverImage");
+			try {
+				switch(hudConfig.optString("glTexFilter","NEAREST")){
+				case "LINEAR":
+					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
+					break;
+				case "NEAREST":
+				default:		
+					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_NEAREST);
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				Console.warning("Could not load texture: "+imgPath);
+				try {
+					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					Console.error("Could not find NOTEX.png? Ah, rubbish...");
+				}
+			}
+		}else{
+			hoverTexture = null;
+		}
+		
+		
+		
 		this.width = hudConfig.getInt("width");
 		this.height = hudConfig.getInt("height");
 		this.xPos = hudConfig.getInt("xPos");
 		this.yPos = hudConfig.getInt("yPos");
-		this.xAlign = hudConfig.getString("xAlign");
-		this.yAlign = hudConfig.getString("yAlign");
-		this.zPos = (float) hudConfig.getDouble("zPos");
+		this.xAlign = hudConfig.optString("xAlign","AGE_HUD_CENTER");
+		this.yAlign = hudConfig.optString("yAlign","AGE_HUD_CENTER");
+		this.zPos = (float) hudConfig.optDouble("zPos",0);
 		this.opacity = (float) hudConfig.getDouble("opacity");
 		
 		computePos();
@@ -96,6 +135,7 @@ public class HudElement{
 		this.fontColor = new Color(r, g, b, a);
 		
 		this.textContent = hudConfig.optString("textContent", "");
+		this.clickCommand = hudConfig.optString("clickCommand", "");
 
 	}
 	
@@ -125,10 +165,16 @@ public class HudElement{
 			this.compY = this.yPos;
 			break;
 		}
+		
+		this.aabb = new Rectangle(this.compX,this.compY,this.width,this.height);
 	}
 
 	public void draw(){
-		this.texture.bind();
+		if(this.hover){
+			this.hoverTexture.bind();
+		}else{
+			this.texture.bind();
+		}
 		
 		GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor4f(1f, 1f, 1f, this.opacity);
@@ -162,11 +208,46 @@ public class HudElement{
 	
 	public void update(long delta){
 		computePos();
+		
+		
+		if(hover){
+			
+		}
+		if(press){
+			
+		}
+		if(click){
+			if(!this.clickCommand.isEmpty()){
+				Console.execute(clickCommand);
+			}
+			click = false;
+		}
 	}
 
 	public void destroy() {
 		this.texture.release();
 		Console.info("Release the texture!");
 	}
-
+	
+	public boolean pushMouse(int x, int y, int lwjglButton, boolean buttonState){		
+		if(this.aabb.contains(x, y)){
+			hover = true;
+			if(buttonState){
+				press = true;
+			}else if(press == true && !buttonState){
+				press = false;
+				click = true;
+			}else{
+				press = false;
+				click = false;
+			}
+			
+			return true;
+		}else{
+			hover = false;
+			click = false;
+			press = false;
+			return false;
+		}		
+	}
 }

@@ -1,7 +1,8 @@
 {
 	"hudElements": {
     	"AGE_ELEM_EXIT": {
-			"backgroundImg": "../AGE.png",
+			"image": "../AGE.png",
+			"hoverImage":"../NOTEX.png",
 			"uvTop":0,
 			"uvLeft":0,
 			"uvBottom":1,
@@ -16,13 +17,14 @@
 			"zPos":1.0,
 			"opacity":0.5,
 			"font":"",
-			"fontColorR":255,
-			"fontColorG":16,
+			"fontColorR":128,
+			"fontColorG":0,
 			"fontColorB":0,
 			"fontColorA":255,
-			"fontSize": 40,
+			"fontSize": 20,
 			"fontAntiAlias": true,
-			"textContent":"Test Text long long long long"
+			"textContent":"Hover me! Click Me!",		
+			"clickCommand":"exit"
 		}
 	},
 	"hudViews": {

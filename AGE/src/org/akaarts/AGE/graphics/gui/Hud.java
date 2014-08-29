@@ -9,16 +9,21 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.akaarts.AGE.Console;
+import org.akaarts.AGE.input.InputHandler;
+import org.akaarts.AGE.input.InputListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Point;
 
 public class Hud {
 	
 	private static Map<String,HudView> allViews = new HashMap<String,HudView>(10);
 	private static ArrayList<String> currentViews = new ArrayList<String>(4);
 	private static Iterator<String> iterator;
+	
+	private static Hud self = new Hud();
 	
 	private Hud(){}
 	
@@ -37,20 +42,30 @@ public class Hud {
 	}
 	
 	public static void update(long delta, boolean wasResized){
-		for(Map.Entry<String, HudView> entry : allViews.entrySet()){
-			entry.getValue().update(delta);
+		for(String viewName : currentViews){
+			allViews.get(viewName).update(delta);
 		}
 	}
 	
 	
-	public static boolean activateView(String viewName){
+	public static boolean showView(String viewName){
 		if(currentViews.contains(viewName)){
 			return true;
 		} else if(allViews.get(viewName)==null){
 			return false;
 		} else {
 			currentViews.add(viewName);
+			InputHandler.addListener(allViews.get(viewName));
 			return true;
+		}
+	}
+	
+	public static void hideView(String viewName){
+		if(currentViews.contains(viewName)){
+			currentViews.remove(viewName);
+			InputHandler.removeListener(allViews.get(viewName));
+		} else {
+			Console.warning("No view with given name active: "+viewName);
 		}
 	}
 
@@ -122,4 +137,10 @@ public class Hud {
 		return true;
 	}
 	
+	public static ArrayList<String> getActiveNames(){
+		return currentViews;
+	}
+	public static HudView getViewByName(String name){
+		return allViews.get(name);
+	}
 }
