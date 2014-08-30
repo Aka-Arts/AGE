@@ -65,6 +65,12 @@ public class Console {
 			case "exit":
 				Engine.requestExit();
 				break;
+			case "menu":
+				if(command.args.length > 0){
+					
+				}else{
+					goToMenu("home");
+				}
 			default:
 				Console.info("Command not found: "+command.func);
 			}
@@ -86,5 +92,9 @@ public class Console {
 		}
 		
 		return cmd;
+	}
+	
+	private static void goToMenu(String menuName){
+		
 	}
 }

@@ -1,36 +1,50 @@
 {
 	"hudElements": {
-    	"AGE_ELEM_EXIT": {
-			"image": "../AGE.png",
-			"hoverImage":"../NOTEX.png",
-			"uvTop":0,
+		"LOGO_HOME":{
+			"image":"launcher/AGE.png",
+			"width":256,
+			"height":256,
+			"xPos":-150,
+			"xAlign":"CENTER",
+			"yPos":50,
+			"yAlign":"TOP"
+		},
+    	"EXIT_BUTTON": {
+			"image": "launcher/buttons/Big-Normal.png",
+			"hoverImage":"launcher/buttons/Big-Hover.png",
+			"uvTop":0.375,
 			"uvLeft":0,
-			"uvBottom":1,
+			"uvBottom":0.625,
 			"uvRight":1,
 			"glTexFilter" : "NEAREST",
 			"width":256,
-			"height":256,
-			"xPos":0,
-			"xAlign":"AGE_HUD_CENTER",
+			"height":64,
+			"xPos":150,
+			"xAlign":"CENTER",
 			"yPos":50,
-			"yAlign":"AGE_HUD_TOP",
-			"zPos":1.0,
-			"opacity":0.5,
-			"font":"",
-			"fontColorR":128,
-			"fontColorG":0,
-			"fontColorB":0,
+			"yAlign":"TOP",
+			"zPos":0,
+			"opacity":1,
+			"font":"launcher/EirikRaude.ttf",
+			"fontColorR":255,
+			"fontColorG":255,
+			"fontColorB":255,
 			"fontColorA":255,
-			"fontSize": 20,
+			"fontSize": 35,
 			"fontAntiAlias": true,
-			"textContent":"Hover me! Click Me!",		
+			"fontX":0,
+			"fontY":0,
+			"fontXAlign":"CENTER",
+			"fontYAlign":"CENTER",
+			"textContent":"Quit",	
 			"clickCommand":"exit"
 		}
 	},
 	"hudViews": {
-		"AGE_VIEW_HOME": {
+		"AGE_HOME": {
 			"elements":[
-				"AGE_ELEM_EXIT"
+				"LOGO_HOME",
+				"EXIT_BUTTON"
 			]
 		}
 	}

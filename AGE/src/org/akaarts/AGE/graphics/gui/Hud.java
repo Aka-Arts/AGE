@@ -23,8 +23,6 @@ public class Hud {
 	private static ArrayList<String> currentViews = new ArrayList<String>(4);
 	private static Iterator<String> iterator;
 	
-	private static Hud self = new Hud();
-	
 	private Hud(){}
 	
 	public static void draw(){

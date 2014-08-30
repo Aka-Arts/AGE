@@ -22,9 +22,9 @@ public class HudElement{
 	public static String NOTEX = "assets/NOTEX.png";
 	public static String NOFONT = "Arial";
 
-	private int xPos, yPos, width, height, compX, compY;
+	private int xPos, yPos, width, height, compX, compY, xFont, yFont, xFontOff, yFontOff;
 	private Texture texture,hoverTexture;
-	private String xAlign, yAlign, textContent, clickCommand;
+	private String xAlign, yAlign, fontXAlign, fontYAlign, textContent, clickCommand;
 	private TrueTypeFont font;
 	private float zPos, opacity, uvTop, uvLeft, uvBottom, uvRight;
 	private Color fontColor;
@@ -32,7 +32,7 @@ public class HudElement{
 	private boolean hover,click,press;
 
 	private HudElement(JSONObject hudConfig, String path){
-		if(!hudConfig.getString("image").isEmpty()){
+		if(!hudConfig.optString("image").isEmpty()){
 			String imgPath = path+hudConfig.getString("image");
 			try {
 				switch(hudConfig.optString("glTexFilter","NEAREST")){
@@ -63,7 +63,7 @@ public class HudElement{
 			}
 		}
 		
-		if(!hudConfig.getString("hoverImage").isEmpty()){
+		if(!hudConfig.optString("hoverImage").isEmpty()){
 			String imgPath = path+hudConfig.getString("hoverImage");
 			try {
 				switch(hudConfig.optString("glTexFilter","NEAREST")){
@@ -91,30 +91,30 @@ public class HudElement{
 		
 		
 		
-		this.width = hudConfig.getInt("width");
-		this.height = hudConfig.getInt("height");
-		this.xPos = hudConfig.getInt("xPos");
-		this.yPos = hudConfig.getInt("yPos");
-		this.xAlign = hudConfig.optString("xAlign","AGE_HUD_CENTER");
-		this.yAlign = hudConfig.optString("yAlign","AGE_HUD_CENTER");
+		this.width = hudConfig.optInt("width",100);
+		this.height = hudConfig.optInt("height",100);
+		this.xPos = hudConfig.optInt("xPos",0);
+		this.yPos = hudConfig.optInt("yPos",0);
+		this.xAlign = hudConfig.optString("xAlign","CENTER");
+		this.yAlign = hudConfig.optString("yAlign","CENTER");
 		this.zPos = (float) hudConfig.optDouble("zPos",0);
-		this.opacity = (float) hudConfig.getDouble("opacity");
+		this.opacity = (float) hudConfig.optDouble("opacity",1);
 		
-		computePos();
+
 		
 		this.uvTop = (float) hudConfig.optDouble("uvTop", 0);
 		this.uvLeft = (float) hudConfig.optDouble("uvLeft",0);
 		this.uvBottom = (float) hudConfig.optDouble("uvBottom",1);
-		this.uvRight = (float) hudConfig.optDouble("uvRight", 0);
+		this.uvRight = (float) hudConfig.optDouble("uvRight", 1);
 
-		String fontPath = path+hudConfig.getString("font");
-		if(!hudConfig.getString("font").equals("")){
+		String fontPath = path+hudConfig.optString("font");
+		if(!hudConfig.optString("font").isEmpty()){
 			try {
-				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) hudConfig.getDouble("fontSize")), false);
+				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) hudConfig.optDouble("fontSize",10)), hudConfig.optBoolean("fontAntiAlias"));
 			} catch (IOException e) {
 				e.printStackTrace();
 				Console.warning("Could not find font: "+fontPath);
-				this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.getDouble("fontSize")),false);
+				this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.optDouble("fontSize",10)),false);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -124,45 +124,79 @@ public class HudElement{
 				Console.error("something with the font format went wrong...");
 			}
 		} else {
-			this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.getDouble("fontSize")),hudConfig.optBoolean("fontAntiAlias", true));
+			this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.optDouble("fontSize",10)),hudConfig.optBoolean("fontAntiAlias", true));
 		}
 
-		int r = hudConfig.getInt("fontColorR");
-		int g = hudConfig.getInt("fontColorG");
-		int b = hudConfig.getInt("fontColorB");
-		int a = hudConfig.getInt("fontColorA");
+		int r = hudConfig.optInt("fontColorR",255);
+		int g = hudConfig.optInt("fontColorG",255);
+		int b = hudConfig.optInt("fontColorB",255);
+		int a = hudConfig.optInt("fontColorA",255);
+		
+		this.xFont = hudConfig.optInt("fontX",0);
+		this.yFont = hudConfig.optInt("fontY",0);
+		this.fontXAlign = hudConfig.optString("fontXAlign","CENTER");
+		this.fontYAlign = hudConfig.optString("fontYAlign","CENTER");
 
 		this.fontColor = new Color(r, g, b, a);
 		
 		this.textContent = hudConfig.optString("textContent", "");
 		this.clickCommand = hudConfig.optString("clickCommand", "");
 
+		computePos();
 	}
 	
 	private void computePos(){
+		//box
 		switch(this.xAlign){
-		case "AGE_HUD_CENTER":
+		case "CENTER":
 			this.compX = (Display.getWidth()/2+this.xPos)-this.width/2;
 			break;
-		case "AGE_HUD_RIGHT":
+		case "RIGHT":
 			this.compX = (Display.getWidth()-(this.xPos+this.width));
 			break;
-		case "AGE_HUD_LEFT":
+		case "LEFT":
 		default:
 			this.compX = this.xPos;
 			break;
 		}
 		
 		switch(this.yAlign){
-		case "AGE_HUD_CENTER":
+		case "CENTER":
 			this.compY = (Display.getHeight()/2+this.yPos)-this.height/2;
 			break;
-		case "AGE_HUD_BOTTOM":
+		case "BOTTOM":
 			this.compY = (Display.getHeight()-(this.yPos+this.height));
 			break;
-		case "AGE_HUD_TOP":
+		case "TOP":
 		default:
 			this.compY = this.yPos;
+			break;
+		}
+		
+		//font relative to box
+		switch(this.fontXAlign){
+		case "CENTER":
+			this.xFontOff = (this.width/2+this.xFont)-this.font.getWidth(textContent)/2;
+			break;
+		case "RIGHT":
+			this.xFontOff = (this.width-(this.xFont+this.font.getWidth(textContent)));
+			break;
+		case "LEFT":
+		default:
+			this.xFontOff = this.xFont;
+			break;
+		}
+		
+		switch(this.fontYAlign){
+		case "CENTER":
+			this.yFontOff = (this.height/2+this.yFont)-this.font.getHeight(textContent)/2;
+			break;
+		case "BOTTOM":
+			this.yFontOff = (this.height-(this.yFont+this.font.getHeight(textContent)));
+			break;
+		case "TOP":
+		default:
+			this.yFontOff = this.yFont;
 			break;
 		}
 		
@@ -170,7 +204,7 @@ public class HudElement{
 	}
 
 	public void draw(){
-		if(this.hover){
+		if(this.hover&&this.hoverTexture!=null){
 			this.hoverTexture.bind();
 		}else{
 			this.texture.bind();
@@ -188,7 +222,7 @@ public class HudElement{
 			GL11.glVertex2f(this.compX,this.compY+this.height);
 		GL11.glEnd();
 		
-		this.font.drawString(this.compX, this.compY, textContent, fontColor);
+		this.font.drawString(this.compX+this.xFontOff, this.compY+this.yFontOff, textContent, fontColor);
 		
 
 	}

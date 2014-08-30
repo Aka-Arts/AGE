@@ -58,7 +58,7 @@ public class Engine {
 		Engine.setupGL();
 		
 		Hud.loadHudJSON("assets/huds/launcher.json");
-		Hud.showView("AGE_VIEW_HOME");
+		Hud.showView("AGE_HOME");
 		
 		Engine.loop();
 		Engine.stop();		
@@ -178,5 +178,5 @@ public class Engine {
 	public static void requestExit(){
 		closeRequested = true;
 	}
-
+	
 }
