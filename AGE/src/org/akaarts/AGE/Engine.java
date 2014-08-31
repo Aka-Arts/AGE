@@ -57,8 +57,10 @@ public class Engine {
 		}		
 		Engine.setupGL();
 		
-		Hud.loadHudJSON("assets/huds/launcher.json");
-		Hud.showView("AGE_HOME");
+		InputHandler.addListener(Hud.self());
+		
+		Hud.setFile("assets/huds/launcher.json");
+		Hud.loadPreset("HOME");
 		
 		Engine.loop();
 		Engine.stop();		

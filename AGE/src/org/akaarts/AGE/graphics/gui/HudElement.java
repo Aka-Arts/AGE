@@ -5,6 +5,7 @@ import java.awt.FontFormatException;
 import java.io.IOException;
 
 import org.akaarts.AGE.Console;
+import org.akaarts.AGE.input.InputListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.opengl.Display;
@@ -19,8 +20,8 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class HudElement{
 
-	public static String NOTEX = "assets/NOTEX.png";
-	public static String NOFONT = "Arial";
+	public static String NOTEX = "assets/defaults/NOTEX.png";
+	public static String NOFONT = "assets/defaults/font.ttf";
 
 	private int xPos, yPos, width, height, compX, compY, xFont, yFont, xFontOff, yFontOff;
 	private Texture texture,hoverTexture;
@@ -30,12 +31,48 @@ public class HudElement{
 	private Color fontColor;
 	private Rectangle aabb;
 	private boolean hover,click,press;
+	
+	public HudElement(){
+		this.width = 100;
+		this.height = 100;
+		this.xPos = 0;
+		this.yPos = 0;
+		this.zPos = 0;
+		
+		this.xAlign = "CENTER";
+		this.yAlign = "CENTER";
+		
+		this.uvLeft = 0;
+		this.uvTop = 0;
+		this.uvBottom = 1;
+		this.uvRight = 1;
+		
+		this.opacity = 1;
+		this.fontColor = Color.white;
+		this.fontXAlign = "CENTER";
+		this.fontYAlign = "CENTER";
 
-	private HudElement(JSONObject hudConfig, String path){
-		if(!hudConfig.optString("image").isEmpty()){
-			String imgPath = path+hudConfig.getString("image");
+		
+		try {
+			this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(NOFONT)).deriveFont(10), true);
+		} catch (FontFormatException | IOException e) {
+			Console.error("Failed to load default font from: "+NOFONT);
+			e.printStackTrace();
+		}
+			
+		
+		
+		computePos();
+	}
+
+	public HudElement(JSONObject elem){
+		
+		String path = Hud.getPath();
+		
+		if(!elem.optString("image").isEmpty()){
+			String imgPath = path+elem.getString("image");
 			try {
-				switch(hudConfig.optString("glTexFilter","NEAREST")){
+				switch(elem.optString("glTexFilter","NEAREST")){
 				case "LINEAR":
 					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
 					break;
@@ -63,10 +100,10 @@ public class HudElement{
 			}
 		}
 		
-		if(!hudConfig.optString("hoverImage").isEmpty()){
-			String imgPath = path+hudConfig.getString("hoverImage");
+		if(!elem.optString("hoverImage").isEmpty()){
+			String imgPath = path+elem.getString("hoverImage");
 			try {
-				switch(hudConfig.optString("glTexFilter","NEAREST")){
+				switch(elem.optString("glTexFilter","NEAREST")){
 				case "LINEAR":
 					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
 					break;
@@ -91,30 +128,30 @@ public class HudElement{
 		
 		
 		
-		this.width = hudConfig.optInt("width",100);
-		this.height = hudConfig.optInt("height",100);
-		this.xPos = hudConfig.optInt("xPos",0);
-		this.yPos = hudConfig.optInt("yPos",0);
-		this.xAlign = hudConfig.optString("xAlign","CENTER");
-		this.yAlign = hudConfig.optString("yAlign","CENTER");
-		this.zPos = (float) hudConfig.optDouble("zPos",0);
-		this.opacity = (float) hudConfig.optDouble("opacity",1);
+		this.width = elem.optInt("width",100);
+		this.height = elem.optInt("height",100);
+		this.xPos = elem.optInt("xPos",0);
+		this.yPos = elem.optInt("yPos",0);
+		this.xAlign = elem.optString("xAlign","CENTER");
+		this.yAlign = elem.optString("yAlign","CENTER");
+		this.zPos = (float) elem.optDouble("zPos",0);
+		this.opacity = (float) elem.optDouble("opacity",1);
 		
 
 		
-		this.uvTop = (float) hudConfig.optDouble("uvTop", 0);
-		this.uvLeft = (float) hudConfig.optDouble("uvLeft",0);
-		this.uvBottom = (float) hudConfig.optDouble("uvBottom",1);
-		this.uvRight = (float) hudConfig.optDouble("uvRight", 1);
+		this.uvTop = (float) elem.optDouble("uvTop", 0);
+		this.uvLeft = (float) elem.optDouble("uvLeft",0);
+		this.uvBottom = (float) elem.optDouble("uvBottom",1);
+		this.uvRight = (float) elem.optDouble("uvRight", 1);
 
-		String fontPath = path+hudConfig.optString("font");
-		if(!hudConfig.optString("font").isEmpty()){
+		String fontPath = path+elem.optString("font");
+		if(!elem.optString("font").isEmpty()){
 			try {
-				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) hudConfig.optDouble("fontSize",10)), hudConfig.optBoolean("fontAntiAlias"));
+				this.font = new TrueTypeFont(Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream(fontPath)).deriveFont((float) elem.optDouble("fontSize",10)), elem.optBoolean("fontAntiAlias"));
 			} catch (IOException e) {
 				e.printStackTrace();
 				Console.warning("Could not find font: "+fontPath);
-				this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.optDouble("fontSize",10)),false);
+				this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) elem.optDouble("fontSize",10)),false);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -124,27 +161,30 @@ public class HudElement{
 				Console.error("something with the font format went wrong...");
 			}
 		} else {
-			this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) hudConfig.optDouble("fontSize",10)),hudConfig.optBoolean("fontAntiAlias", true));
+			this.font = new TrueTypeFont(new Font("Arial", Font.PLAIN, (int) elem.optDouble("fontSize",10)),elem.optBoolean("fontAntiAlias", true));
 		}
 
-		int r = hudConfig.optInt("fontColorR",255);
-		int g = hudConfig.optInt("fontColorG",255);
-		int b = hudConfig.optInt("fontColorB",255);
-		int a = hudConfig.optInt("fontColorA",255);
+		int r = elem.optInt("fontColorR",255);
+		int g = elem.optInt("fontColorG",255);
+		int b = elem.optInt("fontColorB",255);
+		int a = elem.optInt("fontColorA",255);
 		
-		this.xFont = hudConfig.optInt("fontX",0);
-		this.yFont = hudConfig.optInt("fontY",0);
-		this.fontXAlign = hudConfig.optString("fontXAlign","CENTER");
-		this.fontYAlign = hudConfig.optString("fontYAlign","CENTER");
+		this.xFont = elem.optInt("fontX",0);
+		this.yFont = elem.optInt("fontY",0);
+		this.fontXAlign = elem.optString("fontXAlign","CENTER");
+		this.fontYAlign = elem.optString("fontYAlign","CENTER");
 
 		this.fontColor = new Color(r, g, b, a);
 		
-		this.textContent = hudConfig.optString("textContent", "");
-		this.clickCommand = hudConfig.optString("clickCommand", "");
+		this.textContent = elem.optString("textContent", "");
+		this.clickCommand = elem.optString("clickCommand", "");
 
 		computePos();
 	}
 	
+	/**
+	 * Transforms the offset and align relative to the upper left corner
+	 */
 	private void computePos(){
 		//box
 		switch(this.xAlign){
@@ -203,11 +243,16 @@ public class HudElement{
 		this.aabb = new Rectangle(this.compX,this.compY,this.width,this.height);
 	}
 
+	/**
+	 * Draws the element
+	 */
 	public void draw(){
 		if(this.hover&&this.hoverTexture!=null){
 			this.hoverTexture.bind();
-		}else{
+		}else if(this.texture!=null){
 			this.texture.bind();
+		}else{
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		}
 		
 		GL11.glBegin(GL11.GL_QUADS);
@@ -222,22 +267,22 @@ public class HudElement{
 			GL11.glVertex2f(this.compX,this.compY+this.height);
 		GL11.glEnd();
 		
-		this.font.drawString(this.compX+this.xFontOff, this.compY+this.yFontOff, textContent, fontColor);
-		
-
+		if(!this.textContent.isEmpty()){
+			this.font.drawString(this.compX+this.xFontOff, this.compY+this.yFontOff, textContent, fontColor);
+		}
 	}
 
-	public static HudElement loadElement(JSONObject hudConfig, String path) {
-		HudElement newElem;
+	public static JSONObject getElement(String name) {
+		JSONObject elem;
 		try{
-			newElem = new HudElement(hudConfig, path);
-		} catch(JSONException e){
+			elem = Hud.getFile().getJSONObject("HUDELEMENTS").getJSONObject(name);
+		}catch(JSONException e){
 			e.printStackTrace();
-			Console.info("Could not load AGE_LAUNCHER_EXIT hudElement");
+			Console.error("Failed to load hudElement: "+name);
 			return null;
 		}
 
-		return newElem;
+		return elem;
 	}
 	
 	public void update(long delta){
@@ -262,8 +307,8 @@ public class HudElement{
 		this.texture.release();
 		Console.info("Release the texture!");
 	}
-	
-	public boolean pushMouse(int x, int y, int lwjglButton, boolean buttonState){		
+
+	public boolean pushMouse(int x, int y, int lwjglButton, boolean buttonState) {
 		if(this.aabb.contains(x, y)){
 			hover = true;
 			if(buttonState){
@@ -282,6 +327,6 @@ public class HudElement{
 			click = false;
 			press = false;
 			return false;
-		}		
+		}
 	}
 }

@@ -3,7 +3,6 @@ package org.akaarts.AGE.input;
 import java.util.ArrayList;
 
 import org.akaarts.AGE.Console;
-import org.akaarts.AGE.graphics.gui.HudView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -61,8 +60,8 @@ public class InputHandler {
 		Console.info("InputHandler - Status: "+listeners.size());
 	}
 
-	public static void removeListener(HudView hudView) {
-		listeners.remove(hudView);
+	public static void removeListener(InputListener listener) {
+		listeners.remove(listener);
 		Console.info("InputHandler - Status: "+listeners.size());
 	}
 	
