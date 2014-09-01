@@ -1,9 +1,15 @@
-package org.akaarts.AGE;
+package org.akaarts.AGE.CLI;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.akaarts.AGE.Engine;
+import org.akaarts.AGE.input.InputListener;
+
 public class Console {
+	
+	private static ArrayList<CommandListener> listeners = new ArrayList<CommandListener>(4);
 	
 	/**
 	 * Logs a message in to the console
@@ -61,27 +67,19 @@ public class Console {
 	 */
 	public static void execute(String commandString){
 		info(">"+commandString);
+		boolean handled = false;
 		for(Command command:parseCommands(commandString)){
-
-			switch(command.func){
-			case "exit":
-				Engine.requestExit();
-				break;
-			case "menu":
-				if(command.args.length > 0){
-					switch(command.args[0]){
-					case "home":
-						goToMenu("home");
-						break;
-					case "settings":
-						goToMenu("settings");
-						break;
-					}
-				}else{
-					goToMenu("home");
+			for(CommandListener listener:listeners){
+				boolean[] ret = listener.run(command.func, command.args);
+				if(ret[1]){
+					handled = true;
 				}
-			default:
-				Console.info("Command not found: "+command.func);
+				if(ret[0]){
+					break;
+				}
+			}
+			if(!handled){
+				Console.warning("Command not found: "+command.func);
 			}
 		}
 	}
@@ -103,7 +101,23 @@ public class Console {
 		return cmd;
 	}
 	
-	private static void goToMenu(String menuName){
-		
+	/**
+	 * Adds a new listener object to the broadcast list
+	 * @param listener - the new listener
+	 */
+	
+	public static void addListener(CommandListener listener){	
+		listeners.add(listener);
+		Console.info("Console - Status: "+listeners.size()+" listeners");
+	}
+	
+	public static void clearListeners(){
+		listeners.clear();
+		Console.info("Console - Status: "+listeners.size()+" listeners");
+	}
+
+	public static void removeListener(CommandListener listener) {
+		listeners.remove(listener);
+		Console.info("Console - Status: "+listeners.size()+" listeners");
 	}
 }

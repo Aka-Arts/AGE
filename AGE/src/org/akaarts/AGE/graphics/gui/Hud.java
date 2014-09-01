@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.akaarts.AGE.Console;
+import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputHandler;
 import org.akaarts.AGE.input.InputListener;
 import org.json.JSONArray;

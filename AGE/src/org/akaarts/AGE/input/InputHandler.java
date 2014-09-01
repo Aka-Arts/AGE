@@ -2,7 +2,7 @@ package org.akaarts.AGE.input;
 
 import java.util.ArrayList;
 
-import org.akaarts.AGE.Console;
+import org.akaarts.AGE.CLI.Console;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -25,10 +25,7 @@ public class InputHandler {
 			boolean state = Keyboard.getEventKeyState();
 			//broadcast
 			for(InputListener l:listeners){
-				if(l.keyEvent(key, state)){
-					//stop propagation
-					break;
-				}
+				l.keyEvent(key, state);
 			}
 		}
 		//check mouse buffer
@@ -40,24 +37,14 @@ public class InputHandler {
 			boolean state = Mouse.getEventButtonState();
 			
 			int wheel = Mouse.getEventDWheel();
-			Console.info("Button: "+state);
 			//broadcast
 			for(InputListener l:listeners){
 				if(button == -1 && wheel == 0){
-					if(l.mouseMoveEvent(x, y)){
-					//stop propagation
-					break;
-					}
+					l.mouseMoveEvent(x, y);			
 				}else if(button == -1){
-					if(l.mouseWheelEvent(x, y, wheel)){
-					//stop propagation
-					break;
-					}
+					l.mouseWheelEvent(x, y, wheel);
 				}else{
-					if(l.mouseButtonEvent(x, y, button, state)){
-					//stop propagation
-					break;
-					}
+					l.mouseButtonEvent(x, y, button, state);
 				}
 			}
 		}
@@ -70,17 +57,17 @@ public class InputHandler {
 	
 	public static void addListener(InputListener listener){	
 		listeners.add(listener);
-		Console.info("InputHandler - Status: "+listeners.size());
+		Console.info("InputHandler - Status: "+listeners.size()+" listeners");
 	}
 	
 	public static void clearListeners(){
 		listeners.clear();
-		Console.info("InputHandler - Status: "+listeners.size());
+		Console.info("InputHandler - Status: "+listeners.size()+" listeners");
 	}
 
 	public static void removeListener(InputListener listener) {
 		listeners.remove(listener);
-		Console.info("InputHandler - Status: "+listeners.size());
+		Console.info("InputHandler - Status: "+listeners.size()+" listeners");
 	}
 	
 }

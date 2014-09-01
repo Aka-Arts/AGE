@@ -40,6 +40,31 @@
 			"textContent":"Quit",	
 			"clickCommand":"exit",
 			"active":true
+		},
+		"BUTTON_BIG":{
+			"image": "launcher/buttons/Big-Klick.png",
+			"hoverImage":"launcher/buttons/Big-Normal.png",
+			"pressImage":"launcher/buttons/Big-Hover.png",
+			"uvTop":0.375,
+			"uvLeft":0,
+			"uvBottom":0.625,
+			"uvRight":1,
+			"glTexFilter" : "NEAREST",
+			"width":256,
+			"height":64,
+			"zPos":0,
+			"opacity":1,
+			"font":"launcher/EirikRaude.ttf",
+			"fontColorR":255,
+			"fontColorG":255,
+			"fontColorB":255,
+			"fontColorA":255,
+			"fontSize": 35,
+			"fontAntiAlias": true,
+			"fontX":0,
+			"fontY":0,
+			"fontXAlign":"CENTER",
+			"fontYAlign":"CENTER"
 		}
 	},
 	"HUDPRESETS":{

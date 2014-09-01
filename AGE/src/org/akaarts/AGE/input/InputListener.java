@@ -15,7 +15,7 @@ public interface InputListener extends EventListener {
 	 * @param keyState - true if pressed or false if released
 	 * @return - return true for stopping the event propagation
 	 */
-	public boolean keyEvent(int lwjglKey, boolean keyState);
+	public void keyEvent(int lwjglKey, boolean keyState);
 	/**
 	 * gets called if a mouse event is registered
 	 * @param x - the absolute x coordinate
@@ -24,10 +24,10 @@ public interface InputListener extends EventListener {
 	 * @param buttonState - true if pressed or false if released/no press event
 	 * @return - return true for stopping the event propagation
 	 */
-	public boolean mouseMoveEvent(int x, int y);
+	public void mouseMoveEvent(int x, int y);
 	
-	public boolean mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState);
+	public void mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState);
 
-	public boolean mouseWheelEvent(int x, int y, int wheelScroll);
+	public void mouseWheelEvent(int x, int y, int wheelScroll);
 	
 }

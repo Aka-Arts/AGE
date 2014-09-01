@@ -2,7 +2,7 @@ package org.akaarts.AGE.graphics.gui;
 
 import java.io.IOException;
 
-import org.akaarts.AGE.Console;
+import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputListener;
 import org.json.JSONObject;
 import org.lwjgl.opengl.Display;
@@ -20,9 +20,11 @@ public class ActiveElement extends HudElement implements InputListener {
 	private Texture hoverTexture, pressTexture;
 
 	public ActiveElement() {
-		// TODO Auto-generated constructor stub
+		super();
+		
+		computeBox();
 	}
-
+	
 	public ActiveElement(JSONObject elem) {
 		super(elem);
 		
@@ -124,6 +126,10 @@ public class ActiveElement extends HudElement implements InputListener {
 		}
 	}
 	
+	/**
+	 * updates the button
+	 * @param delta - difference in milliseconds since last frame
+	 */
 	public void update(long delta){
 		
 		if(hover){
@@ -139,7 +145,10 @@ public class ActiveElement extends HudElement implements InputListener {
 			click = false;
 		}
 	}
-
+	
+	/**
+	 * Destroys all textures
+	 */
 	public void destroy() {
 		this.texture.release();
 		if(hoverTexture!=null){
@@ -151,24 +160,59 @@ public class ActiveElement extends HudElement implements InputListener {
 		Console.info("Release the texture!");
 	}
 	
+	/**
+	 * Sets a new Console command for click events
+	 * @param command - the new Console Command
+	 */
+	public void setCommand(String command){
+		this.clickCommand = command;
+	}
+	
+	/**
+	 * Sets a new position for this element
+	 * @param x - the new x
+	 * @param y - the new y
+	 */
+	public void setPos(int x, int y){
+		this.xPos = x;
+		this.yPos = y;
+		
+		computePos();
+		computeBox();
+	}
+	
+	/**
+	 * Sets the alignment rule for x (LEFT,CENTER,RIGHT) an y (TOP,CENTER,BOTTOM)
+	 * @param x - The rule for x
+	 * @param y - The rule for y
+	 */
+	public void setElementAlign(String x, String y){
+		this.xAlign = x;
+		this.yAlign = y;
+		
+		computePos();
+		computeBox();
+	}
+	
+	
+	//Interface Methods
 	@Override
-	public boolean keyEvent(int lwjglKey, boolean keyState) {
+	public void keyEvent(int lwjglKey, boolean keyState) {
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
-	public boolean mouseMoveEvent(int x, int y) {
+	public void mouseMoveEvent(int x, int y) {
 		if(this.aabb.contains(x, y)){
 			hover = true;
-			return true;
+			return;
 		}else{
 			hover = false;
-			return false;
+			return;
 		}
 	}
 	
-	public boolean mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState){
+	public void mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState){
 		if(this.aabb.contains(x, y)){
 			if(buttonState){
 				press = true;
@@ -179,19 +223,19 @@ public class ActiveElement extends HudElement implements InputListener {
 				press = false;
 				click = false;
 			}
-			return true;
+			return;
 		}else{
 			press = false;
 			click = false;
-			return false;
+			return;
 		}
 		
 	}
 
 	@Override
-	public boolean mouseWheelEvent(int x, int y, int wheelScroll) {
+	public void mouseWheelEvent(int x, int y, int wheelScroll) {
 		// TODO Auto-generated method stub
-		return false;
+
 	}
 
 }

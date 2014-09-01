@@ -1,4 +1,4 @@
-package org.akaarts.AGE;
+package org.akaarts.AGE.CLI;
 
 public class Command {
 	

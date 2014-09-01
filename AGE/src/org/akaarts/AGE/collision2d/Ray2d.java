@@ -1,6 +1,6 @@
 package org.akaarts.AGE.collision2d;
 
-import org.akaarts.AGE.Console;
+import org.akaarts.AGE.CLI.Console;
 
 /**
  * Class for 2D ray intersection tests.

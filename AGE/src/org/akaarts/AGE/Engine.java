@@ -4,9 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
 import javax.imageio.ImageIO;
 
+import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.graphics.gui.ActiveElement;
 import org.akaarts.AGE.graphics.gui.Hud;
+import org.akaarts.AGE.graphics.gui.HudElement;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -36,24 +40,11 @@ public class Engine {
 	public static void start() {
 		
 		Console.info("Starting AGE...");
-		try {
-			Display.setDisplayMode(new DisplayMode(DEF_WIDTH, DEF_HEIGHT));
-		} catch (LWJGLException e) {
-			Console.error("Error at setting DisplayMode");
-			e.printStackTrace();
-		}
-		DisplayMode desktop = Display.getDesktopDisplayMode();
-		Console.info("Current Screen Resolution: "+desktop.getWidth()+"x"+desktop.getHeight()+" @"+desktop.getFrequency()+" Hz with "+desktop.getBitsPerPixel()+" bits per pixel");
 		
-			setTitle("AGE - Launcher");
-			setIcons(new String[]{"assets/AGE_128.png","assets/AGE_32.png","assets/AGE_16.png"});
-		try {
-			Display.create();
-		} catch (LWJGLException e) {
-			Console.error("Error at creating Display");
-			e.printStackTrace();
-		}		
+		Engine.setup();
 		Engine.setupGL();
+		
+		Console.addListener(LauncherCommands.SELF);
 		
 		Hud.setFile("assets/huds/launcher.json");
 		Hud.loadPreset("HOME");
@@ -62,6 +53,9 @@ public class Engine {
 		Engine.stop();		
 	}
 	
+	/**
+	 * Sets the openGL space up
+	 */
 	private static void setupGL() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);               
         
@@ -74,6 +68,28 @@ public class Engine {
         GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
+	}
+	/**
+	 * Sets the Display, title and icons up
+	 */
+	private static void setup(){
+		try {
+			Display.setDisplayMode(new DisplayMode(DEF_WIDTH, DEF_HEIGHT));
+		} catch (LWJGLException e) {
+			Console.error("Error at setting DisplayMode");
+			e.printStackTrace();
+		}
+		DisplayMode desktop = Display.getDesktopDisplayMode();
+		Console.info("Current Desktop Resolution: "+desktop.getWidth()+"x"+desktop.getHeight()+" @"+desktop.getFrequency()+" Hz with "+desktop.getBitsPerPixel()+" bits per pixel");
+		
+			setTitle("AGE - Launcher");
+			setIcons(new String[]{"assets/AGE_128.png","assets/AGE_32.png","assets/AGE_16.png"});
+		try {
+			Display.create();
+		} catch (LWJGLException e) {
+			Console.error("Error at creating Display");
+			e.printStackTrace();
+		}		
 	}
 	
 	/**

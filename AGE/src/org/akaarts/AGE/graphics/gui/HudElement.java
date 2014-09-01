@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 
-import org.akaarts.AGE.Console;
+import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputListener;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +22,12 @@ public class HudElement{
 
 	public static String NOTEX = "assets/defaults/NOTEX.png";
 	public static String NOFONT = "assets/defaults/font.ttf";
+	
+	public static final String CENTER = "CENTER";
+	public static final String TOP = "TOP";
+	public static final String BOTTOM = "BOTTOM";
+	public static final String LEFT = "LEFT";
+	public static final String RIGHT = "RIGHT";
 
 	protected int xPos;
 	protected int yPos;
@@ -68,6 +74,8 @@ public class HudElement{
 		this.fontColor = Color.white;
 		this.fontXAlign = "CENTER";
 		this.fontYAlign = "CENTER";
+		
+		this.textContent = "";
 
 		
 		try {
@@ -177,7 +185,7 @@ public class HudElement{
 	/**
 	 * Transforms the offset and align relative to the upper left corner
 	 */
-	private void computePos(){
+	protected void computePos(){
 		//box
 		switch(this.xAlign){
 		case "CENTER":
@@ -261,6 +269,11 @@ public class HudElement{
 		}
 	}
 
+	/**
+	 * Gets the JSONObject from the current active HudFile matching name
+	 * @param name - The name of the JSONObject for the element
+	 * @return The JSONObject of the element
+	 */
 	public static JSONObject getElement(String name) {
 		JSONObject elem;
 		try{
@@ -274,12 +287,85 @@ public class HudElement{
 		return elem;
 	}
 	
+	/**
+	 * Updates the element
+	 * @param delta - difference in milliseconds since the last frame
+	 */
 	public void update(long delta){
 		computePos();
 	}
 
+	/**
+	 * Destroys the elements textures
+	 */
 	public void destroy() {
 		this.texture.release();
 		Console.info("Release the texture!");
+	}
+	
+	/**
+	 * Sets a new position for this element
+	 * @param x - the new x
+	 * @param y - the new y
+	 */
+	public void setPos(int x, int y){
+		this.xPos = x;
+		this.yPos = y;
+		
+		computePos();
+	}
+	
+	/**
+	 * Sets a new Texture for this element
+	 * @param path - path from Classpath
+	 * @param useLinear - If it should use LinearFiltering or Nearest
+	 */
+	public void setTexture(String path, boolean useLinear){
+		if(!path.isEmpty()){
+			try {
+				if(useLinear){
+					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_LINEAR);
+				}else{	
+					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(path),GL11.GL_NEAREST);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				Console.warning("Could not load texture: "+path);
+				try {
+					this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					Console.error("Could not find NOTEX.png? Ah, rubbish...");
+				}
+			}
+		}else{
+			try {
+				this.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				Console.error("Could not find NOTEX.png? Ah, rubbish...");
+			}
+		}
+	}
+	
+	/**
+	 * Sets the alignment rule for x (LEFT,CENTER,RIGHT) an y (TOP,CENTER,BOTTOM)
+	 * @param x - The rule for x
+	 * @param y - The rule for y
+	 */
+	public void setElementAlign(String x, String y){
+		this.xAlign = x;
+		this.yAlign = y;
+		
+		computePos();
+	}
+	
+	/**
+	 * Sets a new text for the element
+	 * @param text - The new text
+	 */
+	public void setText(String text){
+		this.textContent = text;
+		computePos();
 	}
 }
