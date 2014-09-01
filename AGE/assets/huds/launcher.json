@@ -10,8 +10,9 @@
 			"yAlign":"TOP"
 		},
     	"EXIT_BUTTON": {
-			"image": "launcher/buttons/Big-Normal.png",
-			"hoverImage":"launcher/buttons/Big-Hover.png",
+			"image": "launcher/buttons/Big-Klick.png",
+			"hoverImage":"launcher/buttons/Big-Normal.png",
+			"pressImage":"launcher/buttons/Big-Hover.png",
 			"uvTop":0.375,
 			"uvLeft":0,
 			"uvBottom":0.625,
@@ -37,7 +38,8 @@
 			"fontXAlign":"CENTER",
 			"fontYAlign":"CENTER",
 			"textContent":"Quit",	
-			"clickCommand":"exit"
+			"clickCommand":"exit",
+			"active":true
 		}
 	},
 	"HUDPRESETS":{

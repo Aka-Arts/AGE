@@ -8,6 +8,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 public class InputHandler {
+	
+
 
 	private InputHandler(){};
 	
@@ -34,12 +36,28 @@ public class InputHandler {
 			int x = Mouse.getEventX();
 			int y = Display.getHeight() - Mouse.getEventY();
 			int button = Mouse.getEventButton();
+
 			boolean state = Mouse.getEventButtonState();
+			
+			int wheel = Mouse.getEventDWheel();
+			Console.info("Button: "+state);
 			//broadcast
 			for(InputListener l:listeners){
-				if(l.mouseEvent(x, y, button, state)){
+				if(button == -1 && wheel == 0){
+					if(l.mouseMoveEvent(x, y)){
 					//stop propagation
 					break;
+					}
+				}else if(button == -1){
+					if(l.mouseWheelEvent(x, y, wheel)){
+					//stop propagation
+					break;
+					}
+				}else{
+					if(l.mouseButtonEvent(x, y, button, state)){
+					//stop propagation
+					break;
+					}
 				}
 			}
 		}

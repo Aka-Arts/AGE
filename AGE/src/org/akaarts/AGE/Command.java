@@ -8,7 +8,6 @@ public class Command {
 	public Command(String command){
 		command = command.replaceAll("(\\A )|( \\z)", "");
 		String[] elem = command.split("[ ]");
-		Console.info(elem.length+"");
 		func = elem[0].toLowerCase();
 		args = new String[elem.length-1];
 		for(int ct = 1;ct<elem.length;ct++){

@@ -59,15 +59,24 @@ public class Console {
 	 * @param commandString - the command string
 	 * Each command line must end with a semicolon (;)
 	 */
-	public static void execute(String commandString){		
+	public static void execute(String commandString){
+		info(">"+commandString);
 		for(Command command:parseCommands(commandString)){
+
 			switch(command.func){
 			case "exit":
 				Engine.requestExit();
 				break;
 			case "menu":
 				if(command.args.length > 0){
-					
+					switch(command.args[0]){
+					case "home":
+						goToMenu("home");
+						break;
+					case "settings":
+						goToMenu("settings");
+						break;
+					}
 				}else{
 					goToMenu("home");
 				}

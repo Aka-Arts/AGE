@@ -24,6 +24,10 @@ public interface InputListener extends EventListener {
 	 * @param buttonState - true if pressed or false if released/no press event
 	 * @return - return true for stopping the event propagation
 	 */
-	public boolean mouseEvent(int x, int y, int lwjglButton, boolean buttonState);
+	public boolean mouseMoveEvent(int x, int y);
+	
+	public boolean mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState);
 
+	public boolean mouseWheelEvent(int x, int y, int wheelScroll);
+	
 }

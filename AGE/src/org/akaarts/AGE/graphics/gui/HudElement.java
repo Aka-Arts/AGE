@@ -23,14 +23,31 @@ public class HudElement{
 	public static String NOTEX = "assets/defaults/NOTEX.png";
 	public static String NOFONT = "assets/defaults/font.ttf";
 
-	private int xPos, yPos, width, height, compX, compY, xFont, yFont, xFontOff, yFontOff;
-	private Texture texture,hoverTexture;
-	private String xAlign, yAlign, fontXAlign, fontYAlign, textContent, clickCommand;
-	private TrueTypeFont font;
-	private float zPos, opacity, uvTop, uvLeft, uvBottom, uvRight;
-	private Color fontColor;
-	private Rectangle aabb;
-	private boolean hover,click,press;
+	protected int xPos;
+	protected int yPos;
+	protected int width;
+	protected int height;
+	protected int compX;
+	protected int compY;
+	protected int xFont;
+	protected int yFont;
+	protected int xFontOff;
+	protected int yFontOff;
+	protected Texture texture;
+	protected String xAlign;
+	protected String yAlign;
+	protected String fontXAlign;
+	protected String fontYAlign;
+	protected String textContent;
+	protected TrueTypeFont font;
+	protected float zPos;
+	protected float opacity;
+	protected float uvTop;
+	protected float uvLeft;
+	protected float uvBottom;
+	protected float uvRight;
+	protected Color fontColor;
+	
 	
 	public HudElement(){
 		this.width = 100;
@@ -100,31 +117,7 @@ public class HudElement{
 			}
 		}
 		
-		if(!elem.optString("hoverImage").isEmpty()){
-			String imgPath = path+elem.getString("hoverImage");
-			try {
-				switch(elem.optString("glTexFilter","NEAREST")){
-				case "LINEAR":
-					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_LINEAR);
-					break;
-				case "NEAREST":
-				default:		
-					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(imgPath),GL11.GL_NEAREST);
-					break;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				Console.warning("Could not load texture: "+imgPath);
-				try {
-					this.hoverTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(NOTEX));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					Console.error("Could not find NOTEX.png? Ah, rubbish...");
-				}
-			}
-		}else{
-			hoverTexture = null;
-		}
+		
 		
 		
 		
@@ -177,7 +170,6 @@ public class HudElement{
 		this.fontColor = new Color(r, g, b, a);
 		
 		this.textContent = elem.optString("textContent", "");
-		this.clickCommand = elem.optString("clickCommand", "");
 
 		computePos();
 	}
@@ -240,16 +232,13 @@ public class HudElement{
 			break;
 		}
 		
-		this.aabb = new Rectangle(this.compX,this.compY,this.width,this.height);
 	}
 
 	/**
 	 * Draws the element
 	 */
 	public void draw(){
-		if(this.hover&&this.hoverTexture!=null){
-			this.hoverTexture.bind();
-		}else if(this.texture!=null){
+		if(this.texture!=null){
 			this.texture.bind();
 		}else{
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -287,46 +276,10 @@ public class HudElement{
 	
 	public void update(long delta){
 		computePos();
-		
-		
-		if(hover){
-			
-		}
-		if(press){
-			
-		}
-		if(click){
-			if(!this.clickCommand.isEmpty()){
-				Console.execute(clickCommand);
-			}
-			click = false;
-		}
 	}
 
 	public void destroy() {
 		this.texture.release();
 		Console.info("Release the texture!");
-	}
-
-	public boolean pushMouse(int x, int y, int lwjglButton, boolean buttonState) {
-		if(this.aabb.contains(x, y)){
-			hover = true;
-			if(buttonState){
-				press = true;
-			}else if(press == true && !buttonState){
-				press = false;
-				click = true;
-			}else{
-				press = false;
-				click = false;
-			}
-			
-			return true;
-		}else{
-			hover = false;
-			click = false;
-			press = false;
-			return false;
-		}
 	}
 }

@@ -1,14 +1,9 @@
 package org.akaarts.AGE;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.graphics.gui.Hud;
@@ -47,7 +42,10 @@ public class Engine {
 			Console.error("Error at setting DisplayMode");
 			e.printStackTrace();
 		}
-			setTitle("Launcher");
+		DisplayMode desktop = Display.getDesktopDisplayMode();
+		Console.info("Current Screen Resolution: "+desktop.getWidth()+"x"+desktop.getHeight()+" @"+desktop.getFrequency()+" Hz with "+desktop.getBitsPerPixel()+" bits per pixel");
+		
+			setTitle("AGE - Launcher");
 			setIcons(new String[]{"assets/AGE_128.png","assets/AGE_32.png","assets/AGE_16.png"});
 		try {
 			Display.create();
@@ -56,8 +54,6 @@ public class Engine {
 			e.printStackTrace();
 		}		
 		Engine.setupGL();
-		
-		InputHandler.addListener(Hud.self());
 		
 		Hud.setFile("assets/huds/launcher.json");
 		Hud.loadPreset("HOME");
@@ -103,7 +99,7 @@ public class Engine {
 			
 			if(showSysInf){
 				if(delta <= 0){
-					setTitle("FPS: "+1000/1);
+					setTitle("FPS: 1000");
 				} else {
 					setTitle("FPS: "+1000/delta);
 				}
@@ -179,6 +175,13 @@ public class Engine {
 	
 	public static void requestExit(){
 		closeRequested = true;
+	}
+	
+	public static DisplayMode[] getDisplayModes(){
+		
+		Display.getDesktopDisplayMode();
+		
+		return null;
 	}
 	
 }

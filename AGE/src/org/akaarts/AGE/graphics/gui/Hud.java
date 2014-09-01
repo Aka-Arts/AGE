@@ -18,14 +18,12 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
-public class Hud implements InputListener{
+public class Hud {
 	
 	private static ArrayList<HudElement> elements = new ArrayList<HudElement>(4);
 	
 	private static JSONObject hudFile;
 	private static String filePath;
-	
-	private static Hud self = new Hud();
 	
 	private Hud(){}
 	
@@ -51,7 +49,11 @@ public class Hud implements InputListener{
 	public static void destroyElements(){
 		for(HudElement element:elements){
 			element.destroy();
+			if(element instanceof ActiveElement){
+				InputHandler.removeListener((ActiveElement)element);
+			}
 		}
+		elements.clear();
 	}
 	
 	public static void destroy(){
@@ -61,6 +63,9 @@ public class Hud implements InputListener{
 	
 	public static void addElement(HudElement elem){
 		elements.add(elem);
+		if(elem instanceof ActiveElement){
+			InputHandler.addListener((ActiveElement) elem);
+		}
 	}
 	
 	public static void loadPreset(String name){
@@ -82,7 +87,12 @@ public class Hud implements InputListener{
 		destroyElements();
 		
 		for(int ct = 0;ct < elementNames.length();ct++){
-			addElement(new HudElement(HudElement.getElement(elementNames.getString(ct))));
+			JSONObject elem = HudElement.getElement(elementNames.getString(ct));
+			if(elem.optBoolean("active")){
+				addElement(new ActiveElement(elem));
+			}else{
+				addElement(new HudElement(elem));
+			}
 		}
 		
 	}
@@ -119,24 +129,6 @@ public class Hud implements InputListener{
 	
 	public static String getPath(){
 		return filePath;
-	}
-	
-	public static Hud self(){
-		return self;
-	}
-
-	@Override
-	public boolean keyEvent(int lwjglKey, boolean keyState) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean mouseEvent(int x, int y, int lwjglButton, boolean buttonState) {
-		for(HudElement elem:elements){
-			elem.pushMouse(x, y, lwjglButton, buttonState);
-		}
-		return false;
 	}
 	
 }
