@@ -140,7 +140,7 @@ public class ActiveElement extends HudElement implements InputListener {
 		}
 		if(click){
 			if(!this.clickCommand.isEmpty()){
-				Console.execute(clickCommand);
+				Console.queueCommands(clickCommand);
 			}
 			click = false;
 		}

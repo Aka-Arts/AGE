@@ -10,6 +10,7 @@ import org.akaarts.AGE.input.InputListener;
 public class Console {
 	
 	private static ArrayList<CommandListener> listeners = new ArrayList<CommandListener>(4);
+	private static ArrayList<Command> commandQueue = new ArrayList<Command>(4);
 	
 	/**
 	 * Logs a message in to the console
@@ -65,10 +66,10 @@ public class Console {
 	 * @param commandString - the command string
 	 * Each command line must end with a semicolon (;)
 	 */
-	public static void execute(String commandString){
-		info(">"+commandString);
-		boolean handled = false;
-		for(Command command:parseCommands(commandString)){
+	public static void executeQueue(long delta){
+		for(Command command:commandQueue){
+			info(">"+command);
+			boolean handled = false;
 			for(CommandListener listener:listeners){
 				boolean[] ret = listener.run(command.func, command.args);
 				if(ret[1]){
@@ -82,23 +83,7 @@ public class Console {
 				Console.warning("Command not found: "+command.func);
 			}
 		}
-	}
-	
-	private static Command[] parseCommands(String commandString){
-		//Drop all chars except a-z, A-Z, 0-9 and _SPACE-+;
-		commandString = commandString.replaceAll("[^a-zA-Z0-9_ \\-\\+;]|(\\A )|( \\z)", "");
-		//Drop multiple spaces
-		commandString = commandString.replaceAll("[ ]{2,}", " ");
-		//split command string at ;
-		String[] commands = commandString.split("[;]");
-		
-		Command[] cmd = new Command[commands.length];
-		
-		for(int ct = 0;ct<commands.length;ct++){
-			cmd[ct] = new Command(commands[ct]);
-		}
-		
-		return cmd;
+		commandQueue.clear();
 	}
 	
 	/**
@@ -119,5 +104,21 @@ public class Console {
 	public static void removeListener(CommandListener listener) {
 		listeners.remove(listener);
 		Console.info("Console - Status: "+listeners.size()+" listeners");
+	}
+	
+	public static void queueCommands(String commandString){
+		
+		//Drop all chars except a-z, A-Z, 0-9 and _SPACE-+;
+		commandString = commandString.replaceAll("[^a-zA-Z0-9_ \\-\\+;]|(\\A )|( \\z)", "");
+		//Drop multiple spaces
+		commandString = commandString.replaceAll("[ ]{2,}", " ");
+		//split command string at ;
+		String[] commands = commandString.split("[;]");
+				
+		for(String command:commands){
+			commandQueue.add(new Command(command));
+		}
+		
+		
 	}
 }

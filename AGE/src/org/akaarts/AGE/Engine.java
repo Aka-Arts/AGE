@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.imageio.ImageIO;
 
@@ -48,6 +51,11 @@ public class Engine {
 		
 		Hud.setFile("assets/huds/launcher.json");
 		Hud.loadPreset("HOME");
+		
+		Console.info("Availble DisplayModes:");
+		for(DisplayMode mode:getDisplayModes()){
+			Console.info(mode.getWidth()+"x"+mode.getHeight()+" @ "+mode.getFrequency()+" Hz with "+mode.getBitsPerPixel()+" bpp");
+		}
 		
 		Engine.loop();
 		Engine.stop();		
@@ -123,6 +131,8 @@ public class Engine {
 			
 			InputHandler.update();
 			
+			Console.executeQueue(delta);
+			
 			Hud.update(delta, Display.wasResized());
 			Hud.draw();
 			
@@ -193,11 +203,55 @@ public class Engine {
 		closeRequested = true;
 	}
 	
-	public static DisplayMode[] getDisplayModes(){
+	/**
+	 * Returns all DisplayModes which are equal or smaller to the desktop resolution and with the same frequency and bit per pixel
+	 * @return All modes in sorted list
+	 */
+	public static ArrayList<DisplayMode> getDisplayModes(){
 		
-		Display.getDesktopDisplayMode();
+		DisplayMode desktop = Display.getDesktopDisplayMode();
+		ArrayList<DisplayMode> modes = new ArrayList<DisplayMode>(10);
+		int width = desktop.getWidth(), height = desktop.getHeight(), hz = desktop.getFrequency(), bpp = desktop.getBitsPerPixel();
 		
-		return null;
+		DisplayMode[] allModes;
+		try {
+			allModes = Display.getAvailableDisplayModes();
+		} catch (LWJGLException e) {
+			Console.error("Failed to load DisplayModes");
+			e.printStackTrace();
+			return null;
+		}
+
+		for(DisplayMode mode:allModes){
+			if(mode.getFrequency()==hz&&mode.getBitsPerPixel()==bpp){
+				if(mode.getHeight()<=height&&mode.getWidth()<=width){
+					modes.add(mode);
+				}
+			}
+		}
+		
+		Collections.sort(modes, new Comparator<DisplayMode>(){
+			public int compare(DisplayMode mode1, DisplayMode mode2){
+				int width1 = mode1.getWidth(), width2 = mode2.getWidth();
+				int height1 = mode1.getHeight(), height2 = mode2.getHeight();
+				
+				if(width1 > width2){
+					return -1;
+				}else if(width1 < width2){
+					return 1;
+				}
+				
+				if(height1 > height2){
+					return -1;
+				}else if(height1 < height2){
+					return 1;
+				}
+				
+				return 0;
+			}
+		});
+		
+		return modes;
 	}
 	
 }

@@ -4,8 +4,10 @@ public class Command {
 	
 	public String func;
 	public String[] args;
+	public String orginal;
 	
 	public Command(String command){
+		this.orginal = command;
 		command = command.replaceAll("(\\A )|( \\z)", "");
 		String[] elem = command.split("[ ]");
 		func = elem[0].toLowerCase();
@@ -16,6 +18,6 @@ public class Command {
 	}
 	
 	public String toString(){
-		return "Function: "+func+" / Arguments: "+args.length;
+		return orginal;
 	}
 }
