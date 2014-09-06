@@ -4,9 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.akaarts.AGE.Engine;
-import org.akaarts.AGE.input.InputListener;
-
 public class Console {
 	
 	private static ArrayList<CommandListener> listeners = new ArrayList<CommandListener>(4);

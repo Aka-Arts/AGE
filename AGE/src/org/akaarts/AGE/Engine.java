@@ -11,9 +11,7 @@ import java.util.Comparator;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
-import org.akaarts.AGE.graphics.gui.ActiveElement;
 import org.akaarts.AGE.graphics.gui.Hud;
-import org.akaarts.AGE.graphics.gui.HudElement;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;

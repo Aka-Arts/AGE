@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputListener;
 import org.json.JSONObject;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
 import org.newdawn.slick.opengl.Texture;

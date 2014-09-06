@@ -4,19 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputHandler;
-import org.akaarts.AGE.input.InputListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Point;
 
 public class Hud {
 	
