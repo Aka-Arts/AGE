@@ -1,12 +1,12 @@
 package org.akaarts.AGE.graphics.gui;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputListener;
 import org.json.JSONObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Rectangle;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
