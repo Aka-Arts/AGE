@@ -1,0 +1,40 @@
+This file is the definition for JSON HUD Files of AGE
+
+Every JSON HUD file has these base objects:
+
+- SYTLE
+- STRUCTURE
+
+
+>>>> The object SYTLE contains all styling informations for the elements in STRUCTURE. <<<<
+
+The name of an object inside of the STYLE has to be unique and is allowed to be one of the following:
+
+- the exact unique name of an element in STRUCTURE
+- the exact class name of an elements class property
+- the exact id name of an elements id property
+
+every of the above listed name may have the from CSS known pseudo classes:
+
+- :hover
+- :active
+and the new
+- :clicked
+
+Every style block contains properties
+Supported properties:
+
+- position 	(static|absolute)
+- top		(px)
+- left		(px)
+- bottom	(px)
+- right		(px)
+- width		(px|%)
+- height	(px|%)
+
+- background-
+--	color	(#rrggbb)
+--	image	(path)
+--	filter	(linear|nearest)
+--	UV		(xUV yUV) as UV coordinates
+--	repeat	(clamp|repeat|repeat-x|repeat-y)
