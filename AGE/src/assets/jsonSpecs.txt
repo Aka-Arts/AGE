@@ -26,23 +26,22 @@ and the new
 Every style block contains properties
 Supported properties:
 
-- position 	(static|absolute)
-- top		(Npx)
-- left		(Npx)
-- bottom	(Npx)
-- right		(Npx)
+- originX 	(left|center|right)
+- originY	(top|center|bottom)
+- positionX	(Npx)
+- positionY	(Npx)
 - width		(Npx|N%)
 - height	(Npx|N%)
 
 - background-
---	color	(#rrggbb)
+--	color	(#rrggbb[aa])
 --	image	(path)
 --	filter	(linear|nearest)
---	UV		(xUV yUV) as UV coordinates
---	repeat	(clamp|repeat|repeat-x|repeat-y)
+--	UV		(TL,BL,BR,TR) as UV coordinates (à xf,yf)
+--	repeat	(none|clamp|repeat|repeat-x|repeat-y)
 
 - font-
---	color	(#rrggbb)
+--	color	(#rrggbb[aa])
 --	name	(path)
 --	size	(px)
 
