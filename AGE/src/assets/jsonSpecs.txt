@@ -27,12 +27,12 @@ Every style block contains properties
 Supported properties:
 
 - position 	(static|absolute)
-- top		(px)
-- left		(px)
-- bottom	(px)
-- right		(px)
-- width		(px|%)
-- height	(px|%)
+- top		(Npx)
+- left		(Npx)
+- bottom	(Npx)
+- right		(Npx)
+- width		(Npx|N%)
+- height	(Npx|N%)
 
 - background-
 --	color	(#rrggbb)

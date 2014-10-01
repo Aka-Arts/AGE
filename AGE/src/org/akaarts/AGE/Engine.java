@@ -11,7 +11,6 @@ import java.util.Comparator;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
-import org.akaarts.AGE.graphics.gui.Hud;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -44,11 +43,6 @@ public class Engine {
 		
 		Engine.setup();
 		Engine.setupGL();
-		
-		Console.addListener(LauncherCommands.SELF);
-		
-		Hud.setFile("assets/huds/launcher.json");
-		Hud.loadPreset("HOME");
 		
 		Console.info("Availble DisplayModes:");
 		for(DisplayMode mode:getDisplayModes()){
@@ -104,8 +98,6 @@ public class Engine {
 	private static void stop() {
 		Console.info("Stopping AGE...");
 		
-		Hud.destroy();
-		
 		Display.destroy();
 		Console.info("Bye!");
 	}
@@ -130,9 +122,6 @@ public class Engine {
 			InputHandler.update();
 			
 			Console.executeQueue(delta);
-			
-			Hud.update(delta, Display.wasResized());
-			Hud.draw();
 			
 			Display.update();
 			Display.sync(AVG_FPS);
