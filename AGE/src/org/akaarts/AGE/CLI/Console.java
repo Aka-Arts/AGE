@@ -59,11 +59,10 @@ public class Console {
 	}
 	
 	/**
-	 * Executes AGE console commands
-	 * @param commandString - the command string
+	 * Executes AGE console commands queue
 	 * Each command line must end with a semicolon (;)
 	 */
-	public static void executeQueue(long delta){
+	public static void executeQueue(){
 		for(Command command:commandQueue){
 			info(">"+command);
 			boolean handled = false;

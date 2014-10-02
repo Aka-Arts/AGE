@@ -28,16 +28,20 @@ Supported properties:
 
 - originX 	(left|center|right)
 - originY	(top|center|bottom)
-- positionX	(Npx)
-- positionY	(Npx)
-- width		(Npx|N%)
-- height	(Npx|N%)
+- positionX	(px)
+- positionY	(px)
+- width		(px|%)
+- height	(px|%)
 
 - background-
 --	color	(#rrggbb[aa])
 --	image	(path)
 --	filter	(linear|nearest)
---	UV		(TL,BL,BR,TR) as UV coordinates (à xf,yf)
+--	UV-
+---  TL
+---	 BL
+---  BR
+---  TR
 --	repeat	(none|clamp|repeat|repeat-x|repeat-y)
 
 - font-

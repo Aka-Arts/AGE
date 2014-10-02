@@ -11,6 +11,7 @@ import java.util.Comparator;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.graphics.gui.Hud;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -29,6 +30,7 @@ public class Engine {
 	
 	static long lastFrame = getTime();
 	
+	private static long delta;
 	
 	private static boolean  closeRequested = false;
 
@@ -41,14 +43,16 @@ public class Engine {
 		
 		Console.info("Starting AGE...");
 		
+		// call the setups
 		Engine.setup();
 		Engine.setupGL();
 		
+		//TODO output all display modes, remove later or move to debugging
 		Console.info("Availble DisplayModes:");
 		for(DisplayMode mode:getDisplayModes()){
 			Console.info(mode.getWidth()+"x"+mode.getHeight()+" @ "+mode.getFrequency()+" Hz with "+mode.getBitsPerPixel()+" bpp");
 		}
-		
+		// go to the loop and stop after
 		Engine.loop();
 		Engine.stop();		
 	}
@@ -59,12 +63,14 @@ public class Engine {
 	private static void setupGL() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);               
         
+		// black clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
         
         // enable alpha blending
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
+        // set the view port
         GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
@@ -73,17 +79,25 @@ public class Engine {
 	 * Sets the Display, title and icons up
 	 */
 	private static void setup(){
+		
+		// try to setup the display
 		try {
 			Display.setDisplayMode(new DisplayMode(DEF_WIDTH, DEF_HEIGHT));
 		} catch (LWJGLException e) {
 			Console.error("Error at setting DisplayMode");
 			e.printStackTrace();
 		}
+		
+		//TODO output desktop display mode in console, remove later or move to debugging
 		DisplayMode desktop = Display.getDesktopDisplayMode();
 		Console.info("Current Desktop Resolution: "+desktop.getWidth()+"x"+desktop.getHeight()+" @"+desktop.getFrequency()+" Hz with "+desktop.getBitsPerPixel()+" bits per pixel");
 		
-			setTitle("AGE - Launcher");
-			setIcons(new String[]{"assets/AGE_128.png","assets/AGE_32.png","assets/AGE_16.png"});
+		// set the initial Title
+		setTitle("AGE - Launcher");
+		// set the initial LOGO
+		setIcons(new String[]{"/assets/AGE_128.png","/assets/AGE_32.png","/assets/AGE_16.png"});
+		
+		// try to create the Display
 		try {
 			Display.create();
 		} catch (LWJGLException e) {
@@ -98,6 +112,10 @@ public class Engine {
 	private static void stop() {
 		Console.info("Stopping AGE...");
 		
+		// destroy the hud
+		Hud.destroy();
+		
+		// destroy the display
 		Display.destroy();
 		Console.info("Bye!");
 	}
@@ -107,23 +125,38 @@ public class Engine {
 	 */
 	private static void loop(){
 		Console.info("Entering loop...");
+		
+		// main loop
 		while(!(closeRequested||Display.isCloseRequested())){
+			// clear the window
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			long delta = getDelta();
 			
+			//update global delta
+			updateDelta();
+			
+			//show FPS in title
 			if(showSysInf){
-				if(delta <= 0){
+				if(getDelta() <= 0){
 					setTitle("FPS: 1000");
 				} else {
-					setTitle("FPS: "+1000/delta);
+					setTitle("FPS: "+1000/getDelta());
 				}
 			}
 			
+			//update the input handler
 			InputHandler.update();
 			
-			Console.executeQueue(delta);
+			//execute all queued commands
+			Console.executeQueue();
 			
+			//update hud and then draw it
+			Hud.update();
+			Hud.draw();
+			
+			// update the display
 			Display.update();
+			
+			// sync to the preferred FPS
 			Display.sync(AVG_FPS);
 
 			
@@ -132,30 +165,52 @@ public class Engine {
 	}
 	
 
-	
+	/**
+	 * get the delta since the last frame
+	 * @return - the delta in milliseconds
+	 */
 	private static long getDelta(){
-		long time = getTime();
-		int delta = (int) (time - lastFrame);
-		lastFrame = time;
-		 
 		return delta;
 	}
 	
+	/**
+	 * update the global delta value, call once per frame
+	 */
+	private static void updateDelta() {
+		long time = getTime();
+		int delta = (int) (time - lastFrame);
+		lastFrame = time;
+		
+		Engine.delta = delta;
+	}
+	
+	/**
+	 * get the current time in milliseconds
+	 * @return
+	 */
 	public static long getTime() {
 	    return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 	
+	/**
+	 * java start method
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Engine.start();
 	}
 	
+	/**
+	 * Set the display icon(s)
+	 * @param paths - one or more paths to images
+	 */
 	public static void setIcons(String[] paths){
 		ByteBuffer[] icons = new ByteBuffer[paths.length];
 		int ct = 0;
 		for(String path:paths){
 			BufferedImage img = null;
 			try {
-			    img = ImageIO.read(new File(path));
+			    img = ImageIO.read(Engine.class.getResourceAsStream(path));
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;
@@ -182,10 +237,18 @@ public class Engine {
 		Display.setIcon(icons);
 	}
 	
+	/**
+	 * Set the window title
+	 * @param title - the new title
+	 */
 	public static void setTitle(String title){
 		Display.setTitle(LAUNCHER_TITLE+title);
 	}
 	
+	/**
+	 * public method to request the exit from anywhere,<br>
+	 * <b style="color:red">Use with caution!</b>
+	 */
 	public static void requestExit(){
 		closeRequested = true;
 	}
