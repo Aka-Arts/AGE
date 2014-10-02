@@ -25,10 +25,9 @@ public class HudElement{
 	private String backgroundColorExpression, backgroundImageExpression, backgroundFilterExpression,  backgroundRepeatExpression;
 	private String backgroundUVTLExpression,backgroundUVBLExpression,backgroundUVBRExpression,backgroundUVTRExpression;
 	private float backgroundColorR, backgroundColorG, backgroundColorB, backgroundColorA;
-	private float backgroundUTL,backgroundUBL,backgroundUBR,backgroundUTR,backgroundVTL,backgroundVBL,backgroundVTBR,backgroundVTR;
+	private float backgroundUTL,backgroundUBL,backgroundUBR,backgroundUTR,backgroundVTL,backgroundVBL,backgroundVBR,backgroundVTR;
 	
 	private Texture texture;
-	private float topLeftU,bottomLeftU,bottomRightU,topRightU,topLeftV,bottomLeftV,bottomRightV,topRightV;
 	
 	public final String NOTEX = "/assets/defaults/NOTEX.png";
 	
@@ -52,9 +51,14 @@ public class HudElement{
 		
 		this.applyDefaultStyle();
 		
+		this.update();
 		
 	}
 	
+	/**
+	 * Public constructor for all basic hudElements. after construction, it adds itself to the children of the parent
+	 * @param parent - the parent hudElement
+	 */
 	public HudElement(HudElement parent) {
 		
 		this.ISROOT = false;
@@ -65,11 +69,34 @@ public class HudElement{
 		
 		this.inheritStyle();
 		
+		this.update();
+		
+		parent.children.add(this);
+		
 	}
 	
 	public void draw() {
+
+
+		float R = 0, G = 0, B = 0;
 		
-		//TODO draw here..
+		if(this.texture!=null){
+			this.texture.bind();
+		}else{
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		}
+		
+		GL11.glBegin(GL11.GL_QUADS);
+			GL11.glColor3f(1, 1, 1);
+			GL11.glTexCoord2f(this.backgroundUTL, this.backgroundVTL);
+			GL11.glVertex2i(this.positionX, this.positionY);
+			GL11.glTexCoord2f(this.backgroundUTR, this.backgroundVTR);
+			GL11.glVertex2i(this.positionX+this.width, this.positionY);
+			GL11.glTexCoord2f(this.backgroundUBR, this.backgroundVBR);
+			GL11.glVertex2i(this.positionX+this.width, this.positionY+this.height);
+			GL11.glTexCoord2f(this.backgroundUBL, this.backgroundVBL);
+			GL11.glVertex2i(this.positionX, this.positionY+this.height);
+		GL11.glEnd();
 		
 		//draw all children
 		for(HudElement child:this.children) {
@@ -178,65 +205,151 @@ public class HudElement{
 			
 		}
 		
-		// load texture
-		if(!this.backgroundImageExpression.isEmpty()) {
-			// find filter
-			int filter;
-			if(this.backgroundFilterExpression.equals("linear")) {
-				filter = GL11.GL_LINEAR;
-			}else {
-				filter = GL11.GL_NEAREST;
-			}
-			try {
-				this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(this.backgroundImageExpression), filter);
-			}catch(Exception e) {
-				Console.warning("Could not find texture: "+this.backgroundImageExpression);
-				try {
-					this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX));
-				}catch(Exception e2) {
-					Console.error("Could not find NOTEX ?!");
-					e2.printStackTrace();
-				}
-			}
-		}else {
-			this.texture = null;
-		}
-		
-		// set UVs
-		
-		// top left
-		String[] TL = this.backgroundUVTLExpression.split(" ");
-		
-		// if correct data
-		if(TL.length==2) {
-			// parse them
-			try {
-				this.topLeftU = Float.parseFloat(TL[0]);
-			}catch(NumberFormatException e) {
-				Console.warning("incorrect UV value U: "+TL[0]);
-				this.topLeftU = 0;
-			}
-			
-			try {
-				this.topLeftV = Float.parseFloat(TL[1]);
-			}catch(NumberFormatException e) {
-				Console.warning("incorrect UV value V: "+TL[1]);
-				this.topLeftV = 0;
-			}
-		}else {
-			// set defaults
-			this.topLeftU = 0;
-			this.topLeftV = 0;
-		}
-		
-
-		
+		this.softUpdate();
+				
 		//update all children
 		
 		for(HudElement child:this.children){
 			child.update();
 		}
 		
+	}
+	
+	/**
+	 * Update function for updating this element without updating it's children. Only updates things like backgrounds, which doesn't affect it's children.
+	 */
+	public void softUpdate(){
+		// destroy old texture
+		
+				if(this.texture!=null){
+					this.texture.release();
+				}
+				
+				// load texture
+				if(!(this.backgroundImageExpression.isEmpty()||this.backgroundImageExpression.equals("none"))) {
+					// find filter
+					int filter;
+					if(this.backgroundFilterExpression.equals("linear")) {
+						filter = GL11.GL_LINEAR;
+					}else {
+						filter = GL11.GL_NEAREST;
+					}
+					try {
+						this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(this.backgroundImageExpression), filter);
+					}catch(Exception e) {
+						Console.warning("Could not find texture: "+this.backgroundImageExpression);
+						try {
+							this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
+						}catch(Exception e2) {
+							Console.error("Could not find NOTEX ?!");
+							e2.printStackTrace();
+						}
+					}
+				}else {
+					this.texture = null;
+				}
+				
+				// set UVs
+				
+				// top left
+				String[] TL = this.backgroundUVTLExpression.split(" ");
+				
+				// if correct data
+				if(TL.length==2) {
+					// parse them
+					try {
+						this.backgroundUTL = Float.parseFloat(TL[0]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value U: "+TL[0]);
+						this.backgroundUTL = 0;
+					}
+					
+					try {
+						this.backgroundVTL = Float.parseFloat(TL[1]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value V: "+TL[1]);
+						this.backgroundVTL = 0;
+					}
+				}else {
+					// set defaults
+					this.backgroundUTL = 0;
+					this.backgroundVTL = 0;
+				}
+				
+				// bottom left
+				String[] BL = this.backgroundUVBLExpression.split(" ");
+				
+				// if correct data
+				if(BL.length==2) {
+					// parse them
+					try {
+						this.backgroundUBL = Float.parseFloat(BL[0]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value U: "+BL[0]);
+						this.backgroundUBL = 0;
+					}
+					
+					try {
+						this.backgroundVBL = Float.parseFloat(BL[1]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value V: "+BL[1]);
+						this.backgroundVBL = 1;
+					}
+				}else {
+					// set defaults
+					this.backgroundUBL = 0;
+					this.backgroundVBL = 1;
+				}
+				
+				// bottom right
+				String[] BR = this.backgroundUVBRExpression.split(" ");
+				
+				// if correct data
+				if(BR.length==2) {
+					// parse them
+					try {
+						this.backgroundUBR = Float.parseFloat(BR[0]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value U: "+BR[0]);
+						this.backgroundUBR = 1;
+					}
+					
+					try {
+						this.backgroundVBR = Float.parseFloat(BR[1]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value V: "+BR[1]);
+						this.backgroundVBR = 1;
+					}
+				}else {
+					// set defaults
+					this.backgroundUBR = 1;
+					this.backgroundVBR = 1;
+				}
+				
+				// top right
+				String[] TR = this.backgroundUVTRExpression.split(" ");
+				
+				// if correct data
+				if(TR.length==2) {
+					// parse them
+					try {
+						this.backgroundUTR = Float.parseFloat(TR[0]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value U: "+TR[0]);
+						this.backgroundUTR = 1;
+					}
+					
+					try {
+						this.backgroundVTR = Float.parseFloat(TR[1]);
+					}catch(NumberFormatException e) {
+						Console.warning("incorrect UV value V: "+TR[1]);
+						this.backgroundVTR = 0;
+					}
+				}else {
+					// set defaults
+					this.backgroundUTR = 1;
+					this.backgroundVTR = 0;
+				}
 	}
 	
 	/**
@@ -298,9 +411,19 @@ public class HudElement{
 		return this.originY;
 	}
 	
+	public void setBackgroundImage(String path){
+		this.backgroundImageExpression = path;
+		
+		this.softUpdate();
+	}
+	
 	public void destroy() {
 		if(this.texture!=null) {
 			this.texture.release();
+			Console.info("Released a texture");
+		}
+		for(HudElement child:children){
+			child.destroy();
 		}
 	}
 	

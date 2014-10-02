@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.gui.Hud;
+import org.akaarts.AGE.graphics.gui.HudElement;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -19,6 +20,7 @@ import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.Util;
 
 public class Engine {
 	final static int AVG_FPS = 120;
@@ -61,8 +63,6 @@ public class Engine {
 	 * Sets the openGL space up
 	 */
 	private static void setupGL() {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);               
-        
 		// black clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
         
@@ -73,6 +73,8 @@ public class Engine {
         // set the view port
         GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
+		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 		
 	}
 	/**
@@ -103,7 +105,10 @@ public class Engine {
 		} catch (LWJGLException e) {
 			Console.error("Error at creating Display");
 			e.printStackTrace();
-		}		
+		}
+		
+		Hud.ROOT.setBackgroundImage("/assets/AGd_128.png");
+		
 	}
 	
 	/**
@@ -149,12 +154,19 @@ public class Engine {
 			//execute all queued commands
 			Console.executeQueue();
 			
-			//update hud and then draw it
-			Hud.update();
+			//draw hud
 			Hud.draw();
 			
 			// update the display
 			Display.update();
+			
+			try{
+				Util.checkGLError();
+			}catch(Exception e){
+				Console.warning("The following GL_ERROR has happened: ");
+				e.printStackTrace();
+			}
+			
 			
 			// sync to the preferred FPS
 			Display.sync(AVG_FPS);

@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11;
 
 public class Hud {
 	
-	 private static final HudElement ROOT = HudElement.getRoot();
+	 public static final HudElement ROOT = HudElement.getRoot();
 	 
 	 public static void update() {
 		 
@@ -19,6 +19,8 @@ public class Hud {
 		 GL11.glLoadIdentity();
 		 GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
 		 GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		 
+
 		 
 		 ROOT.draw();
 	 }
