@@ -20,8 +20,6 @@ every of the above listed name may have the from CSS known pseudo classes:
 
 - :hover
 - :active
-and the new
-- :clicked
 
 Every style block contains properties
 Supported properties:

@@ -1,15 +1,18 @@
 package org.akaarts.AGE.graphics.gui;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.input.InputHandler;
+import org.akaarts.AGE.input.InputListener;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-public class HudElement{
+public class HudElement implements InputListener{
 
 	private static HudElement root = new HudElement();
 	
@@ -24,10 +27,20 @@ public class HudElement{
 	
 	private String backgroundColorExpression, backgroundImageExpression, backgroundFilterExpression,  backgroundRepeatExpression;
 	private String backgroundUVTLExpression,backgroundUVBLExpression,backgroundUVBRExpression,backgroundUVTRExpression;
+	
+	private String backgroundColorExpressionHover, backgroundImageExpressionHover, backgroundFilterExpressionHover,  backgroundRepeatExpressionHover;
+	private String backgroundUVTLExpressionHover,backgroundUVBLExpressionHover,backgroundUVBRExpressionHover,backgroundUVTRExpressionHover;
+	
 	private float backgroundColorR, backgroundColorG, backgroundColorB, backgroundColorA;
 	private float backgroundUTL,backgroundUBL,backgroundUBR,backgroundUTR,backgroundVTL,backgroundVBL,backgroundVBR,backgroundVTR;
 	
-	private Texture texture;
+	private boolean isHovered, isActive, isClicked;
+	
+	private Rectangle aabb;
+	
+	private Texture texture, textureHover, textureActive;
+	
+	
 	
 	public final String NOTEX = "/assets/defaults/NOTEX.png";
 	
@@ -103,10 +116,20 @@ public class HudElement{
 			GL11.glVertex2i(this.positionX, this.positionY+this.height);
 		GL11.glEnd();
 		
+		if(this.isClicked){
+			Console.info(this.hashCode()+" was clicked!");
+		}else if(this.isActive){
+			Console.info(this.hashCode()+" is pressed!");
+		}else if(this.isHovered){
+			Console.info(this.hashCode()+" is hovered!");
+		}
+		
 		//draw all children
 		for(HudElement child:this.children) {
 			child.draw();
 		}
+		
+		this.isClicked = false;
 	}
 	
 	/**
@@ -209,6 +232,8 @@ public class HudElement{
 			this.positionY = 0;
 			
 		}
+		
+		this.aabb = new Rectangle(this.positionX,this.positionY,this.width,this.height);
 		
 		this.softUpdate();
 				
@@ -406,6 +431,9 @@ public class HudElement{
 	 * @param hExpr - new height
 	 */
 	public void setDimensions(String wExpr, String hExpr){
+		if(this.ISROOT){
+			return;
+		}
 		this.widthExpression = wExpr.trim().toLowerCase();
 		this.heightExpression = hExpr.trim().toLowerCase();
 		
@@ -420,6 +448,9 @@ public class HudElement{
 	 * @param yOrigin - the origin for the y Axis (ORIGIN_TOP,ORIGIN_CENTER,ORIGIN_BOTTOM)
 	 */
 	public void setPositioning(String xExpr, String yExpr, String xOrigin, String yOrigin){
+		if(this.ISROOT){
+			return;
+		}
 		this.positionXExpression = xExpr.trim().toLowerCase();
 		this.positionYExpression = yExpr.trim().toLowerCase();
 		
@@ -491,6 +522,61 @@ public class HudElement{
 		for(HudElement child:children){
 			child.destroy();
 		}
+	}
+	
+	
+	
+	public void setListening(boolean listening){
+		if(listening){
+			InputHandler.addListener(this);
+		}else{
+			InputHandler.removeListener(this);
+		}
+	}
+
+	@Override
+	public void keyEvent(int lwjglKey, boolean keyState) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoveEvent(int x, int y) {
+		if(this.aabb.contains(x, y)){
+			this.isHovered = true;
+			return;
+		}else{
+			this.isHovered = false;
+			return;
+		}
+		
+	}
+
+	@Override
+	public void mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState) {
+		if(this.aabb.contains(x, y)){
+			if(buttonState){
+				this.isActive = true;
+			}else if(this.isActive && !buttonState){
+				this.isActive = false;
+				this.isClicked = true;
+			}else{
+				this.isActive = false;
+				this.isClicked = false;
+			}
+			return;
+		}else{
+			this.isActive = false;
+			this.isClicked = false;
+			return;
+		}
+		
+	}
+
+	@Override
+	public void mouseWheelEvent(int x, int y, int wheelScroll) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

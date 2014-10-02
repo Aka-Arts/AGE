@@ -105,12 +105,17 @@ public class Engine {
 			Console.error("Error at creating Display");
 			e.printStackTrace();
 		}
+		HudElement container = new HudElement(Hud.ROOT);
 		
-		HudElement elem = new HudElement(Hud.ROOT);
+		container.setDimensions("200", "200");
+		container.setPositioning("0", "0", "center", "center");
+		
+		HudElement elem = new HudElement(container);
 		
 		elem.setBackgroundImage("/assets/defaults/AGE.png");
 		elem.setDimensions("100", "100");
 		elem.setPositioning("0", "0", "center", "bottom");
+		elem.setListening(true);
 		
 	}
 	
