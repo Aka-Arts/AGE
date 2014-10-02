@@ -63,6 +63,7 @@ public class Engine {
 	 * Sets the openGL space up
 	 */
 	private static void setupGL() {
+		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 		// black clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
         
@@ -73,8 +74,6 @@ public class Engine {
         // set the view port
         GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		
-		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 		
 	}
 	/**
@@ -107,7 +106,11 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
-		Hud.ROOT.setBackgroundImage("/assets/AGd_128.png");
+		HudElement elem = new HudElement(Hud.ROOT);
+		
+		elem.setBackgroundImage("/assets/defaults/AGE.png");
+		elem.setDimensions("100", "100");
+		elem.setPositioning("0", "0", "center", "bottom");
 		
 	}
 	

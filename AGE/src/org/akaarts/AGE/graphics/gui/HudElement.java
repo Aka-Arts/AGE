@@ -75,19 +75,24 @@ public class HudElement{
 		
 	}
 	
+	/**
+	 * Draws the element and it's children
+	 */
 	public void draw() {
 
 
-		float R = 0, G = 0, B = 0;
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		
+		float a = 0;
 		
 		if(this.texture!=null){
-			this.texture.bind();
-		}else{
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			a = 1;
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.getTextureID());
+			// texture.bind() seems broken... strange...
 		}
 		
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor3f(1, 1, 1);
+			GL11.glColor4f(1, 1, 1, a);
 			GL11.glTexCoord2f(this.backgroundUTL, this.backgroundVTL);
 			GL11.glVertex2i(this.positionX, this.positionY);
 			GL11.glTexCoord2f(this.backgroundUTR, this.backgroundVTR);
@@ -387,36 +392,97 @@ public class HudElement{
 		
 	}
 	
+	/**
+	 * Returns the width as raw String expression
+	 * @return - a String of the interpreted expression
+	 */
 	public String getWidthExpr() {
 		return this.widthExpression;
 	}
 	
+	/**
+	 * Sets the new Dimensions of this element as String in pixels or percent and performs an update()<br> Examples: "100" for pixels or "50%" for percent (refer to the parents width/height)
+	 * @param wExpr - new width 
+	 * @param hExpr - new height
+	 */
+	public void setDimensions(String wExpr, String hExpr){
+		this.widthExpression = wExpr.trim().toLowerCase();
+		this.heightExpression = hExpr.trim().toLowerCase();
+		
+		this.update();
+	}
+	
+	/**
+	 * Sets the new positioning for this element.
+	 * @param xExpr - the distance from xOrigin-position to this elements position
+	 * @param yExpr	- the distance from yOrigin-position to this elements position
+	 * @param xOrigin - the origin for the x Axis (ORIGIN_LEFT,ORIGIN_CENTER,ORIGIN_RIGHT)
+	 * @param yOrigin - the origin for the y Axis (ORIGIN_TOP,ORIGIN_CENTER,ORIGIN_BOTTOM)
+	 */
+	public void setPositioning(String xExpr, String yExpr, String xOrigin, String yOrigin){
+		this.positionXExpression = xExpr.trim().toLowerCase();
+		this.positionYExpression = yExpr.trim().toLowerCase();
+		
+		this.originX = xOrigin.trim().toLowerCase();
+		this.originY = yOrigin.trim().toLowerCase();
+		
+		this.update();
+		
+	}
+	
+	/**
+	 * Returns the effective width as integer
+	 * @return - the width in pixels
+	 */
 	public int getWidth() {
 		return this.width;
 	}
 	
+	/**
+	 * Returns the height as raw String expression
+	 * @return - a String of the interpreted expression
+	 */
 	public String getHeightExpr() {
 		return this.heightExpression;
 	}
 	
+	/**
+	 * Returns the effective height as integer
+	 * @return - the height in pixels
+	 */
 	public int getHeight() {
 		return this.height;
 	}
 	
+	/**
+	 * Returns the alignment origin of the X Axis as raw String expression
+	 * @return - a String of the interpreted expression
+	 */
 	public String getOriginX() {
 		return this.originX;
 	}
 	
+	/**
+	 * Returns the alignment origin of the Y Axis as raw String expression
+	 * @return - a String of the interpreted expression
+	 */
 	public String getOriginY() {
 		return this.originY;
 	}
 	
+	/**
+	 * Sets a new image for the element and performs a softUpdate
+	 * @param path - the path to the new image
+	 */
 	public void setBackgroundImage(String path){
 		this.backgroundImageExpression = path;
 		
 		this.softUpdate();
 	}
 	
+	/**
+	 * Destroys all own textures and calls destroy() on it's children
+	 */
 	public void destroy() {
 		if(this.texture!=null) {
 			this.texture.release();
