@@ -107,15 +107,9 @@ public class Engine {
 		}
 		HudElement container = new HudElement(Hud.ROOT);
 		
-		container.setDimensions("200", "200");
-		container.setPositioning("0", "0", "center", "center");
-		
-		HudElement elem = new HudElement(container);
-		
-		elem.setBackgroundImage("/assets/defaults/AGE.png");
-		elem.setDimensions("100", "100");
-		elem.setPositioning("0", "0", "center", "bottom");
-		elem.setListening(true);
+		container.setDimensions(200, 200);
+		container.setListening(true);
+		container.setBackgroundImage("/assets/defaults/AGE.png");
 		
 	}
 	

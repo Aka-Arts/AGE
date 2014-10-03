@@ -16,11 +16,6 @@ The name of an object inside of the STYLE has to be unique and is allowed to be 
 - the exact class name of an elements class property
 - the exact id name of an elements id property
 
-every of the above listed name may have the from CSS known pseudo classes:
-
-- :hover
-- :active
-
 Every style block contains properties
 Supported properties:
 

@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.input.InputHandler;
 import org.akaarts.AGE.input.InputListener;
+import org.akaarts.AGE.utils.UVMap4;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -18,27 +20,20 @@ public class HudElement implements InputListener{
 	
 	private HudElement parent;
 	
-	private String widthExpression, heightExpression;
 	private int width,height;
 	
-	private String positionXExpression, positionYExpression;	
-	private String originX,	originY;
-	private int positionX,positionY;
+	private int originX,originY;
+	private int positionX,positionY,relativeX,relativeY;
 	
-	private String backgroundColorExpression, backgroundImageExpression, backgroundFilterExpression,  backgroundRepeatExpression;
-	private String backgroundUVTLExpression,backgroundUVBLExpression,backgroundUVBRExpression,backgroundUVTRExpression;
-	
-	private String backgroundColorExpressionHover, backgroundImageExpressionHover, backgroundFilterExpressionHover,  backgroundRepeatExpressionHover;
-	private String backgroundUVTLExpressionHover,backgroundUVBLExpressionHover,backgroundUVBRExpressionHover,backgroundUVTRExpressionHover;
-	
-	private float backgroundColorR, backgroundColorG, backgroundColorB, backgroundColorA;
-	private float backgroundUTL,backgroundUBL,backgroundUBR,backgroundUTR,backgroundVTL,backgroundVBL,backgroundVBR,backgroundVTR;
+	private Color backgroundColor;
+
 	
 	private boolean isHovered, isActive, isClicked;
 	
 	private Rectangle aabb;
 	
 	private Texture texture, textureHover, textureActive;
+	private UVMap4 uv, uvHover, uvActive;
 	
 	
 	
@@ -48,11 +43,11 @@ public class HudElement implements InputListener{
 	
 	private ArrayList<HudElement> children = new ArrayList<HudElement>();
 	
-	public static final String ORIGIN_CENTER = "center",
-							ORIGIN_TOP = "top", 
-							ORIGIN_BOTTOM = "bottom", 
-							ORIGIN_LEFT = "left", 
-							ORIGIN_RIGHT = "right";
+	public static final int ORIGIN_CENTER = 0,
+							ORIGIN_TOP = 1, 
+							ORIGIN_BOTTOM = 2, 
+							ORIGIN_LEFT = 3, 
+							ORIGIN_RIGHT = 4;
 	
 	/**
 	 * Constructor only for the root element
@@ -104,15 +99,17 @@ public class HudElement implements InputListener{
 			// texture.bind() seems broken... strange...
 		}
 		
+		UVMap4 uvMap4 = this.uv;
+		
 		GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor4f(1, 1, 1, a);
-			GL11.glTexCoord2f(this.backgroundUTL, this.backgroundVTL);
+			GL11.glTexCoord2f(uvMap4.U[0], uvMap4.V[0]);
 			GL11.glVertex2i(this.positionX, this.positionY);
-			GL11.glTexCoord2f(this.backgroundUTR, this.backgroundVTR);
+			GL11.glTexCoord2f(uvMap4.U[1], uvMap4.V[1]);
 			GL11.glVertex2i(this.positionX+this.width, this.positionY);
-			GL11.glTexCoord2f(this.backgroundUBR, this.backgroundVBR);
+			GL11.glTexCoord2f(uvMap4.U[2], uvMap4.V[2]);
 			GL11.glVertex2i(this.positionX+this.width, this.positionY+this.height);
-			GL11.glTexCoord2f(this.backgroundUBL, this.backgroundVBL);
+			GL11.glTexCoord2f(uvMap4.U[3], uvMap4.V[3]);
 			GL11.glVertex2i(this.positionX, this.positionY+this.height);
 		GL11.glEnd();
 		
@@ -140,86 +137,29 @@ public class HudElement implements InputListener{
 		//TODO update here...
 		if(!ISROOT) {
 			
-			// update width
-			if(this.widthExpression.endsWith("%")) {
-				// from percent
-				try {
-					int percent = Integer.parseInt(this.widthExpression.substring(0, this.widthExpression.length()-1));
-					this.width = (int) Math.floor(((float)this.parent.width/100)*percent);
-				}catch(NumberFormatException e) {
-					// unknown value, set like parent
-					this.width = this.parent.width;
-				}
-			
-			}else {
-				// from pixels
-				try {
-					this.width = Integer.parseInt(widthExpression);
-				}catch(NumberFormatException e) {
-					// unknown value, set like parent
-					this.width = this.parent.width;
-				}
-			
-			}
-			
-			// update height
-			if(this.heightExpression.endsWith("%")) {
-				// from percent
-				try {
-					int percent = Integer.parseInt(this.heightExpression.substring(0, this.heightExpression.length()-1));
-					this.height = (int) Math.floor(((float)this.parent.height/100)*percent);
-				}catch(NumberFormatException e) {
-					// unknown value, set like parent
-					this.height = this.parent.height;
-				}
-			}else {
-				// from pixels
-				try {
-					this.height = Integer.parseInt(heightExpression);
-				}catch(NumberFormatException e) {
-					// unknown value, set like parent
-					this.height = this.parent.height;
-				}
-			
-			}
-			
-			// update x position relative to parent
-			int posX;
-			try {
-				posX = Integer.parseInt(this.positionXExpression);
-			}catch(NumberFormatException e) {
-				posX = 0;
-			}
-			
+			// update x position relative to parent			switch(this.originX) {
 			switch(this.originX) {
 			case HudElement.ORIGIN_CENTER:
-				this.positionX = ((this.parent.width/2+posX)-this.width/2)+this.parent.positionX;
+				this.positionX = ((this.parent.width/2+this.relativeX)-this.width/2)+this.parent.positionX;
 				break;
 			case HudElement.ORIGIN_RIGHT:
-				this.positionX = (this.parent.width-(posX+this.width))+this.parent.positionX;
+				this.positionX = (this.parent.width-(this.relativeX+this.width))+this.parent.positionX;
 				break;
 			default:
-				this.positionX = posX + this.parent.positionX;
+				this.positionX = this.relativeX + this.parent.positionX;
 				break;
 			}
 			
 			// update y position relative to parent
-			int posY;
-			try {
-				posY = Integer.parseInt(this.positionYExpression);
-			}catch(NumberFormatException e) {
-				posY = 0;
-			}
-
 			switch(this.originY) {
 			case HudElement.ORIGIN_CENTER:
-				this.positionY = ((this.parent.height/2+posY)-this.height/2)+this.parent.positionY;
+				this.positionY = ((this.parent.height/2+this.relativeY)-this.height/2)+this.parent.positionY;
 				break;
 			case HudElement.ORIGIN_BOTTOM:
-				this.positionY = (this.parent.height-(posY+this.height))+this.parent.positionY;
+				this.positionY = (this.parent.height-(this.relativeY+this.height))+this.parent.positionY;
 				break;
 			default:
-				this.positionY = posY + this.parent.positionY;
+				this.positionY = this.relativeY + this.parent.positionY;
 				break;
 			}
 			
@@ -234,8 +174,6 @@ public class HudElement implements InputListener{
 		}
 		
 		this.aabb = new Rectangle(this.positionX,this.positionY,this.width,this.height);
-		
-		this.softUpdate();
 				
 		//update all children
 		
@@ -244,144 +182,7 @@ public class HudElement implements InputListener{
 		}
 		
 	}
-	
-	/**
-	 * Update function for updating this element without updating it's children. Only updates things like backgrounds, which doesn't affect it's children.
-	 */
-	public void softUpdate(){
-		// destroy old texture
-		
-				if(this.texture!=null){
-					this.texture.release();
-				}
-				
-				// load texture
-				if(!(this.backgroundImageExpression.isEmpty()||this.backgroundImageExpression.equals("none"))) {
-					// find filter
-					int filter;
-					if(this.backgroundFilterExpression.equals("linear")) {
-						filter = GL11.GL_LINEAR;
-					}else {
-						filter = GL11.GL_NEAREST;
-					}
-					try {
-						this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(this.backgroundImageExpression), filter);
-					}catch(Exception e) {
-						Console.warning("Could not find texture: "+this.backgroundImageExpression);
-						try {
-							this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
-						}catch(Exception e2) {
-							Console.error("Could not find NOTEX ?!");
-							e2.printStackTrace();
-						}
-					}
-				}else {
-					this.texture = null;
-				}
-				
-				// set UVs
-				
-				// top left
-				String[] TL = this.backgroundUVTLExpression.split(" ");
-				
-				// if correct data
-				if(TL.length==2) {
-					// parse them
-					try {
-						this.backgroundUTL = Float.parseFloat(TL[0]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value U: "+TL[0]);
-						this.backgroundUTL = 0;
-					}
-					
-					try {
-						this.backgroundVTL = Float.parseFloat(TL[1]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value V: "+TL[1]);
-						this.backgroundVTL = 0;
-					}
-				}else {
-					// set defaults
-					this.backgroundUTL = 0;
-					this.backgroundVTL = 0;
-				}
-				
-				// bottom left
-				String[] BL = this.backgroundUVBLExpression.split(" ");
-				
-				// if correct data
-				if(BL.length==2) {
-					// parse them
-					try {
-						this.backgroundUBL = Float.parseFloat(BL[0]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value U: "+BL[0]);
-						this.backgroundUBL = 0;
-					}
-					
-					try {
-						this.backgroundVBL = Float.parseFloat(BL[1]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value V: "+BL[1]);
-						this.backgroundVBL = 1;
-					}
-				}else {
-					// set defaults
-					this.backgroundUBL = 0;
-					this.backgroundVBL = 1;
-				}
-				
-				// bottom right
-				String[] BR = this.backgroundUVBRExpression.split(" ");
-				
-				// if correct data
-				if(BR.length==2) {
-					// parse them
-					try {
-						this.backgroundUBR = Float.parseFloat(BR[0]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value U: "+BR[0]);
-						this.backgroundUBR = 1;
-					}
-					
-					try {
-						this.backgroundVBR = Float.parseFloat(BR[1]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value V: "+BR[1]);
-						this.backgroundVBR = 1;
-					}
-				}else {
-					// set defaults
-					this.backgroundUBR = 1;
-					this.backgroundVBR = 1;
-				}
-				
-				// top right
-				String[] TR = this.backgroundUVTRExpression.split(" ");
-				
-				// if correct data
-				if(TR.length==2) {
-					// parse them
-					try {
-						this.backgroundUTR = Float.parseFloat(TR[0]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value U: "+TR[0]);
-						this.backgroundUTR = 1;
-					}
-					
-					try {
-						this.backgroundVTR = Float.parseFloat(TR[1]);
-					}catch(NumberFormatException e) {
-						Console.warning("incorrect UV value V: "+TR[1]);
-						this.backgroundVTR = 0;
-					}
-				}else {
-					// set defaults
-					this.backgroundUTR = 1;
-					this.backgroundVTR = 0;
-				}
-	}
-	
+
 	/**
 	 * returns the unique root
 	 * @return - always the same root
@@ -394,23 +195,15 @@ public class HudElement implements InputListener{
 	 * applies all the default expressions
 	 */
 	private void applyDefaultStyle(){
-		this.widthExpression = "100%";
-		this.heightExpression = "100%";
+		this.setDimensions(1f, 1f);
 		
 		this.originX = ORIGIN_LEFT;
 		this.originY = ORIGIN_TOP;
 		
-		this.positionXExpression = "0";
-		this.positionYExpression = "0";
+		this.setPositioning(0, 0, ORIGIN_LEFT, ORIGIN_TOP);
 		
-		this.backgroundColorExpression = "#00000000";
-		this.backgroundImageExpression = "none";
-		this.backgroundFilterExpression = "nearest";
-		this.backgroundRepeatExpression = "none";
-		this.backgroundUVTLExpression = "0 0";
-		this.backgroundUVBLExpression = "0 1";
-		this.backgroundUVBRExpression = "1 1";
-		this.backgroundUVTRExpression = "1 0";
+		this.setBackgroundColor(null);
+		this.setBackgroundImage(null);
 	}
 	
 	private void inheritStyle() {
@@ -418,24 +211,31 @@ public class HudElement implements InputListener{
 	}
 	
 	/**
-	 * Returns the width as raw String expression
-	 * @return - a String of the interpreted expression
+	 * Sets the new Dimensions of this element as integer in pixels and performs an update()
+	 * @param w - new width 
+	 * @param h - new height
 	 */
-	public String getWidthExpr() {
-		return this.widthExpression;
-	}
-	
-	/**
-	 * Sets the new Dimensions of this element as String in pixels or percent and performs an update()<br> Examples: "100" for pixels or "50%" for percent (refer to the parents width/height)
-	 * @param wExpr - new width 
-	 * @param hExpr - new height
-	 */
-	public void setDimensions(String wExpr, String hExpr){
+	public void setDimensions(int w, int h){
 		if(this.ISROOT){
 			return;
 		}
-		this.widthExpression = wExpr.trim().toLowerCase();
-		this.heightExpression = hExpr.trim().toLowerCase();
+		this.width = w;
+		this.height = h;
+		
+		this.update();
+	}
+	
+	/**
+	 * Sets the new Dimensions of this element as float in percent and performs an update()<br> Examples: 0.5 for 50% (refer to the parents width/height)
+	 * @param wPercent - percent of parents width (0.00 to 1.00)
+	 * @param hPercent - percent of parents width (0.00 to 1.00)
+	 */
+	public void setDimensions(float wPercent, float hPercent){
+		if(this.ISROOT){
+			return;
+		}
+		this.width = (int) Math.floor(this.parent.width*wPercent);
+		this.height = (int) Math.floor(this.parent.width*wPercent);
 		
 		this.update();
 	}
@@ -447,15 +247,15 @@ public class HudElement implements InputListener{
 	 * @param xOrigin - the origin for the x Axis (ORIGIN_LEFT,ORIGIN_CENTER,ORIGIN_RIGHT)
 	 * @param yOrigin - the origin for the y Axis (ORIGIN_TOP,ORIGIN_CENTER,ORIGIN_BOTTOM)
 	 */
-	public void setPositioning(String xExpr, String yExpr, String xOrigin, String yOrigin){
+	public void setPositioning(int x, int y, int xOrigin, int yOrigin){
 		if(this.ISROOT){
 			return;
 		}
-		this.positionXExpression = xExpr.trim().toLowerCase();
-		this.positionYExpression = yExpr.trim().toLowerCase();
+		this.relativeX = x;
+		this.relativeY = y;
 		
-		this.originX = xOrigin.trim().toLowerCase();
-		this.originY = yOrigin.trim().toLowerCase();
+		this.originX = xOrigin;
+		this.originY = yOrigin;
 		
 		this.update();
 		
@@ -470,14 +270,6 @@ public class HudElement implements InputListener{
 	}
 	
 	/**
-	 * Returns the height as raw String expression
-	 * @return - a String of the interpreted expression
-	 */
-	public String getHeightExpr() {
-		return this.heightExpression;
-	}
-	
-	/**
 	 * Returns the effective height as integer
 	 * @return - the height in pixels
 	 */
@@ -489,7 +281,7 @@ public class HudElement implements InputListener{
 	 * Returns the alignment origin of the X Axis as raw String expression
 	 * @return - a String of the interpreted expression
 	 */
-	public String getOriginX() {
+	public int getOriginX() {
 		return this.originX;
 	}
 	
@@ -497,18 +289,49 @@ public class HudElement implements InputListener{
 	 * Returns the alignment origin of the Y Axis as raw String expression
 	 * @return - a String of the interpreted expression
 	 */
-	public String getOriginY() {
+	public int getOriginY() {
 		return this.originY;
 	}
 	
 	/**
-	 * Sets a new image for the element and performs a softUpdate
-	 * @param path - the path to the new image
+	 * Sets a new or default color for this element (default is white)
+	 * @param color - new color
+	 */
+	public void setBackgroundColor(Color color){
+		if(color!=null){
+			this.backgroundColor = color;			
+		}else{
+			this.backgroundColor = new Color(1f,1f,1f);
+		}
+
+	}
+	
+	/**
+	 * Sets a new or no image for this element (UVs will be set to default and the scale filter is GL_NEAREST)
+	 * @param path - the path to the new image or null for no image
 	 */
 	public void setBackgroundImage(String path){
-		this.backgroundImageExpression = path;
 		
-		this.softUpdate();
+		if(this.texture!=null){
+			this.texture.release();
+		}
+		
+		if(path!=null){
+			try {
+				this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(path), GL11.GL_NEAREST);
+			}catch(Exception e) {
+				Console.warning("Could not find texture: "+path);
+				try {
+					this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
+				}catch(Exception e2) {
+					Console.error("Could not find NOTEX ?!");
+					e2.printStackTrace();
+				}
+			}
+		}else{
+			this.texture = null;
+		}
+		this.uv = new UVMap4(0,0,1,0,1,1,0,1);
 	}
 	
 	/**
