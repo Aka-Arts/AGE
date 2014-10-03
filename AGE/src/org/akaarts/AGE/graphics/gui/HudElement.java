@@ -1,6 +1,7 @@
 package org.akaarts.AGE.graphics.gui;
 
 import java.awt.Rectangle;
+import java.awt.color.CMMException;
 import java.util.ArrayList;
 
 import org.akaarts.AGE.CLI.Console;
@@ -27,8 +28,9 @@ public class HudElement implements InputListener{
 	
 	private Color backgroundColor;
 
+	public String onHover, onActive, onClick, onEnter, onLeave;
 	
-	private boolean isHovered, isActive, isClicked;
+	private boolean isHovered, isActive, wasClicked, wasEntered, wasLeft;
 	
 	private Rectangle aabb;
 	
@@ -47,7 +49,13 @@ public class HudElement implements InputListener{
 							ORIGIN_TOP = 1, 
 							ORIGIN_BOTTOM = 2, 
 							ORIGIN_LEFT = 3, 
-							ORIGIN_RIGHT = 4;
+							ORIGIN_RIGHT = 4,
+							STATE_NORMAL = 5,
+							STATE_HOVER = 6,
+							STATE_ACTIVE = 7,
+							STATE_CLICK = 8,
+							STATE_ENTER = 9,
+							STATE_LEAVE = 10;
 	
 	/**
 	 * Constructor only for the root element
@@ -58,6 +66,8 @@ public class HudElement implements InputListener{
 		this.ISROOT = true;
 		
 		this.applyDefaultStyle();
+		
+		this.setBackgroundColor(new Color(1,1,1,0));
 		
 		this.update();
 		
@@ -87,22 +97,21 @@ public class HudElement implements InputListener{
 	 * Draws the element and it's children
 	 */
 	public void draw() {
-
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		
-		float a = 0;
-		
-		if(this.texture!=null){
-			a = 1;
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.getTextureID());
-			// texture.bind() seems broken... strange...
+		if(this.isActive&&this.textureActive!=null){
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureActive.getTextureID());
+		}else if(this.isHovered&&this.textureHover!=null){
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureHover.getTextureID());			
+		}else if(this.texture!=null){
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.getTextureID());			
+		}else{
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		}
 		
 		UVMap4 uvMap4 = this.uv;
 		
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor4f(1, 1, 1, a);
+			GL11.glColor4f(this.backgroundColor.r,this.backgroundColor.g,this.backgroundColor.b,this.backgroundColor.a);
 			GL11.glTexCoord2f(uvMap4.U[0], uvMap4.V[0]);
 			GL11.glVertex2i(this.positionX, this.positionY);
 			GL11.glTexCoord2f(uvMap4.U[1], uvMap4.V[1]);
@@ -113,20 +122,41 @@ public class HudElement implements InputListener{
 			GL11.glVertex2i(this.positionX, this.positionY+this.height);
 		GL11.glEnd();
 		
-		if(this.isClicked){
-			Console.info(this.hashCode()+" was clicked!");
-		}else if(this.isActive){
-			Console.info(this.hashCode()+" is pressed!");
-		}else if(this.isHovered){
-			Console.info(this.hashCode()+" is hovered!");
+		//for debugging
+//		if(this.isClicked){
+//			Console.info(this.hashCode()+" was clicked!");
+//		}else if(this.isActive){
+//			Console.info(this.hashCode()+" is pressed!");
+//		}else if(this.isHovered){
+//			Console.info(this.hashCode()+" is hovered!");
+//		}
+		
+		// queue enter commands if there are any
+		if(this.wasEntered&&this.onEnter!=null){
+			Console.queueCommands(onEnter);
+		}
+		// queue hover commands if there are any
+		if(this.isHovered&&this.onHover!=null){
+			Console.queueCommands(onHover);			
+		}
+		// queue active commands if there are any
+		if(this.isActive&&this.onActive!=null){
+			Console.queueCommands(onActive);		
+		}
+		// queue click commands if there are any
+		if(this.wasClicked&&this.onClick!=null){
+			Console.queueCommands(onClick);
+			this.wasClicked = false;
+		}
+		// queue leave commands if there are any
+		if(this.wasLeft&&this.onLeave!=null){
+			Console.queueCommands(onLeave);
 		}
 		
 		//draw all children
 		for(HudElement child:this.children) {
 			child.draw();
 		}
-		
-		this.isClicked = false;
 	}
 	
 	/**
@@ -307,7 +337,7 @@ public class HudElement implements InputListener{
 	}
 	
 	/**
-	 * Sets a new or no image for this element (UVs will be set to default and the scale filter is GL_NEAREST)
+	 * Simply sets a new or no image for this elements normal state (UVs will be set to default and the scale filter is GL_NEAREST)
 	 * @param path - the path to the new image or null for no image
 	 */
 	public void setBackgroundImage(String path){
@@ -333,6 +363,98 @@ public class HudElement implements InputListener{
 		}
 		this.uv = new UVMap4(0,0,1,0,1,1,0,1);
 	}
+
+	/**
+	 * Sets a new or no image for this elements selected state (UVs will be set to default and the scale filter is GL_NEAREST)
+	 * @param path - the path to the new image or null for no image
+	 * @param state - the state to associate to image to (STATE_(ACTIVE|HOVER|NORMAL))
+	 */
+	public void setBackgroundImage(String path, int state){
+		
+		Texture tmp = null;
+		
+		if(path!=null){
+			try {
+				tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(path), GL11.GL_NEAREST);
+			}catch(Exception e) {
+				Console.warning("Could not find texture: "+path);
+				try {
+					tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
+				}catch(Exception e2) {
+					Console.error("Could not find NOTEX ?!");
+					e2.printStackTrace();
+				}
+			}
+		}
+		
+		switch(state){
+		case STATE_ACTIVE:
+			if(this.textureActive!=null){this.textureActive.release();}
+			this.textureActive = tmp;
+			this.uvActive = new UVMap4(0,0,1,0,1,1,0,1);
+			break;
+		case STATE_HOVER:
+			if(this.textureHover!=null){this.textureHover.release();}
+			this.textureHover = tmp;
+			this.uvHover = new UVMap4(0,0,1,0,1,1,0,1);
+			break;
+		case STATE_NORMAL:
+		default:
+			if(this.texture!=null){this.texture.release();}
+			this.texture = tmp;
+			this.uv = new UVMap4(0,0,1,0,1,1,0,1);
+			break;
+		}
+	}
+	
+	/**
+	 * Sets a new or no image for this elements selected state
+	 * @param path - the path to the new image or null for no image
+	 * @param state - the state to associate the image to
+	 * @param filter - the GL_filter to use (Nearest or Linear)
+	 * @param uvs - an UVMap4 to use with the selected state
+	 */
+	public void setBackgroundImage(String path, int state, int filter, UVMap4 uvs){
+		
+		Texture tmp = null;
+		
+		if(!(filter==GL11.GL_NEAREST||filter==GL11.GL_LINEAR)){
+			filter = GL11.GL_NEAREST;
+		}
+		
+		if(path!=null){
+			try {
+				tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(path), filter);
+			}catch(Exception e) {
+				Console.warning("Could not find texture: "+path);
+				try {
+					tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
+				}catch(Exception e2) {
+					Console.error("Could not find NOTEX ?!");
+					e2.printStackTrace();
+				}
+			}
+		}
+		
+		switch(state){
+		case STATE_ACTIVE:
+			if(this.textureActive!=null){this.textureActive.release();}
+			this.textureActive = tmp;
+			this.uvActive = uvs;
+			break;
+		case STATE_HOVER:
+			if(this.textureHover!=null){this.textureHover.release();}
+			this.textureHover = tmp;
+			this.uvHover = uvs;
+			break;
+		case STATE_NORMAL:
+		default:
+			if(this.texture!=null){this.texture.release();}
+			this.texture = tmp;
+			this.uv = uvs;
+			break;
+		}
+	}
 	
 	/**
 	 * Destroys all own textures and calls destroy() on it's children
@@ -342,13 +464,23 @@ public class HudElement implements InputListener{
 			this.texture.release();
 			Console.info("Released a texture");
 		}
+		if(this.textureActive!=null) {
+			this.textureActive.release();
+			Console.info("Released a texture");
+		}
+		if(this.textureHover!=null) {
+			this.textureHover.release();
+			Console.info("Released a texture");
+		}
 		for(HudElement child:children){
 			child.destroy();
 		}
 	}
 	
-	
-	
+	/**
+	 * Sets, if this element is listening to mouse/key events
+	 * @param listening - if listening
+	 */
 	public void setListening(boolean listening){
 		if(listening){
 			InputHandler.addListener(this);
@@ -366,9 +498,19 @@ public class HudElement implements InputListener{
 	@Override
 	public void mouseMoveEvent(int x, int y) {
 		if(this.aabb.contains(x, y)){
+			if(!this.isHovered){
+				this.wasEntered = true;
+			}else{
+				this.wasEntered = false;
+			}
 			this.isHovered = true;
 			return;
 		}else{
+			if(this.isHovered){
+				this.wasLeft = true;
+			}else{
+				this.wasLeft = false;
+			}
 			this.isHovered = false;
 			return;
 		}
@@ -379,18 +521,21 @@ public class HudElement implements InputListener{
 	public void mouseButtonEvent(int x, int y, int lwjglButton, boolean buttonState) {
 		if(this.aabb.contains(x, y)){
 			if(buttonState){
+				// press
 				this.isActive = true;
 			}else if(this.isActive && !buttonState){
+				// click
 				this.isActive = false;
-				this.isClicked = true;
+				this.wasClicked = true;
 			}else{
+				// nothing
 				this.isActive = false;
-				this.isClicked = false;
+				this.wasClicked = false;
 			}
 			return;
 		}else{
 			this.isActive = false;
-			this.isClicked = false;
+			this.wasClicked = false;
 			return;
 		}
 		

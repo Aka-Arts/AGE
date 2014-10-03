@@ -110,6 +110,10 @@ public class Engine {
 		container.setDimensions(200, 200);
 		container.setListening(true);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
+		container.setBackgroundImage("dasdasd", HudElement.STATE_HOVER);
+		
+		container.onEnter="ENTERED!!!";
+		container.onLeave="LEFT!!";
 		
 	}
 	
