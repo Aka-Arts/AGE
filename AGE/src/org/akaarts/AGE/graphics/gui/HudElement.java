@@ -1,19 +1,19 @@
 package org.akaarts.AGE.graphics.gui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.color.CMMException;
 import java.util.ArrayList;
 
 import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.graphics.Texture2D;
 import org.akaarts.AGE.input.InputHandler;
 import org.akaarts.AGE.input.InputListener;
 import org.akaarts.AGE.utils.UVMap4;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-import org.newdawn.slick.util.ResourceLoader;
+import org.lwjgl.opengl.GL13;
 
 public class HudElement implements InputListener{
 
@@ -34,7 +34,9 @@ public class HudElement implements InputListener{
 	
 	private Rectangle aabb;
 	
-	private Texture texture, textureHover, textureActive;
+	private TextElement text;
+	
+	private Texture2D texture, textureHover, textureActive;
 	private UVMap4 uv, uvHover, uvActive;
 	
 	
@@ -97,13 +99,13 @@ public class HudElement implements InputListener{
 	 * Draws the element and it's children
 	 */
 	public void draw() {
-		
+
 		if(this.isActive&&this.textureActive!=null){
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureActive.getTextureID());
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureActive.ID);
 		}else if(this.isHovered&&this.textureHover!=null){
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureHover.getTextureID());			
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureHover.ID);			
 		}else if(this.texture!=null){
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.getTextureID());			
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);			
 		}else{
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		}
@@ -111,7 +113,11 @@ public class HudElement implements InputListener{
 		UVMap4 uvMap4 = this.uv;
 		
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor4f(this.backgroundColor.r,this.backgroundColor.g,this.backgroundColor.b,this.backgroundColor.a);
+			GL11.glColor4f(
+					(1/255f)*this.backgroundColor.getRed(),
+					(1/255f)*this.backgroundColor.getGreen(),
+					(1/255f)*this.backgroundColor.getBlue(),
+					(1/255f)*this.backgroundColor.getAlpha());
 			GL11.glTexCoord2f(uvMap4.U[0], uvMap4.V[0]);
 			GL11.glVertex2i(this.positionX, this.positionY);
 			GL11.glTexCoord2f(uvMap4.U[1], uvMap4.V[1]);
@@ -121,6 +127,10 @@ public class HudElement implements InputListener{
 			GL11.glTexCoord2f(uvMap4.U[3], uvMap4.V[3]);
 			GL11.glVertex2i(this.positionX, this.positionY+this.height);
 		GL11.glEnd();
+		
+		if(this.text != null) {
+			this.text.draw(this.backgroundColor.getAlpha());
+		}
 		
 		//for debugging
 //		if(this.isClicked){
@@ -342,26 +352,7 @@ public class HudElement implements InputListener{
 	 */
 	public void setBackgroundImage(String path){
 		
-		if(this.texture!=null){
-			this.texture.release();
-		}
-		
-		if(path!=null){
-			try {
-				this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(path), GL11.GL_NEAREST);
-			}catch(Exception e) {
-				Console.warning("Could not find texture: "+path);
-				try {
-					this.texture = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
-				}catch(Exception e2) {
-					Console.error("Could not find NOTEX ?!");
-					e2.printStackTrace();
-				}
-			}
-		}else{
-			this.texture = null;
-		}
-		this.uv = new UVMap4(0,0,1,0,1,1,0,1);
+		this.setBackgroundImage(path, STATE_NORMAL);
 	}
 
 	/**
@@ -371,36 +362,26 @@ public class HudElement implements InputListener{
 	 */
 	public void setBackgroundImage(String path, int state){
 		
-		Texture tmp = null;
-		
+		Texture2D tmp = null;
+
 		if(path!=null){
-			try {
-				tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(path), GL11.GL_NEAREST);
-			}catch(Exception e) {
-				Console.warning("Could not find texture: "+path);
-				try {
-					tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
-				}catch(Exception e2) {
-					Console.error("Could not find NOTEX ?!");
-					e2.printStackTrace();
-				}
-			}
+			tmp = Texture2D.loadTexture2d(path);
 		}
 		
 		switch(state){
 		case STATE_ACTIVE:
-			if(this.textureActive!=null){this.textureActive.release();}
+			if(this.textureActive!=null){this.textureActive.destroy();}
 			this.textureActive = tmp;
 			this.uvActive = new UVMap4(0,0,1,0,1,1,0,1);
 			break;
 		case STATE_HOVER:
-			if(this.textureHover!=null){this.textureHover.release();}
+			if(this.textureHover!=null){this.textureHover.destroy();}
 			this.textureHover = tmp;
 			this.uvHover = new UVMap4(0,0,1,0,1,1,0,1);
 			break;
 		case STATE_NORMAL:
 		default:
-			if(this.texture!=null){this.texture.release();}
+			if(this.texture!=null){this.texture.destroy();}
 			this.texture = tmp;
 			this.uv = new UVMap4(0,0,1,0,1,1,0,1);
 			break;
@@ -416,44 +397,55 @@ public class HudElement implements InputListener{
 	 */
 	public void setBackgroundImage(String path, int state, int filter, UVMap4 uvs){
 		
-		Texture tmp = null;
+		Texture2D tmp = null;
 		
 		if(!(filter==GL11.GL_NEAREST||filter==GL11.GL_LINEAR)){
 			filter = GL11.GL_NEAREST;
 		}
 		
 		if(path!=null){
-			try {
-				tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(path), filter);
-			}catch(Exception e) {
-				Console.warning("Could not find texture: "+path);
-				try {
-					tmp = TextureLoader.getTexture("PNG", HudElement.class.getResourceAsStream(NOTEX), GL11.GL_NEAREST);
-				}catch(Exception e2) {
-					Console.error("Could not find NOTEX ?!");
-					e2.printStackTrace();
-				}
-			}
+			tmp = Texture2D.loadTexture2d(path);
 		}
 		
 		switch(state){
 		case STATE_ACTIVE:
-			if(this.textureActive!=null){this.textureActive.release();}
+			if(this.textureActive!=null){this.textureActive.destroy();}
 			this.textureActive = tmp;
 			this.uvActive = uvs;
 			break;
 		case STATE_HOVER:
-			if(this.textureHover!=null){this.textureHover.release();}
+			if(this.textureHover!=null){this.textureHover.destroy();}
 			this.textureHover = tmp;
 			this.uvHover = uvs;
 			break;
 		case STATE_NORMAL:
 		default:
-			if(this.texture!=null){this.texture.release();}
+			if(this.texture!=null){this.texture.destroy();}
 			this.texture = tmp;
 			this.uv = uvs;
 			break;
 		}
+	}
+	
+	public void setText(String text) {
+		this.setText(text, TextElement.STDFONT,TextElement.STDSIZE, Font.PLAIN);
+	}
+	
+	public void setText(String text, int size) {
+		this.setText(text, TextElement.STDFONT, size, Font.PLAIN);
+	}
+	
+	public void setText(String text, String fontPath, int fontsize, int fontStyle) {
+		if(text==null) {
+			this.text = null;
+			return;
+		}
+		this.text = new TextElement(this.positionX, this.positionY, this.width, this.height);
+		this.text.setText(text);
+		this.text.setFont(fontPath);
+		this.text.setSize(fontsize);
+		this.text.setSytle(fontStyle);
+		this.text.update();
 	}
 	
 	/**
@@ -461,16 +453,16 @@ public class HudElement implements InputListener{
 	 */
 	public void destroy() {
 		if(this.texture!=null) {
-			this.texture.release();
-			Console.info("Released a texture");
+			this.texture.destroy();
 		}
 		if(this.textureActive!=null) {
-			this.textureActive.release();
-			Console.info("Released a texture");
+			this.textureActive.destroy();
 		}
 		if(this.textureHover!=null) {
-			this.textureHover.release();
-			Console.info("Released a texture");
+			this.textureHover.destroy();
+		}
+		if(this.text!=null) {
+			this.text.destroy();
 		}
 		for(HudElement child:children){
 			child.destroy();

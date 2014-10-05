@@ -21,6 +21,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Util;
+import org.lwjgl.util.glu.GLU;
 
 public class Engine {
 	final static int AVG_FPS = 120;
@@ -75,6 +76,8 @@ public class Engine {
         GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
+		Console.info("Maximum texture size: "+GL11.GL_MAX_TEXTURE_SIZE);
+		
 	}
 	/**
 	 * Sets the Display, title and icons up
@@ -106,14 +109,11 @@ public class Engine {
 			e.printStackTrace();
 		}
 		HudElement container = new HudElement(Hud.ROOT);
-		
+		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
 		container.setDimensions(200, 200);
-		container.setListening(true);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
-		container.setBackgroundImage("dasdasd", HudElement.STATE_HOVER);
+		container.setText("Hallo Welt!",50);
 		
-		container.onEnter="ENTERED!!!";
-		container.onLeave="LEFT!!";
 		
 	}
 	
@@ -166,12 +166,7 @@ public class Engine {
 			// update the display
 			Display.update();
 			
-			try{
-				Util.checkGLError();
-			}catch(Exception e){
-				Console.warning("The following GL_ERROR has happened: ");
-				e.printStackTrace();
-			}
+			checkGLError();
 			
 			
 			// sync to the preferred FPS
@@ -183,6 +178,13 @@ public class Engine {
 	}
 	
 
+	public static void checkGLError() {
+		int errorCode = GL11.glGetError();
+		
+		if(errorCode!=GL11.GL_NO_ERROR) {
+			Console.error("GL Error: "+errorCode+" / "+GLU.gluErrorString(errorCode));
+		}
+	}
 	/**
 	 * get the delta since the last frame
 	 * @return - the delta in milliseconds
