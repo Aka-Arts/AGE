@@ -1,7 +1,6 @@
 package org.akaarts.AGE;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.Util;
 import org.lwjgl.util.glu.GLU;
 
 public class Engine {
