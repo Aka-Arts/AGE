@@ -62,6 +62,7 @@ public class Engine {
 	 * Sets the openGL space up
 	 */
 	private static void setupGL() {
+		
 		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 		// black clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
@@ -74,13 +75,15 @@ public class Engine {
         GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
-		Console.info("Maximum texture size: "+GL11.GL_MAX_TEXTURE_SIZE);
+		Console.info("Maximum texture size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
 		
 	}
 	/**
 	 * Sets the Display, title and icons up
 	 */
 	private static void setup(){
+		
+		Console.info(Display.getAdapter());
 		
 		// try to setup the display
 		try {
