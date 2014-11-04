@@ -36,9 +36,9 @@ public class TextElement {
 		this.text = "";
 		try {
 			this.font = Font.createFont(Font.TRUETYPE_FONT, Font.class.getResourceAsStream(STDFONT));
-		} catch (FontFormatException | IOException e2) {
+		} catch (FontFormatException | IOException e) {
 			Console.error("could not load default font file...!?");
-			e2.printStackTrace();
+			e.printStackTrace();
 		}
 		this.size = 12;
 		this.style = Font.PLAIN;
