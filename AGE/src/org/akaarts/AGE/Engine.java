@@ -1,5 +1,7 @@
 package org.akaarts.AGE;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,8 +12,10 @@ import java.util.Comparator;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.graphics.BasicFont;
 import org.akaarts.AGE.graphics.gui.Hud;
 import org.akaarts.AGE.graphics.gui.HudElement;
+import org.akaarts.AGE.graphics.gui.TextElement;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -23,8 +27,8 @@ import org.lwjgl.util.glu.GLU;
 
 public class Engine {
 	final static int AVG_FPS = 120;
-	final static int DEF_WIDTH = 1280;
-	final static int DEF_HEIGHT = 720;
+	final static int DEF_WIDTH = 1024;
+	final static int DEF_HEIGHT = 1024;
 	final static String LAUNCHER_TITLE = "AGE - ";
 	
 	static boolean showSysInf = true;
@@ -35,6 +39,8 @@ public class Engine {
 	
 	private static boolean  closeRequested = false;
 
+	//TODO remove
+	static BasicFont fonti;
 
 	private Engine() {}
 	/**
@@ -109,12 +115,22 @@ public class Engine {
 			Console.error("Error at creating Display");
 			e.printStackTrace();
 		}
-		HudElement container = new HudElement(Hud.ROOT);
-		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
-		container.setDimensions(200, 200);
-		container.setBackgroundImage("/assets/defaults/AGE.png");
-		container.setText("Hallo Welt!",50);
 		
+		try {
+			fonti = new BasicFont(Font.createFont(Font.TRUETYPE_FONT, Font.class.getResourceAsStream(TextElement.STDFONT)));
+			HudElement container = new HudElement(Hud.ROOT);
+			container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
+			container.setDimensions(1024, 1024);
+//			container.setBackgroundImage("/assets/defaults/AGE.png");
+			container.texture = fonti.texture;
+//			container.setText(" Hallo Welt!",60);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 		
 	}
 	
@@ -123,6 +139,10 @@ public class Engine {
 	 */
 	private static void stop() {
 		Console.info("Stopping AGE...");
+		
+		// TODO remove
+		fonti.destroy();
+		
 		
 		// destroy the hud
 		Hud.destroy();

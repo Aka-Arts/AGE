@@ -36,7 +36,7 @@ public class HudElement implements InputListener{
 	
 	private TextElement text;
 	
-	private Texture2D texture, textureHover, textureActive;
+	public Texture2D texture, textureHover, textureActive;
 	private UVMap4 uv, uvHover, uvActive;
 	
 	
