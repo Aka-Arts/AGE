@@ -52,13 +52,51 @@ public class BasicFont {
 		chars[23] = "X";
 		chars[24] = "Y";
 		chars[25] = "Z";
+		chars[26] = "a";
+		chars[27] = "b";
+		chars[28] = "c";
+		chars[29] = "d";
+		chars[30] = "e";
+		chars[31] = "f";
+		chars[32] = "g";
+		chars[33] = "h";
+		chars[34] = "i";
+		chars[35] = "j";
+		chars[36] = "k";
+		chars[37] = "l";
+		chars[38] = "m";
+		chars[39] = "n";
+		chars[40] = "o";
+		chars[41] = "p";
+		chars[42] = "q";
+		chars[43] = "r";
+		chars[44] = "s";
+		chars[45] = "t";
+		chars[46] = "u";
+		chars[47] = "v";
+		chars[48] = "w";
+		chars[49] = "x";
+		chars[50] = "y";
+		chars[51] = "z";
+		chars[52] = " ";
+		chars[53] = "0";
+		chars[54] = "1";
+		chars[55] = "2";
+		chars[56] = "3";
+		chars[57] = "4";
+		chars[58] = "5";
+		chars[59] = "6";
+		chars[60] = "7";
+		chars[61] = "8";
+		chars[62] = "9";
+		chars[63] = "-";
 		
 		for(int i = 0; i < 16 ; i++) {
 			for(int j = 0; j < 16 ; j++) {
 				
 				int index = i * 16 + j;
 				
-				if(chars[index]!=null) {
+				if(chars[index]!=null&&!chars[index].equals("")) {
 					int charWidth = metrics.charWidth(chars[index].charAt(0));
 					
 					g.drawString(chars[index], j*64 + ((64-charWidth)/2), i*64 + metrics.getMaxAscent());
