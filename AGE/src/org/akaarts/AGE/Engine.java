@@ -12,10 +12,10 @@ import java.util.Comparator;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
-import org.akaarts.AGE.graphics.BasicFont;
 import org.akaarts.AGE.graphics.gui.Hud;
 import org.akaarts.AGE.graphics.gui.HudElement;
 import org.akaarts.AGE.graphics.gui.TextElement;
+import org.akaarts.AGE.graphics.text.FontMap;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -40,7 +40,7 @@ public class Engine {
 	private static boolean  closeRequested = false;
 
 	//TODO remove
-	static BasicFont fonti;
+	static FontMap fonti;
 
 	private Engine() {}
 	/**
@@ -116,21 +116,12 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
-		try {
-			fonti = new BasicFont(Font.createFont(Font.TRUETYPE_FONT, Font.class.getResourceAsStream(TextElement.STDFONT)));
-			HudElement container = new HudElement(Hud.ROOT);
-			container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
-			container.setDimensions(1024, 1024);
-//			container.setBackgroundImage("/assets/defaults/AGE.png");
-			container.texture = fonti.texture;
-//			container.setText(" Hallo Welt!",60);
-		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		HudElement container = new HudElement(Hud.ROOT);
+		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
+		container.setDimensions(1024, 1024);
+		container.setBackgroundImage("/assets/defaults/AGE.png");
+		container.setText(" Hallo Welt!",60);
+	
 		
 	}
 	
@@ -138,14 +129,12 @@ public class Engine {
 	 * Stops engine and cleans up
 	 */
 	private static void stop() {
-		Console.info("Stopping AGE...");
-		
-		// TODO remove
-		fonti.destroy();
-		
+		Console.info("Stopping AGE...");		
 		
 		// destroy the hud
 		Hud.destroy();
+		
+		
 		
 		// destroy the display
 		Display.destroy();
