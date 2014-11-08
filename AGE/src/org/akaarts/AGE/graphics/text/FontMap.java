@@ -18,13 +18,17 @@ public class FontMap {
 	
 	private HashMap<String,UVMap4> chars = new HashMap<String,UVMap4>();
 	
-	public FontMap(Font font) {
+	// TODO javadoc !
+	
+	public FontMap(Font font, boolean useAA) {
 		
 		
-		Font tmpFont = font.deriveFont(Font.PLAIN,60);		
+		Font tmpFont = font.deriveFont(Font.PLAIN,60);
 		BufferedImage img = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D)img.getGraphics();
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		if(useAA){
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		}
 		FontMetrics metrics = g.getFontMetrics(tmpFont);
 		g.setColor(Color.WHITE);
 		g.setFont(tmpFont);
