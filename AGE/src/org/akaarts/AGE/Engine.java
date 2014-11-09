@@ -118,7 +118,7 @@ public class Engine {
 		
 		HudElement container = new HudElement(Hud.ROOT);
 		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
-		container.setDimensions(1024, 1024);
+		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
 		container.setText(" Hallo Welt!",60);
 	

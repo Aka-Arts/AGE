@@ -41,10 +41,10 @@ public class FontMap {
 				i = 0;
 				j++;
 			}
-				
-			int index = i * 16 + j;
 			
 			// TODO set uvmap
+			
+			int maxHeight = metrics.getMaxAscent();
 				
 			if(key!=null) {
 				int charWidth = metrics.charWidth(key.charAt(0));
@@ -89,19 +89,19 @@ public class FontMap {
 		chars[68] = ";";	chars[69] = "'";	chars[70] = "\"";	chars[71] = "?";
 		chars[72] = "!";	chars[73] = "[";	chars[74] = "]";	chars[75] = "{";
 		chars[76] = "}";	chars[77] = "(";	chars[78] = ")";	chars[79] = "<";
-		chars[80] = ">";	chars[81] = "+";	chars[82] = "*";	chars[83] = "Ã§";
+		chars[80] = ">";	chars[81] = "+";	chars[82] = "*";	chars[83] = "ç";
 		chars[84] = "%";	chars[85] = "&";	chars[86] = "/";	chars[87] = "\\";
-		chars[88] = "=";	chars[89] = "^";	chars[90] = "Â¦";	chars[91] = "@";
-		chars[92] = "#";	chars[93] = "Â°";	chars[94] = "Â§";	chars[95] = "Â¬";
-		chars[96] = "|";	chars[97] = "Â¢";	chars[98] = "â‚¬";	chars[99] = "Ã¤";
-		chars[100] = "Ã¶";	chars[101] = "Ã¼";	chars[102] = "Ã©";	chars[103] = "Ã¨";
-		chars[104] = "Ãª";	chars[105] = "Ã¡";	chars[106] = "Ã ";	chars[107] = "Ã¢";
-		chars[108] = "Ãº";	chars[109] = "Ã¹";	chars[110] = "Ã»";	chars[111] = "Ã³";
-		chars[112] = "Ã²";	chars[113] = "Ã´";	chars[114] = "Â´";	chars[115] = "`";
-		chars[116] = "Â¨";	chars[117] = "Ã„";	chars[118] = "Ã–";	chars[119] = "Ãœ";
-		chars[120] = "Ã‰";	chars[121] = "Ãˆ";	chars[122] = "ÃŠ";	chars[123] = "Ã";
-		chars[124] = "Ã€";	chars[125] = "Ã‚";	chars[126] = "Ãš";	chars[127] = "Ã™";
-		chars[128] = "Ã›";	chars[129] = "Ã“";	chars[130] = "Ã’";	chars[131] = "Ã”";
+		chars[88] = "=";	chars[89] = "^";	chars[90] = "¦";	chars[91] = "@";
+		chars[92] = "#";	chars[93] = "°";	chars[94] = "§";	chars[95] = "¬";
+		chars[96] = "|";	chars[97] = "¢";	chars[98] = "€";	chars[99] = "ä";
+		chars[100] = "ö";	chars[101] = "ü";	chars[102] = "é";	chars[103] = "è";
+		chars[104] = "ê";	chars[105] = "á";	chars[106] = "à";	chars[107] = "â";
+		chars[108] = "ú";	chars[109] = "ù";	chars[110] = "û";	chars[111] = "ó";
+		chars[112] = "ò";	chars[113] = "ô";	chars[114] = "´";	chars[115] = "`";
+		chars[116] = "¨";	chars[117] = "Ä";	chars[118] = "Ö";	chars[119] = "Ü";
+		chars[120] = "É";	chars[121] = "È";	chars[122] = "Ê";	chars[123] = "Á";
+		chars[124] = "À";	chars[125] = "Â";	chars[126] = "Ú";	chars[127] = "Ù";
+		chars[128] = "Û";	chars[129] = "Ó";	chars[130] = "Ò";	chars[131] = "Ô";
 		
 		for(String chr : chars){
 			if(chr!=null){
