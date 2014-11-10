@@ -22,14 +22,33 @@ public class FontMap {
 	
 	public FontMap(Font font, boolean useAA) {
 		
+		initChars();
 		
-		Font tmpFont = font.deriveFont(Font.PLAIN,60);
 		BufferedImage img = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D)img.getGraphics();
 		if(useAA){
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		}
-		FontMetrics metrics = g.getFontMetrics(tmpFont);
+		
+		int fontSizePx;
+		
+		int fontSizePt = 60;
+		
+		Font tmpFont;
+		FontMetrics metrics;
+		
+		do {
+			tmpFont = font.deriveFont(Font.PLAIN,fontSizePt);
+			
+			metrics = g.getFontMetrics(tmpFont);
+			
+			fontSizePx = metrics.getMaxAscent() + metrics.getMaxDescent();
+			
+			fontSizePt--;
+			
+		}while(fontSizePx > 56);
+		
+
 		g.setColor(Color.WHITE);
 		g.setFont(tmpFont);
 		
@@ -44,7 +63,7 @@ public class FontMap {
 			
 			// TODO set uvmap
 			
-			int maxHeight = metrics.getMaxAscent();
+			
 				
 			if(key!=null) {
 				int charWidth = metrics.charWidth(key.charAt(0));
@@ -64,6 +83,11 @@ public class FontMap {
 	}
 	
 	private void initChars(){
+		
+		if(!chars.isEmpty()) {
+			return;
+		}
+		
 		String[] chars = new String[256];
 		
 		// CharMap
@@ -89,19 +113,19 @@ public class FontMap {
 		chars[68] = ";";	chars[69] = "'";	chars[70] = "\"";	chars[71] = "?";
 		chars[72] = "!";	chars[73] = "[";	chars[74] = "]";	chars[75] = "{";
 		chars[76] = "}";	chars[77] = "(";	chars[78] = ")";	chars[79] = "<";
-		chars[80] = ">";	chars[81] = "+";	chars[82] = "*";	chars[83] = "ç";
+		chars[80] = ">";	chars[81] = "+";	chars[82] = "*";	chars[83] = "ï¿½";
 		chars[84] = "%";	chars[85] = "&";	chars[86] = "/";	chars[87] = "\\";
-		chars[88] = "=";	chars[89] = "^";	chars[90] = "¦";	chars[91] = "@";
-		chars[92] = "#";	chars[93] = "°";	chars[94] = "§";	chars[95] = "¬";
-		chars[96] = "|";	chars[97] = "¢";	chars[98] = "€";	chars[99] = "ä";
-		chars[100] = "ö";	chars[101] = "ü";	chars[102] = "é";	chars[103] = "è";
-		chars[104] = "ê";	chars[105] = "á";	chars[106] = "à";	chars[107] = "â";
-		chars[108] = "ú";	chars[109] = "ù";	chars[110] = "û";	chars[111] = "ó";
-		chars[112] = "ò";	chars[113] = "ô";	chars[114] = "´";	chars[115] = "`";
-		chars[116] = "¨";	chars[117] = "Ä";	chars[118] = "Ö";	chars[119] = "Ü";
-		chars[120] = "É";	chars[121] = "È";	chars[122] = "Ê";	chars[123] = "Á";
-		chars[124] = "À";	chars[125] = "Â";	chars[126] = "Ú";	chars[127] = "Ù";
-		chars[128] = "Û";	chars[129] = "Ó";	chars[130] = "Ò";	chars[131] = "Ô";
+		chars[88] = "=";	chars[89] = "^";	chars[90] = "ï¿½";		chars[91] = "@";
+		chars[92] = "#";	chars[93] = "ï¿½";		chars[94] = "ï¿½";		chars[95] = "ï¿½";
+		chars[96] = "|";	chars[97] = "ï¿½";		chars[98] = "ï¿½";		chars[99] = "ï¿½";
+		chars[100] = "ï¿½";	chars[101] = "ï¿½";	chars[102] = "ï¿½";	chars[103] = "ï¿½";
+		chars[104] = "ï¿½";	chars[105] = "ï¿½";	chars[106] = "ï¿½";	chars[107] = "ï¿½";
+		chars[108] = "ï¿½";	chars[109] = "ï¿½";	chars[110] = "ï¿½";	chars[111] = "ï¿½";
+		chars[112] = "ï¿½";	chars[113] = "ï¿½";	chars[114] = "ï¿½";	chars[115] = "`";
+		chars[116] = "ï¿½";	chars[117] = "ï¿½";	chars[118] = "ï¿½";	chars[119] = "ï¿½";
+		chars[120] = "ï¿½";	chars[121] = "ï¿½";	chars[122] = "ï¿½";	chars[123] = "ï¿½";
+		chars[124] = "ï¿½";	chars[125] = "ï¿½";	chars[126] = "ï¿½";	chars[127] = "ï¿½";
+		chars[128] = "ï¿½";	chars[129] = "ï¿½";	chars[130] = "ï¿½";	chars[131] = "ï¿½";
 		
 		for(String chr : chars){
 			if(chr!=null){

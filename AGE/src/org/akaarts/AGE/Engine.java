@@ -15,6 +15,7 @@ import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.gui.Hud;
 import org.akaarts.AGE.graphics.gui.HudElement;
 import org.akaarts.AGE.graphics.gui.TextElement;
+import org.akaarts.AGE.graphics.text.FontManager;
 import org.akaarts.AGE.graphics.text.FontMap;
 import org.akaarts.AGE.input.InputHandler;
 import org.lwjgl.BufferUtils;
@@ -27,8 +28,8 @@ import org.lwjgl.util.glu.GLU;
 
 public class Engine {
 	final static int AVG_FPS = 120;
-	final static int DEF_WIDTH = 1024;
-	final static int DEF_HEIGHT = 1024;
+	final static int DEF_WIDTH = 1440;
+	final static int DEF_HEIGHT = 800;
 	final static String LAUNCHER_TITLE = "AGE - ";
 	
 	static boolean showSysInf = true;
@@ -116,6 +117,8 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
+		fonti = new FontMap(Font.decode("Courier"), true);
+		
 		HudElement container = new HudElement(Hud.ROOT);
 		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
 		container.setDimensions(128, 128);
@@ -134,7 +137,7 @@ public class Engine {
 		// destroy the hud
 		Hud.destroy();
 		
-		
+		FontManager.destroy();
 		
 		// destroy the display
 		Display.destroy();
