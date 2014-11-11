@@ -36,7 +36,7 @@ public class FontMap {
 		
 		int fontSizePx;
 		
-		int fontSizePt = 60;
+		int fontSizePt = 64;
 		
 		Font tmpFont;
 		FontMetrics metrics;
@@ -46,11 +46,11 @@ public class FontMap {
 			
 			metrics = g.getFontMetrics(tmpFont);
 			
-			fontSizePx = metrics.getMaxAscent() + metrics.getMaxDescent();
+			fontSizePx = metrics.getHeight();
 			
 			fontSizePt--;
 			
-		}while(fontSizePx > 56);
+		}while(fontSizePx > 60);
 		
 
 		g.setColor(Color.WHITE);
@@ -72,7 +72,7 @@ public class FontMap {
 			if(key!=null) {
 				int charWidth = metrics.charWidth(key.charAt(0));
 					
-				g.drawString(key, j*64 + ((64-charWidth)/2), i*64 + metrics.getMaxAscent());
+				g.drawString(key, j*64 + ((64-charWidth)/2), i*64 + metrics.getMaxAscent()+metrics.getLeading()+2);
 				g.drawLine(j*64, i*64+64, j*64+64, i*64+64);
 			}
 			
@@ -88,7 +88,7 @@ public class FontMap {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
 		
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor4f(1f,1f,1f,1f);
+			GL11.glColor4f(1f,1f,0f,1f);
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2i(0, 0);
 			GL11.glTexCoord2f(1, 0);
