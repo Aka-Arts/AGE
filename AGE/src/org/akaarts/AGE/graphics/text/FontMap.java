@@ -6,7 +6,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.akaarts.AGE.graphics.Texture2D;
 import org.akaarts.AGE.utils.UVMap4;
@@ -16,7 +16,9 @@ public class FontMap {
 	
 	private Texture2D texture;
 	
-	private HashMap<String,UVMap4> chars = new HashMap<String,UVMap4>();
+	private LinkedHashMap<String,UVMap4> chars = new LinkedHashMap<String,UVMap4>();
+	
+	public boolean usesAA = false;
 	
 	// TODO javadoc !
 	
@@ -29,6 +31,8 @@ public class FontMap {
 		if(useAA){
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		}
+		
+		usesAA = useAA;
 		
 		int fontSizePx;
 		
@@ -56,9 +60,9 @@ public class FontMap {
 		
 		for(String key : chars.keySet()) {
 			
-			if(i >= 16){
-				i = 0;
-				j++;
+			if(j >= 16){
+				j = 0;
+				i++;
 			}
 			
 			// TODO set uvmap
@@ -69,13 +73,31 @@ public class FontMap {
 				int charWidth = metrics.charWidth(key.charAt(0));
 					
 				g.drawString(key, j*64 + ((64-charWidth)/2), i*64 + metrics.getMaxAscent());
+				g.drawLine(j*64, i*64+64, j*64+64, i*64+64);
 			}
 			
-			i++;
+			j++;
 		}
 		
-		this.texture = Texture2D.loadTexture2d(img, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR, false);
+		this.texture = Texture2D.loadTexture2d(img, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_NEAREST, GL11.GL_NEAREST, false);
 		
+	}
+	
+	public void draw(){
+		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
+		
+		GL11.glBegin(GL11.GL_QUADS);
+			GL11.glColor4f(1f,1f,1f,1f);
+			GL11.glTexCoord2f(0, 0);
+			GL11.glVertex2i(0, 0);
+			GL11.glTexCoord2f(1, 0);
+			GL11.glVertex2i(1024, 0);
+			GL11.glTexCoord2f(1, 1);
+			GL11.glVertex2i(1024, 1024);
+			GL11.glTexCoord2f(0, 1);
+			GL11.glVertex2i(0, 1024);
+		GL11.glEnd();
 	}
 	
 	public void destroy() {

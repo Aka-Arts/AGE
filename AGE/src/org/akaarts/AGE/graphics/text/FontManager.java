@@ -30,12 +30,22 @@ public class FontManager {
 	}
 	
 	/**
-	 * Method for adding and initializing a new Font
+	 * Method for adding and initializing a new Font with AA
 	 * @param name - The Name for the new font
 	 * @param font - The Font Object to add
 	 */
 	public static void addFont(String name, Font font){
-		SELF.fonts.put(name, new FontMap(font,true));
+		addFont(name, font, true);
+	}
+	
+	/**
+	 * Method for adding and initializing a new Font
+	 * @param name - The Name for the new font
+	 * @param font - The Font Object to add
+	 * @param useAA - Use Anti Aliasing?
+	 */
+	public static void addFont(String name, Font font, boolean useAA){
+		SELF.fonts.put(name, new FontMap(font,useAA));
 	}
 	
 	/**
@@ -45,6 +55,10 @@ public class FontManager {
 	public static void destroyFont(String name){
 		SELF.fonts.get(name).destroy();
 		SELF.fonts.remove(name);
+	}
+	
+	public static FontMap getFont(String name){
+		return SELF.fonts.get(name);
 	}
 	
 	/**
