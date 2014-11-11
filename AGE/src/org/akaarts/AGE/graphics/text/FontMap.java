@@ -113,19 +113,19 @@ public class FontMap {
 		chars[68] = ";";	chars[69] = "'";	chars[70] = "\"";	chars[71] = "?";
 		chars[72] = "!";	chars[73] = "[";	chars[74] = "]";	chars[75] = "{";
 		chars[76] = "}";	chars[77] = "(";	chars[78] = ")";	chars[79] = "<";
-		chars[80] = ">";	chars[81] = "+";	chars[82] = "*";	chars[83] = "�";
+		chars[80] = ">";	chars[81] = "+";	chars[82] = "*";	chars[83] = "ç";
 		chars[84] = "%";	chars[85] = "&";	chars[86] = "/";	chars[87] = "\\";
-		chars[88] = "=";	chars[89] = "^";	chars[90] = "�";		chars[91] = "@";
-		chars[92] = "#";	chars[93] = "�";		chars[94] = "�";		chars[95] = "�";
-		chars[96] = "|";	chars[97] = "�";		chars[98] = "�";		chars[99] = "�";
-		chars[100] = "�";	chars[101] = "�";	chars[102] = "�";	chars[103] = "�";
-		chars[104] = "�";	chars[105] = "�";	chars[106] = "�";	chars[107] = "�";
-		chars[108] = "�";	chars[109] = "�";	chars[110] = "�";	chars[111] = "�";
-		chars[112] = "�";	chars[113] = "�";	chars[114] = "�";	chars[115] = "`";
-		chars[116] = "�";	chars[117] = "�";	chars[118] = "�";	chars[119] = "�";
-		chars[120] = "�";	chars[121] = "�";	chars[122] = "�";	chars[123] = "�";
-		chars[124] = "�";	chars[125] = "�";	chars[126] = "�";	chars[127] = "�";
-		chars[128] = "�";	chars[129] = "�";	chars[130] = "�";	chars[131] = "�";
+		chars[88] = "=";	chars[89] = "^";	chars[90] = "¦";	chars[91] = "@";
+		chars[92] = "#";	chars[93] = "°";	chars[94] = "§";	chars[95] = "¬";
+		chars[96] = "|";	chars[97] = "¢";	chars[98] = "€";	chars[99] = "ä";
+		chars[100] = "ö";	chars[101] = "ü";	chars[102] = "é";	chars[103] = "è";
+		chars[104] = "ê";	chars[105] = "á";	chars[106] = "à";	chars[107] = "â";
+		chars[108] = "ú";	chars[109] = "ù";	chars[110] = "û";	chars[111] = "ó";
+		chars[112] = "ò";	chars[113] = "ô";	chars[114] = "´";	chars[115] = "`";
+		chars[116] = "¨";	chars[117] = "Ä";	chars[118] = "Ö";	chars[119] = "Ü";
+		chars[120] = "É";	chars[121] = "È";	chars[122] = "Ê";	chars[123] = "Á";
+		chars[124] = "À";	chars[125] = "Â";	chars[126] = "Ú";	chars[127] = "Ù";
+		chars[128] = "Û";	chars[129] = "Ó";	chars[130] = "Ò";	chars[131] = "Ô";
 		
 		for(String chr : chars){
 			if(chr!=null){

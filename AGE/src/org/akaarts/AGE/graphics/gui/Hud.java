@@ -1,5 +1,6 @@
 package org.akaarts.AGE.graphics.gui;
 
+import org.akaarts.AGE.CLI.Console;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
@@ -27,6 +28,7 @@ public class Hud {
 	 
 	 public static void destroy() {
 		 ROOT.destroy();
+		 Console.info("Hud destroyed");
 	 }
 	
 }

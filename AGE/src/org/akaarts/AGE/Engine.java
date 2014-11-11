@@ -40,9 +40,6 @@ public class Engine {
 	
 	private static boolean  closeRequested = false;
 
-	//TODO remove
-	static FontMap fonti;
-
 	private Engine() {}
 	/**
 	 * Starts the engine and enters loop
@@ -116,8 +113,6 @@ public class Engine {
 			Console.error("Error at creating Display");
 			e.printStackTrace();
 		}
-		
-		fonti = new FontMap(Font.decode("Courier"), true);
 		
 		HudElement container = new HudElement(Hud.ROOT);
 		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
