@@ -114,7 +114,7 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
-		FontManager.addFont("C", Font.decode("Arial bold"));
+		FontManager.addFont("C", Font.decode("IMPACT"));
 		
 		HudElement container = new HudElement(Hud.ROOT);
 		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);

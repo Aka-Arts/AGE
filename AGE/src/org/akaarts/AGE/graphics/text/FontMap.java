@@ -18,6 +18,8 @@ public class FontMap {
 	
 	private LinkedHashMap<String,UVMap4> chars = new LinkedHashMap<String,UVMap4>();
 	
+	private final int DIMENSION = 1024;
+	
 	public boolean usesAA = false;
 	
 	// TODO javadoc !
@@ -26,7 +28,7 @@ public class FontMap {
 		
 		initChars();
 		
-		BufferedImage img = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(DIMENSION, DIMENSION, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D)img.getGraphics();
 		if(useAA){
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -65,15 +67,29 @@ public class FontMap {
 				i++;
 			}
 			
-			// TODO set uvmap
-			
-			
-				
 			if(key!=null) {
 				int charWidth = metrics.charWidth(key.charAt(0));
-					
-				g.drawString(key, j*64 + ((64-charWidth)/2), i*64 + metrics.getMaxAscent()+metrics.getLeading()+2);
-				g.drawLine(j*64, i*64+64, j*64+64, i*64+64);
+				
+				
+				// TODO set uvmap
+				int u1, v1, u2, v2, u3, v3, u4, v4;
+				
+				u1 = u4 = j * 64;
+				v1 = v2 = i * 64;
+				u2 = u3 = j * 64 + charWidth + 4;
+				v3 = v4 = i * 64 + 64;
+				
+				g.drawString(key, j*64+2, i*64 + metrics.getMaxAscent()+metrics.getLeading()+2);
+				g.drawLine(u1, v1, u2, v2);
+				g.drawLine(u2, v2, u3, v3);
+				g.drawLine(u3, v3, u4, v4);
+				g.drawLine(u4, v4, u1, v1);
+				
+				
+				UVMap4 uvMap = new UVMap4(u1/1024f, v1/1024f, u2/1024f, v2/1024f, u3/1024f, v3/1024f, u4/1024f, v4/1024f);
+				
+				chars.put(key, uvMap);
+				
 			}
 			
 			j++;
@@ -92,11 +108,11 @@ public class FontMap {
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2i(0, 0);
 			GL11.glTexCoord2f(1, 0);
-			GL11.glVertex2i(1024, 0);
+			GL11.glVertex2i(DIMENSION, 0);
 			GL11.glTexCoord2f(1, 1);
-			GL11.glVertex2i(1024, 1024);
+			GL11.glVertex2i(DIMENSION, DIMENSION);
 			GL11.glTexCoord2f(0, 1);
-			GL11.glVertex2i(0, 1024);
+			GL11.glVertex2i(0, DIMENSION);
 		GL11.glEnd();
 	}
 	
