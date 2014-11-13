@@ -12,6 +12,7 @@ import java.util.Comparator;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.gui.Hud;
 import org.akaarts.AGE.graphics.gui.HudElement;
 import org.akaarts.AGE.graphics.gui.TextElement;
@@ -172,7 +173,7 @@ public class Engine {
 			//draw hud
 			Hud.draw();
 			
-			FontManager.getFont("C").draw();
+			FontManager.getFont("DEFAULT").drawChar(60, 60, "A", 53, new Color4f(1,1,1,1));;
 			
 			// update the display
 			Display.update();

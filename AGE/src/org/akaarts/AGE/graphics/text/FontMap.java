@@ -1,6 +1,5 @@
 package org.akaarts.AGE.graphics.text;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -8,17 +7,17 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
 
+import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.Texture2D;
-import org.akaarts.AGE.utils.UVMap4;
 import org.lwjgl.opengl.GL11;
 
 public class FontMap {
 	
 	private Texture2D texture;
 	
-	private LinkedHashMap<String,UVMap4> chars = new LinkedHashMap<String,UVMap4>();
+	private LinkedHashMap<String,Glyph> chars = new LinkedHashMap<String,Glyph>();
 	
-	private final int DIMENSION = 1024;
+	private final int DIMENSION = 512;
 	
 	public boolean usesAA = false;
 	
@@ -38,7 +37,7 @@ public class FontMap {
 		
 		int fontSizePx;
 		
-		int fontSizePt = 64;
+		int fontSizePt = 35;
 		
 		Font tmpFont;
 		FontMetrics metrics;
@@ -52,10 +51,10 @@ public class FontMap {
 			
 			fontSizePt--;
 			
-		}while(fontSizePx > 60);
+		}while(fontSizePx > 32);
 		
 
-		g.setColor(Color.WHITE);
+		g.setColor(java.awt.Color.WHITE);
 		g.setFont(tmpFont);
 		
 		int i = 0, j = 0; 
@@ -68,27 +67,12 @@ public class FontMap {
 			}
 			
 			if(key!=null) {
-				int charWidth = metrics.charWidth(key.charAt(0));
 				
+				Glyph glyph = new Glyph(key, metrics, j, i);
 				
-				// TODO set uvmap
-				int u1, v1, u2, v2, u3, v3, u4, v4;
+				g.drawString(key, j*32+((32-glyph.WIDTH)/2), i*32 + metrics.getMaxAscent()+metrics.getLeading());
 				
-				u1 = u4 = j * 64;
-				v1 = v2 = i * 64;
-				u2 = u3 = j * 64 + charWidth + 4;
-				v3 = v4 = i * 64 + 64;
-				
-				g.drawString(key, j*64+2, i*64 + metrics.getMaxAscent()+metrics.getLeading()+2);
-				g.drawLine(u1, v1, u2, v2);
-				g.drawLine(u2, v2, u3, v3);
-				g.drawLine(u3, v3, u4, v4);
-				g.drawLine(u4, v4, u1, v1);
-				
-				
-				UVMap4 uvMap = new UVMap4(u1/1024f, v1/1024f, u2/1024f, v2/1024f, u3/1024f, v3/1024f, u4/1024f, v4/1024f);
-				
-				chars.put(key, uvMap);
+				chars.put(key, glyph);
 				
 			}
 			
@@ -114,6 +98,28 @@ public class FontMap {
 			GL11.glTexCoord2f(0, 1);
 			GL11.glVertex2i(0, DIMENSION);
 		GL11.glEnd();
+	}
+	
+	public void drawChar(int x, int y ,String character, int fontSize, Color4f color){
+		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
+		
+		Glyph glyph = chars.get(character);
+		
+		int fontWidth =  (int) (fontSize*(glyph.WIDTH/32f));
+		
+		GL11.glBegin(GL11.GL_QUADS);
+			GL11.glColor4f(color.R,color.G,color.B,color.A);
+			GL11.glTexCoord2f(glyph.UV.U[0], glyph.UV.V[0]);
+			GL11.glVertex2i(x, y);
+			GL11.glTexCoord2f(glyph.UV.U[1], glyph.UV.V[1]);
+			GL11.glVertex2i(x+fontWidth, y);
+			GL11.glTexCoord2f(glyph.UV.U[2], glyph.UV.V[2]);
+			GL11.glVertex2i(x+fontWidth, y+fontSize);
+			GL11.glTexCoord2f(glyph.UV.U[3], glyph.UV.V[3]);
+			GL11.glVertex2i(x, y+fontSize);
+		GL11.glEnd();
+		
 	}
 	
 	public void destroy() {
