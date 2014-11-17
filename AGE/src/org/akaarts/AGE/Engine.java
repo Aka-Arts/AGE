@@ -64,26 +64,6 @@ public class Engine {
 	}
 	
 	/**
-	 * Sets the openGL space up
-	 */
-	private static void setupGL() {
-		
-		GL11.glEnable(GL11.GL_TEXTURE_2D); 
-		// black clear color
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
-        
-        // enable alpha blending
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        
-        // set the view port
-        GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		
-		Console.info("Maximum texture size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
-		
-	}
-	/**
 	 * Sets the Display, title and icons up
 	 */
 	private static void setup(){
@@ -124,21 +104,25 @@ public class Engine {
 		container.setText(" Hallo Welt!",60);
 		
 	}
-	
 	/**
-	 * Stops engine and cleans up
+	 * Sets the openGL space up
 	 */
-	private static void stop() {
-		Console.info("Stopping AGE...");		
+	private static void setupGL() {
 		
-		// destroy the hud
-		Hud.destroy();
+		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+		// black clear color
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
+        
+        // enable alpha blending
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        
+        // set the view port
+        GL11.glViewport(0,0,Display.getWidth(),Display.getHeight());
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
-		FontManager.destroy();
+		Console.info("Maximum texture size: "+GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE));
 		
-		// destroy the display
-		Display.destroy();
-		Console.info("Bye!");
 	}
 	
 	/**
@@ -173,7 +157,7 @@ public class Engine {
 			//draw hud
 			Hud.draw();
 			
-			FontManager.getFont("DEFAULT").drawChar(60, 60, "A", 53, new Color4f(1,1,1,1));;
+			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is the default font!", 64, new Color4f(1,1,1,1));;
 			
 			// update the display
 			Display.update();
@@ -189,6 +173,23 @@ public class Engine {
 		Console.info("Leaving loop...");
 	}
 	
+	
+	/**
+	 * Stops engine and cleans up
+	 */
+	private static void stop() {
+		Console.info("Stopping AGE...");		
+		
+		// destroy the hud
+		Hud.destroy();
+		
+		FontManager.destroy();
+		
+		// destroy the display
+		Display.destroy();
+		Console.info("Bye!");
+	}
+	
 
 	public static void checkGLError() {
 		int errorCode = GL11.glGetError();
@@ -197,6 +198,7 @@ public class Engine {
 			Console.error("GL Error: "+errorCode+" / "+GLU.gluErrorString(errorCode));
 		}
 	}
+	
 	/**
 	 * get the delta since the last frame
 	 * @return - the delta in milliseconds

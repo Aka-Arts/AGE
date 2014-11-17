@@ -106,6 +106,10 @@ public class FontMap {
 		
 		Glyph glyph = chars.get(character);
 		
+		if(glyph==null){
+			glyph = chars.get("?");
+		}
+		
 		int fontWidth =  (int) (fontSize*(glyph.WIDTH/32f));
 		
 		GL11.glBegin(GL11.GL_QUADS);
@@ -120,6 +124,27 @@ public class FontMap {
 			GL11.glVertex2i(x, y+fontSize);
 		GL11.glEnd();
 		
+	}
+	
+	public void drawString(int x, int y ,String text, int fontSize, Color4f color){
+		
+		int xOffset = 0;
+		String currentChar = "";
+		
+		for(int i = 0; i < text.length() ; i++ ){
+			
+			currentChar = text.substring(i, i+1);
+			
+			drawChar(x + xOffset, y, currentChar, fontSize, color);
+			
+			Glyph glyph = chars.get(currentChar);
+			
+			if(glyph==null){
+				glyph = chars.get("?");
+			}
+			
+			xOffset += (glyph.WIDTH/32f)*fontSize;
+		}
 	}
 	
 	public void destroy() {
