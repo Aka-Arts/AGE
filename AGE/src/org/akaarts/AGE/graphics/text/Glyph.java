@@ -22,12 +22,21 @@ public class Glyph {
 		// TODO set uvmap
 		int u1, v1, u2, v2, u3, v3, u4, v4;
 		
-		u1 = u4 = mapX * 32 + (32-this.WIDTH)/2;
-		v1 = v2 = mapY * 32;
-		u2 = u3 = mapX * 32 + this.WIDTH + (32-this.WIDTH)/2;
-		v3 = v4 = mapY * 32 + 32;
+		u1 = u4 = mapX * FontMap.CHARSIZE + (FontMap.CHARSIZE-this.WIDTH)/2;
+		v1 = v2 = mapY * FontMap.CHARSIZE;
+		u2 = u3 = mapX * FontMap.CHARSIZE + this.WIDTH + (FontMap.CHARSIZE-this.WIDTH)/2;
+		v3 = v4 = mapY * FontMap.CHARSIZE + FontMap.CHARSIZE;
 		
-		this.UV = new UVMap4(u1/512f, v1/512f, u2/512f, v2/512f, u3/512f, v3/512f, u4/512f, v4/512f);
+		this.UV = new UVMap4(
+				u1/(float)FontMap.DIMENSION, 
+				v1/(float)FontMap.DIMENSION, 
+				u2/(float)FontMap.DIMENSION,
+				v2/(float)FontMap.DIMENSION,
+				u3/(float)FontMap.DIMENSION, 
+				v3/(float)FontMap.DIMENSION, 
+				u4/(float)FontMap.DIMENSION, 
+				v4/(float)FontMap.DIMENSION
+				);
 		
 	}
 

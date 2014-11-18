@@ -15,11 +15,11 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-public class HudElement implements InputListener{
+public class GUIElement implements InputListener{
 
-	private static HudElement root = new HudElement();
+	private static GUIElement root = new GUIElement();
 	
-	private HudElement parent;
+	private GUIElement parent;
 	
 	private int width,height;
 	
@@ -45,7 +45,7 @@ public class HudElement implements InputListener{
 	
 	public final boolean ISROOT;
 	
-	private ArrayList<HudElement> children = new ArrayList<HudElement>();
+	private ArrayList<GUIElement> children = new ArrayList<GUIElement>();
 	
 	public static final int ORIGIN_CENTER = 0,
 							ORIGIN_TOP = 1, 
@@ -63,7 +63,7 @@ public class HudElement implements InputListener{
 	 * Constructor only for the root element
 	 * Setting all default styles
 	 */
-	private HudElement() {
+	private GUIElement() {
 		
 		this.ISROOT = true;
 		
@@ -79,7 +79,7 @@ public class HudElement implements InputListener{
 	 * Public constructor for all basic hudElements. after construction, it adds itself to the children of the parent
 	 * @param parent - the parent hudElement
 	 */
-	public HudElement(HudElement parent) {
+	public GUIElement(GUIElement parent) {
 		
 		this.ISROOT = false;
 		
@@ -164,7 +164,7 @@ public class HudElement implements InputListener{
 		}
 		
 		//draw all children
-		for(HudElement child:this.children) {
+		for(GUIElement child:this.children) {
 			child.draw();
 		}
 	}
@@ -179,10 +179,10 @@ public class HudElement implements InputListener{
 			
 			// update x position relative to parent			switch(this.originX) {
 			switch(this.originX) {
-			case HudElement.ORIGIN_CENTER:
+			case GUIElement.ORIGIN_CENTER:
 				this.positionX = ((this.parent.width/2+this.relativeX)-this.width/2)+this.parent.positionX;
 				break;
-			case HudElement.ORIGIN_RIGHT:
+			case GUIElement.ORIGIN_RIGHT:
 				this.positionX = (this.parent.width-(this.relativeX+this.width))+this.parent.positionX;
 				break;
 			default:
@@ -192,10 +192,10 @@ public class HudElement implements InputListener{
 			
 			// update y position relative to parent
 			switch(this.originY) {
-			case HudElement.ORIGIN_CENTER:
+			case GUIElement.ORIGIN_CENTER:
 				this.positionY = ((this.parent.height/2+this.relativeY)-this.height/2)+this.parent.positionY;
 				break;
-			case HudElement.ORIGIN_BOTTOM:
+			case GUIElement.ORIGIN_BOTTOM:
 				this.positionY = (this.parent.height-(this.relativeY+this.height))+this.parent.positionY;
 				break;
 			default:
@@ -217,7 +217,7 @@ public class HudElement implements InputListener{
 				
 		//update all children
 		
-		for(HudElement child:this.children){
+		for(GUIElement child:this.children){
 			child.update();
 		}
 		
@@ -227,7 +227,7 @@ public class HudElement implements InputListener{
 	 * returns the unique root
 	 * @return - always the same root
 	 */
-	public static HudElement getRoot() {
+	public static GUIElement getRoot() {
 		return root;
 	}
 	
@@ -464,7 +464,7 @@ public class HudElement implements InputListener{
 		if(this.text!=null) {
 			this.text.destroy();
 		}
-		for(HudElement child:children){
+		for(GUIElement child:children){
 			child.destroy();
 		}
 	}

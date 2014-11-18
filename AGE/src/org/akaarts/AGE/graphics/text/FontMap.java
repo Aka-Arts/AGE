@@ -17,7 +17,8 @@ public class FontMap {
 	
 	private LinkedHashMap<String,Glyph> chars = new LinkedHashMap<String,Glyph>();
 	
-	private final int DIMENSION = 512;
+	public static final int DIMENSION = 1024;
+	public static final int CHARSIZE = DIMENSION/16;
 	
 	public boolean usesAA = false;
 	
@@ -37,7 +38,7 @@ public class FontMap {
 		
 		int fontSizePx;
 		
-		int fontSizePt = 35;
+		int fontSizePt = CHARSIZE+3;
 		
 		Font tmpFont;
 		FontMetrics metrics;
@@ -51,7 +52,7 @@ public class FontMap {
 			
 			fontSizePt--;
 			
-		}while(fontSizePx > 32);
+		}while(fontSizePx > CHARSIZE);
 		
 
 		g.setColor(java.awt.Color.WHITE);
@@ -70,7 +71,7 @@ public class FontMap {
 				
 				Glyph glyph = new Glyph(key, metrics, j, i);
 				
-				g.drawString(key, j*32+((32-glyph.WIDTH)/2), i*32 + metrics.getMaxAscent()+metrics.getLeading());
+				g.drawString(key, j*CHARSIZE+((CHARSIZE-glyph.WIDTH)/2), i*CHARSIZE + metrics.getMaxAscent()+metrics.getLeading());
 				
 				chars.put(key, glyph);
 				
@@ -110,7 +111,7 @@ public class FontMap {
 			glyph = chars.get("?");
 		}
 		
-		int fontWidth =  (int) (fontSize*(glyph.WIDTH/32f));
+		int fontWidth =  (int) (fontSize*(glyph.WIDTH/(float)CHARSIZE));
 		
 		GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor4f(color.R,color.G,color.B,color.A);
@@ -143,7 +144,7 @@ public class FontMap {
 				glyph = chars.get("?");
 			}
 			
-			xOffset += (glyph.WIDTH/32f)*fontSize;
+			xOffset += (glyph.WIDTH/(float)CHARSIZE)*fontSize;
 		}
 	}
 	

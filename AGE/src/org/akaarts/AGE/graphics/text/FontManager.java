@@ -18,7 +18,7 @@ public class FontManager {
 	private FontManager() {
 		
 		try {
-			this.fonts.put("DEFAULT", new FontMap(Font.createFont(Font.PLAIN, FontManager.class.getResourceAsStream(STDFONT)),false));
+			this.fonts.put("DEFAULT", new FontMap(Font.createFont(Font.PLAIN, FontManager.class.getResourceAsStream(STDFONT)),true));
 		} catch (FontFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

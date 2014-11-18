@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Color4f;
-import org.akaarts.AGE.graphics.gui.Hud;
-import org.akaarts.AGE.graphics.gui.HudElement;
+import org.akaarts.AGE.graphics.gui.GUI;
+import org.akaarts.AGE.graphics.gui.GUIElement;
 import org.akaarts.AGE.graphics.gui.TextElement;
 import org.akaarts.AGE.graphics.text.FontManager;
 import org.akaarts.AGE.graphics.text.FontMap;
@@ -97,8 +97,8 @@ public class Engine {
 		
 		FontManager.addFont("C", Font.decode("IMPACT"));
 		
-		HudElement container = new HudElement(Hud.ROOT);
-		container.setPositioning(0, 0, HudElement.ORIGIN_CENTER, HudElement.ORIGIN_CENTER);
+		GUIElement container = new GUIElement(GUI.ROOT);
+		container.setPositioning(0, 0, GUIElement.ORIGIN_CENTER, GUIElement.ORIGIN_CENTER);
 		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
 		container.setText(" Hallo Welt!",60);
@@ -154,10 +154,10 @@ public class Engine {
 			//execute all queued commands
 			Console.executeQueue();
 			
-			//draw hud
-			Hud.draw();
+			//draw GUI
+			GUI.draw();
 			
-			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is the default font!", 64, new Color4f(1,1,1,1));;
+			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is the default font!", 32, new Color4f(1,1,1,1));;
 			
 			// update the display
 			Display.update();
@@ -181,7 +181,7 @@ public class Engine {
 		Console.info("Stopping AGE...");		
 		
 		// destroy the hud
-		Hud.destroy();
+		GUI.destroy();
 		
 		FontManager.destroy();
 		

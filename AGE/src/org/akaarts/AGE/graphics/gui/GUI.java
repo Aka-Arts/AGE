@@ -4,9 +4,9 @@ import org.akaarts.AGE.CLI.Console;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
-public class Hud {
+public class GUI {
 	
-	 public static final HudElement ROOT = HudElement.getRoot();
+	 public static final GUIElement ROOT = GUIElement.getRoot();
 	 
 	 public static void update() {
 		 
