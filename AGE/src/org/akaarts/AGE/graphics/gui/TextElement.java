@@ -14,17 +14,20 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
+import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.Texture2D;
+import org.akaarts.AGE.graphics.text.FontManager;
+import org.akaarts.AGE.graphics.text.FontMap;
 import org.lwjgl.opengl.GL11;
 
 public class TextElement {
 
-	private Font font;
+	private FontMap font;
 	private int width, height, x, y,texDimension;
-	private Texture2D texture;
 	private String text;
 	private int style;
 	private int size;
+	private Color4f color;
 
 	public static final String STDFONT = "/assets/defaults/font.ttf";
 	public static final int STDSIZE = 32;
@@ -34,14 +37,10 @@ public class TextElement {
 		this.x = x;
 		this.y = y;
 		this.text = "";
-		try {
-			this.font = Font.createFont(Font.TRUETYPE_FONT, Font.class.getResourceAsStream(STDFONT));
-		} catch (FontFormatException | IOException e) {
-			Console.error("could not load default font file...!?");
-			e.printStackTrace();
-		}
-		this.size = 12;
+		this.font = FontManager.getFont("DEFAULT");
+		this.size = STDSIZE;
 		this.style = Font.PLAIN;
+		this.color = new Color4f(1,1,1,1);
 
 	}
 	
@@ -72,64 +71,37 @@ public class TextElement {
 		this.size = size;
 	}
 
-	public void setFont(String path) {
-		try {
-			this.font = Font.createFont(Font.TRUETYPE_FONT, Font.class.getResourceAsStream(path));
-		}catch(FontFormatException | IOException e) {
-			Console.warning("Could not load font: "+path);
-			try {
-				this.font = Font.createFont(Font.TRUETYPE_FONT, Font.class.getResourceAsStream(STDFONT));
-			} catch (FontFormatException | IOException e2) {
-				Console.error("could not load default font file...!?");
-				e2.printStackTrace();
-				return;
-			}
-		}
+	public void setFont(FontMap font) {
+		this.font = font;
 	}
 
-	public void update() {
-		if(this.texture!=null) {
-			this.texture.destroy();
-		}
-		if(this.text == null ||this.text.isEmpty()) {
-			return;
-		}
-		Font tmpFont = font.deriveFont(this.style,this.size);		
-		BufferedImage img = new BufferedImage(this.texDimension, this.texDimension, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = (Graphics2D)img.getGraphics();
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		FontMetrics metrics = g.getFontMetrics(tmpFont);
-		g.setColor(Color.WHITE);
-		g.setFont(tmpFont);
-		g.drawString(text, 0, metrics.getMaxAscent());
-		
-		this.texture = Texture2D.loadTexture2d(img, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR, false);
-	}
+//	public void update() {
+//		if(this.texture!=null) {
+//			this.texture.destroy();
+//		}
+//		if(this.text == null ||this.text.isEmpty()) {
+//			return;
+//		}
+//		Font tmpFont = font.deriveFont(this.style,this.size);		
+//		BufferedImage img = new BufferedImage(this.texDimension, this.texDimension, BufferedImage.TYPE_INT_ARGB);
+//		Graphics2D g = (Graphics2D)img.getGraphics();
+//		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+//		FontMetrics metrics = g.getFontMetrics(tmpFont);
+//		g.setColor(Color.WHITE);
+//		g.setFont(tmpFont);
+//		g.drawString(text, 0, metrics.getMaxAscent());
+//		
+//		this.texture = Texture2D.loadTexture2d(img, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR, false);
+//	}
 	
 	public void draw(float parentAlpha) {
 		
-		if(this.texture == null) {
+		if(this.text == null || this.text.isEmpty()) {
 			return;
 			// nothing to draw here!
 		}
 		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D,this.texture.ID);
-		
-		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor4f(1,1,1,(1/255f)*parentAlpha);
-			GL11.glTexCoord2f(0, 0);
-			GL11.glVertex2i(this.x, this.y);
-			GL11.glTexCoord2f((1/(float)this.texDimension)*this.width, 0);
-			GL11.glVertex2i(this.x+this.width, this.y);
-			GL11.glTexCoord2f((1/(float)this.texDimension)*this.width, (1/(float)this.texDimension)*this.height);
-			GL11.glVertex2i(this.x+this.width, this.y+this.height);
-			GL11.glTexCoord2f(0, (1/(float)this.texDimension)*this.height);
-			GL11.glVertex2i(this.x, this.y+this.height);
-		GL11.glEnd();
-	}
-	
-	public void destroy() {
-		this.texture.destroy();
+		this.font.drawString(this.x, this.y, this.text, this.size, this.color);
 	}
 
 }

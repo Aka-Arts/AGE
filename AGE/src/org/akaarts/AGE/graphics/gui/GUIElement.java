@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Texture2D;
+import org.akaarts.AGE.graphics.text.FontManager;
 import org.akaarts.AGE.input.InputHandler;
 import org.akaarts.AGE.input.InputListener;
 import org.akaarts.AGE.utils.UVMap4;
@@ -335,7 +336,7 @@ public class GUIElement implements InputListener{
 	
 	/**
 	 * Sets a new or default color for this element (default is white)
-	 * @param color - new color
+	 * @param color - new color or null for default
 	 */
 	public void setBackgroundColor(Color color){
 		if(color!=null){
@@ -427,25 +428,29 @@ public class GUIElement implements InputListener{
 		}
 	}
 	
+	/**
+	 * Sets the element's text with default font, size and style
+	 * @param text - the new text or null for none
+	 */
 	public void setText(String text) {
-		this.setText(text, TextElement.STDFONT,TextElement.STDSIZE, Font.PLAIN);
+		this.setText(text, "DEFAULT",TextElement.STDSIZE, Font.PLAIN);
 	}
 	
 	public void setText(String text, int size) {
-		this.setText(text, TextElement.STDFONT, size, Font.PLAIN);
+		this.setText(text, "DEFAULT", size, Font.PLAIN);
 	}
 	
-	public void setText(String text, String fontPath, int fontsize, int fontStyle) {
-		if(text==null) {
+	public void setText(String text, String fontName, int fontSize, int fontStyle) {
+		if(text==null||text.isEmpty()) {
 			this.text = null;
 			return;
 		}
 		this.text = new TextElement(this.positionX, this.positionY, this.width, this.height);
 		this.text.setText(text);
-		this.text.setFont(fontPath);
-		this.text.setSize(fontsize);
+		this.text.setFont(FontManager.getFont(fontName));
+		this.text.setSize(fontSize);
 		this.text.setSytle(fontStyle);
-		this.text.update();
+//		this.text.update();
 	}
 	
 	/**
@@ -460,9 +465,6 @@ public class GUIElement implements InputListener{
 		}
 		if(this.textureHover!=null) {
 			this.textureHover.destroy();
-		}
-		if(this.text!=null) {
-			this.text.destroy();
 		}
 		for(GUIElement child:children){
 			child.destroy();

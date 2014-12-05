@@ -142,7 +142,7 @@ public class Engine {
 			//show FPS in title
 			if(showSysInf){
 				if(getDelta() <= 0){
-					setTitle("FPS: 1000");
+					setTitle("FPS: inf");
 				} else {
 					setTitle("FPS: "+1000/getDelta());
 				}
