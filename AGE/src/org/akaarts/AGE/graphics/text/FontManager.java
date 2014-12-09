@@ -7,6 +7,11 @@ import java.util.HashMap;
 
 import org.akaarts.AGE.CLI.Console;
 
+/**
+ * A class for managing fonts for AGE
+ * @author Luca Egli
+ *
+ */
 public class FontManager {
 	
 	private HashMap<String,FontMap> fonts = new HashMap<String, FontMap>();
@@ -57,8 +62,20 @@ public class FontManager {
 		SELF.fonts.remove(name);
 	}
 	
+	/**
+	 * Returns a FontMap of  the named font or the default if no font by this name was found
+	 * @param name - name of the font
+	 * @return the named or the default font
+	 */
 	public static FontMap getFont(String name){
-		return SELF.fonts.get(name);
+		
+		FontMap font = SELF.fonts.get(name);
+		
+		if(font == null){
+			font = SELF.fonts.get("DEFAULT");
+		}
+		
+		return font;
 	}
 	
 	/**

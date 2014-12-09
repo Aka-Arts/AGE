@@ -117,6 +117,16 @@ public class Texture2D {
 		return Texture2D.loadTexture(path, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_NEAREST, GL11.GL_NEAREST, false);
 	}
 	
+	/**
+	 * Advanced method for texture loading.
+	 * @param img - image as BufferImage
+	 * @param wrapU - GL wrapping constant
+	 * @param wrapV - GL wrapping constant
+	 * @param magFilter - GL magnification constant
+	 * @param minFilter - GL minimizing constant
+	 * @param useMipmaps - If to use mipmaps
+	 * @return A texture2D object
+	 */
 	public static Texture2D loadTexture2d(BufferedImage img, int wrapU, int wrapV, int magFilter, int minFilter, boolean useMipmaps) {
 		int[] pixels = new int[img.getWidth() * img.getHeight()];
         img.getRGB(0, 0, img.getWidth(), img.getHeight(), pixels, 0, img.getWidth());
@@ -148,12 +158,19 @@ public class Texture2D {
         return new Texture2D(img.getWidth(), img.getHeight(), buffer, wrapU, wrapV, minFilter, magFilter, useMipmaps);
 	}
 	
+	/**
+	 * Disposing method
+	 */
 	public void destroy() {
 		GL11.glDeleteTextures(ID);
 		this.isDestroyed = true;
 		Console.info("Released a texture");
 	}
 	
+	/**
+	 * Method for checking object state
+	 * @return True if already disposed
+	 */
 	public boolean isDestroyed() {
 		return this.isDestroyed;
 	}

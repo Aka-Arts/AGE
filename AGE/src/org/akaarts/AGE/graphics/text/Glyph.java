@@ -19,7 +19,6 @@ public class Glyph {
 		
 		this.CHAR = character;
 		
-		// TODO set uvmap
 		int u1, v1, u2, v2, u3, v3, u4, v4;
 		
 		u1 = u4 = mapX * FontMap.CHARSIZE + (FontMap.CHARSIZE-this.WIDTH)/2;

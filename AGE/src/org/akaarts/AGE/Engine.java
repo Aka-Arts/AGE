@@ -27,10 +27,15 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
+/**
+ * The main class of the AGE
+ * @author luca.egli
+ *
+ */
 public class Engine {
 	final static int AVG_FPS = 120;
-	final static int DEF_WIDTH = 1440;
-	final static int DEF_HEIGHT = 800;
+	final static int DEF_WIDTH = 1280;
+	final static int DEF_HEIGHT = 720;
 	final static String LAUNCHER_TITLE = "AGE - ";
 	
 	static boolean showSysInf = true;
@@ -42,6 +47,7 @@ public class Engine {
 	private static boolean  closeRequested = false;
 
 	private Engine() {}
+	
 	/**
 	 * Starts the engine and enters loop
 	 */
@@ -95,17 +101,16 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
-		FontManager.addFont("C", Font.decode("IMPACT"));
-		
 		GUIElement container = new GUIElement(GUI.ROOT);
 		container.setPositioning(0, 0, GUIElement.ORIGIN_CENTER, GUIElement.ORIGIN_CENTER);
 		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
-		container.setText(" Hallo Welt!",60);
+		container.setText("Hallo Welt!",60);
 		
 	}
+	
 	/**
-	 * Sets the openGL space up
+	 * Setup the GL space
 	 */
 	private static void setupGL() {
 		
@@ -157,7 +162,7 @@ public class Engine {
 			//draw GUI
 			GUI.draw();
 			
-			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is the default font!", 32, new Color4f(1,1,1,1));;
+			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is \r\n the default font!", 32, new Color4f(1,1,1,1));;
 			
 			// update the display
 			Display.update();
@@ -190,7 +195,9 @@ public class Engine {
 		Console.info("Bye!");
 	}
 	
-
+	/**
+	 * Checks for a GL Error and outputs it to the console
+	 */
 	public static void checkGLError() {
 		int errorCode = GL11.glGetError();
 		
@@ -336,6 +343,20 @@ public class Engine {
 		});
 		
 		return modes;
+	}
+	
+	/**
+	 * Shows a message dialog and forcefully exits afterwards
+	 * @param message - message to show
+	 */
+	public static void crashGracefully(String message){
+		String additional = 
+				"\r\n" +
+				"\r\n" +
+				"We're sorry, but please inform us of the previous error.";
+		Sys.alert("Some gears totally broke with the following message:", message + additional);
+		
+		System.exit(666);
 	}
 	
 }

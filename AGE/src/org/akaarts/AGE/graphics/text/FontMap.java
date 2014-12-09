@@ -7,10 +7,16 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
 
+import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.Texture2D;
 import org.lwjgl.opengl.GL11;
 
+/**
+ * Class for holding a map of characters of a specific font
+ * @author Luca Egli
+ *
+ */
 public class FontMap {
 	
 	private Texture2D texture;
@@ -22,8 +28,11 @@ public class FontMap {
 	
 	public boolean usesAA = false;
 	
-	// TODO javadoc !
-	
+	/**
+	 * Creates an object, which holds a chartable (Latin) of the given font
+	 * @param font - the font to use
+	 * @param useAA - if to enable anti aliasing
+	 */
 	public FontMap(Font font, boolean useAA) {
 		
 		initChars();
@@ -84,6 +93,9 @@ public class FontMap {
 		
 	}
 	
+	/**
+	 * Test method for drawing the chartable
+	 */
 	public void draw(){
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
@@ -101,13 +113,22 @@ public class FontMap {
 		GL11.glEnd();
 	}
 	
+	/**
+	 * Draws a single character at a specified position on the display
+	 * @param x - position to the left side of the display
+	 * @param y - position to the top of the display
+	 * @param character
+	 * @param fontSize - the font size in pixels
+	 * @param color - color of the font
+	 */
 	public void drawChar(int x, int y ,String character, int fontSize, Color4f color){
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
 		
-		Glyph glyph = chars.get(character);
+		Glyph glyph = chars.get(character.substring(0, 1));
 		
 		if(glyph==null){
+//			Console.warning("Symbol of character '" + character.substring(0, 1) + "' not found in table!");
 			glyph = chars.get("?");
 		}
 		
@@ -127,16 +148,38 @@ public class FontMap {
 		
 	}
 	
+	/**
+	 * Draws the given string at a specified position on the display. Supports line breaks (\r,\n,\r\n)
+	 * @param x - position to the left side of the display
+	 * @param y - position to the top of the display
+	 * @param text - Text to draw
+	 * @param fontSize - the font size in pixels
+	 * @param color - color of the font
+	 */
 	public void drawString(int x, int y ,String text, int fontSize, Color4f color){
 		
 		int xOffset = 0;
+		int yOffset = 0;
 		String currentChar = "";
 		
 		for(int i = 0; i < text.length() ; i++ ){
 			
 			currentChar = text.substring(i, i+1);
 			
-			drawChar(x + xOffset, y, currentChar, fontSize, color);
+			// filter linebreaks
+			if(currentChar.equalsIgnoreCase("\r") || currentChar.equalsIgnoreCase("\n")){
+				
+				// if windows cr & nl
+				if(text.substring(i, i+2).equalsIgnoreCase("\r\n")){
+					i++;
+				}
+				
+				yOffset += fontSize;
+				xOffset = 0;
+				continue;
+			}
+			
+			drawChar(x + xOffset, y + yOffset, currentChar, fontSize, color);
 			
 			Glyph glyph = chars.get(currentChar);
 			
@@ -148,10 +191,16 @@ public class FontMap {
 		}
 	}
 	
+	/**
+	 * Disposes the object
+	 */
 	public void destroy() {
 		this.texture.destroy();
 	}
 	
+	/**
+	 * initializes the chartable
+	 */
 	private void initChars(){
 		
 		if(!chars.isEmpty()) {
