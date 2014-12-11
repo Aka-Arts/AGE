@@ -2,6 +2,7 @@ package org.akaarts.AGE.utils;
 
 import java.util.ArrayList;
 
+@Deprecated
 public class Node {
 	
 	private ArrayList<Node> subNodes = new ArrayList<Node>();
