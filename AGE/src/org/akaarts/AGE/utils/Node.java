@@ -2,35 +2,46 @@ package org.akaarts.AGE.utils;
 
 import java.util.ArrayList;
 
-@Deprecated
 public class Node {
 	
-	private ArrayList<Node> subNodes = new ArrayList<Node>();
-
-	public Node() {
+	private ArrayList<Node> children = new ArrayList<Node>();
+	private Node parent;
+	
+	public Node(){
 		
 	}
-
+	
 	/**
-	 * @return the subNodes
+	 * Default children getter
+	 * @return ArrayList of children
 	 */
-	public ArrayList<Node> getSubNodes() {
-		return subNodes;
-	}
-
-	/**
-	 * @param subNode - the subNode to add
-	 */
-	public void addNode(Node node) {
-		this.subNodes.add(node);
+	public ArrayList<Node> getChildren(){
+		return this.children;
 	}
 	
 	/**
-	 * @param subNode - the subNode to remove
+	 * Default child adder
+	 * @param child - the childnode to add
 	 */
-	public void remNode(Node node) {
-		this.subNodes.remove(node);
+	public void addChild(Node child){
+		this.children.add(child);
+		child.setParent(this);
+	}
+
+	/**
+	 * 
+	 * @param parent
+	 */
+	protected void setParent(Node parent) {
+		this.parent = parent;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public Node getParent(){
+		return this.parent;
+	}
 
 }
