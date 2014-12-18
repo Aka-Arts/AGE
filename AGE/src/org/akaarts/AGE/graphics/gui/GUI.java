@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GUI {
 	
-	 public static final GUIElement ROOT = GUIElement.getRoot();
+	 public static final GUINode ROOT = new GUINode();
 	 
 	 public static void update() {
 		 

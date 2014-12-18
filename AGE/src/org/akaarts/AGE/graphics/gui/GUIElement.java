@@ -18,9 +18,7 @@ import org.lwjgl.opengl.GL13;
 
 public class GUIElement implements InputListener{
 
-	private static GUIElement root = new GUIElement();
-	
-	private GUIElement parent;
+	private GUINode parent;
 	
 	private int width,height;
 	
@@ -40,13 +38,7 @@ public class GUIElement implements InputListener{
 	private Texture2D texture, textureHover, textureActive;
 	private UVMap4 uv, uvHover, uvActive;
 	
-	
-	
 	public final String NOTEX = "/assets/defaults/NOTEX.png";
-	
-	public final boolean ISROOT;
-	
-	private ArrayList<GUIElement> children = new ArrayList<GUIElement>();
 	
 	public static final int ORIGIN_CENTER = 0,
 							ORIGIN_TOP = 1, 
@@ -61,28 +53,12 @@ public class GUIElement implements InputListener{
 							STATE_LEAVE = 10;
 	
 	/**
-	 * Constructor only for the root element
-	 * Setting all default styles
-	 */
-	private GUIElement() {
-		
-		this.ISROOT = true;
-		
-		this.applyDefaultStyle();
-		
-		this.setBackgroundColor(new Color(1,1,1,0));
-		
-		this.update();
-		
-	}
-	
-	/**
-	 * Public constructor for all basic hudElements. after construction, it adds itself to the children of the parent
-	 * @param parent - the parent hudElement
+	 * Public constructor for all basic hudElements. after construction, it adds itself as element of the parent
+	 * @param parent - the parent GUINode
 	 */
 	public GUIElement(GUIElement parent) {
 		
-		this.ISROOT = false;
+		// TODO no parent parameter
 		
 		this.parent = parent;
 		
