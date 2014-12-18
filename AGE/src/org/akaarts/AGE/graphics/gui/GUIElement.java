@@ -53,22 +53,15 @@ public class GUIElement implements InputListener{
 							STATE_LEAVE = 10;
 	
 	/**
-	 * Public constructor for all basic hudElements. after construction, it adds itself as element of the parent
-	 * @param parent - the parent GUINode
+	 * Public constructor for all basic GUIElements.
 	 */
-	public GUIElement(GUIElement parent) {
-		
-		// TODO no parent parameter
-		
-		this.parent = parent;
+	public GUIElement() {
 		
 		this.applyDefaultStyle();
 		
 		this.inheritStyle();
 		
 		this.update();
-		
-		parent.children.add(this);
 		
 	}
 	
@@ -139,11 +132,7 @@ public class GUIElement implements InputListener{
 		if(this.wasLeft&&this.onLeave!=null){
 			Console.queueCommands(onLeave);
 		}
-		
-		//draw all children
-		for(GUIElement child:this.children) {
-			child.draw();
-		}
+
 	}
 	
 	/**
@@ -152,31 +141,33 @@ public class GUIElement implements InputListener{
 	public void update() {
 
 		//TODO update here...
-		if(!ISROOT) {
+		if(this.parent.getParent()!=null) {
+			
+			GUIElement parentElement = this.parent.getElement()
 			
 			// update x position relative to parent			switch(this.originX) {
 			switch(this.originX) {
 			case GUIElement.ORIGIN_CENTER:
-				this.positionX = ((this.parent.width/2+this.relativeX)-this.width/2)+this.parent.positionX;
+				this.positionX = ((this.parent.getElement().width/2+this.relativeX)-this.width/2)+this.parent.getElement().positionX;
 				break;
 			case GUIElement.ORIGIN_RIGHT:
-				this.positionX = (this.parent.width-(this.relativeX+this.width))+this.parent.positionX;
+				this.positionX = (this.parent.getElement().width-(this.relativeX+this.width))+this.parent.getElement().positionX;
 				break;
 			default:
-				this.positionX = this.relativeX + this.parent.positionX;
+				this.positionX = this.relativeX + this.parent.getElement().positionX;
 				break;
 			}
 			
 			// update y position relative to parent
 			switch(this.originY) {
 			case GUIElement.ORIGIN_CENTER:
-				this.positionY = ((this.parent.height/2+this.relativeY)-this.height/2)+this.parent.positionY;
+				this.positionY = ((this.parent.getElement().height/2+this.relativeY)-this.height/2)+this.parent.getElement().positionY;
 				break;
 			case GUIElement.ORIGIN_BOTTOM:
-				this.positionY = (this.parent.height-(this.relativeY+this.height))+this.parent.positionY;
+				this.positionY = (this.parent.getElement().height-(this.relativeY+this.height))+this.parent.getElement().positionY;
 				break;
 			default:
-				this.positionY = this.relativeY + this.parent.positionY;
+				this.positionY = this.relativeY + this.parent.getElement().positionY;
 				break;
 			}
 			
@@ -191,21 +182,7 @@ public class GUIElement implements InputListener{
 		}
 		
 		this.aabb = new Rectangle(this.positionX,this.positionY,this.width,this.height);
-				
-		//update all children
 		
-		for(GUIElement child:this.children){
-			child.update();
-		}
-		
-	}
-
-	/**
-	 * returns the unique root
-	 * @return - always the same root
-	 */
-	public static GUIElement getRoot() {
-		return root;
 	}
 	
 	/**
@@ -233,7 +210,7 @@ public class GUIElement implements InputListener{
 	 * @param h - new height
 	 */
 	public void setDimensions(int w, int h){
-		if(this.ISROOT){
+		if(this.parent.getParent()==null){
 			return;
 		}
 		this.width = w;
@@ -248,10 +225,10 @@ public class GUIElement implements InputListener{
 	 * @param hPercent - percent of parents width (0.00 to 1.00)
 	 */
 	public void setDimensions(float wPercent, float hPercent){
-		if(this.ISROOT){
+		if(this.parent.getParent()==null){
 			return;
 		}
-		this.width = (int) Math.floor(this.parent.width*wPercent);
+		this.width = (int) Math.floor(this.parent.getElement().width*wPercent);
 		this.height = (int) Math.floor(this.parent.width*wPercent);
 		
 		this.update();
