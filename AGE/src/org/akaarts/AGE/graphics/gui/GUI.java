@@ -21,8 +21,6 @@ public class GUI {
 		 GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
 		 GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		 
-
-		 
 		 ROOT.draw();
 	 }
 	 

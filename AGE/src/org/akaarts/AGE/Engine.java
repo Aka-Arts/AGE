@@ -15,6 +15,7 @@ import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.gui.GUI;
 import org.akaarts.AGE.graphics.gui.GUIElement;
+import org.akaarts.AGE.graphics.gui.GUINode;
 import org.akaarts.AGE.graphics.gui.TextElement;
 import org.akaarts.AGE.graphics.text.FontManager;
 import org.akaarts.AGE.graphics.text.FontMap;
@@ -101,11 +102,12 @@ public class Engine {
 			e.printStackTrace();
 		}
 		
-		GUIElement container = new GUIElement(GUI.ROOT);
-		container.setPositioning(0, 0, GUIElement.ORIGIN_CENTER, GUIElement.ORIGIN_CENTER);
+		GUINode container = new GUINode();
+		container.setPositioning(0, 0, GUINode.ORIGIN_CENTER, GUINode.ORIGIN_CENTER);
 		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
 		container.setText("Hallo Welt!",60);
+		GUI.ROOT.addChild(container);
 		
 	}
 	
@@ -162,13 +164,12 @@ public class Engine {
 			//draw GUI
 			GUI.draw();
 			
-			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is \r\n the default font!", 32, new Color4f(1,1,1,1));;
-			
-			// update the display
-			Display.update();
+			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is \r\nthe default font!", 32, new Color4f(1,1,1,1));
 			
 			checkGLError();
 			
+			// update the display
+			Display.update();			
 			
 			// sync to the preferred FPS
 			Display.sync(AVG_FPS);

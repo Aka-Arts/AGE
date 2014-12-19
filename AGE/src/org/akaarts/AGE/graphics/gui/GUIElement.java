@@ -61,7 +61,7 @@ public class GUIElement implements InputListener{
 		
 		this.inheritStyle();
 		
-		this.update();
+//		this.update();
 		
 	}
 	
@@ -138,52 +138,52 @@ public class GUIElement implements InputListener{
 	/**
 	 * Recalculates the element and it's children
 	 */
-	public void update() {
-
-		//TODO update here...
-		if(this.parent.getParent()!=null) {
-			
-			GUIElement parentElement = this.parent.getElement()
-			
-			// update x position relative to parent			switch(this.originX) {
-			switch(this.originX) {
-			case GUIElement.ORIGIN_CENTER:
-				this.positionX = ((this.parent.getElement().width/2+this.relativeX)-this.width/2)+this.parent.getElement().positionX;
-				break;
-			case GUIElement.ORIGIN_RIGHT:
-				this.positionX = (this.parent.getElement().width-(this.relativeX+this.width))+this.parent.getElement().positionX;
-				break;
-			default:
-				this.positionX = this.relativeX + this.parent.getElement().positionX;
-				break;
-			}
-			
-			// update y position relative to parent
-			switch(this.originY) {
-			case GUIElement.ORIGIN_CENTER:
-				this.positionY = ((this.parent.getElement().height/2+this.relativeY)-this.height/2)+this.parent.getElement().positionY;
-				break;
-			case GUIElement.ORIGIN_BOTTOM:
-				this.positionY = (this.parent.getElement().height-(this.relativeY+this.height))+this.parent.getElement().positionY;
-				break;
-			default:
-				this.positionY = this.relativeY + this.parent.getElement().positionY;
-				break;
-			}
-			
-		}else {
-			//only root
-			this.width = Display.getWidth();
-			this.height = Display.getHeight();
-			
-			this.positionX = 0;
-			this.positionY = 0;
-			
-		}
-		
-		this.aabb = new Rectangle(this.positionX,this.positionY,this.width,this.height);
-		
-	}
+//	public void update() {
+//
+//		//TODO update here...
+//		if(this.parent.getParent()!=null) {
+//			
+//			GUIElement parentElement = this.parent;
+//			
+//			// update x position relative to parent			switch(this.originX) {
+//			switch(this.originX) {
+//			case GUIElement.ORIGIN_CENTER:
+//				this.positionX = ((this.parent.width/2+this.relativeX)-this.width/2)+this.parent.positionX;
+//				break;
+//			case GUIElement.ORIGIN_RIGHT:
+//				this.positionX = (this.parent.width-(this.relativeX+this.width))+this.parent.positionX;
+//				break;
+//			default:
+//				this.positionX = this.relativeX + this.parent.positionX;
+//				break;
+//			}
+//			
+//			// update y position relative to parent
+//			switch(this.originY) {
+//			case GUIElement.ORIGIN_CENTER:
+//				this.positionY = ((this.parent.height/2+this.relativeY)-this.height/2)+this.parent.positionY;
+//				break;
+//			case GUIElement.ORIGIN_BOTTOM:
+//				this.positionY = (this.parent.height-(this.relativeY+this.height))+this.parent.positionY;
+//				break;
+//			default:
+//				this.positionY = this.relativeY + this.parent.positionY;
+//				break;
+//			}
+//			
+//		}else {
+//			//only root
+//			this.width = Display.getWidth();
+//			this.height = Display.getHeight();
+//			
+//			this.positionX = 0;
+//			this.positionY = 0;
+//			
+//		}
+//		
+//		this.aabb = new Rectangle(this.positionX,this.positionY,this.width,this.height);
+//		
+//	}
 	
 	/**
 	 * applies all the default expressions
@@ -216,7 +216,7 @@ public class GUIElement implements InputListener{
 		this.width = w;
 		this.height = h;
 		
-		this.update();
+//		this.update();
 	}
 	
 	/**
@@ -228,10 +228,10 @@ public class GUIElement implements InputListener{
 		if(this.parent.getParent()==null){
 			return;
 		}
-		this.width = (int) Math.floor(this.parent.getElement().width*wPercent);
-		this.height = (int) Math.floor(this.parent.width*wPercent);
+//		this.width = (int) Math.floor(this.parent.width*wPercent);
+//		this.height = (int) Math.floor(this.parent.width*wPercent);
 		
-		this.update();
+//		this.update();
 	}
 	
 	/**
@@ -242,16 +242,16 @@ public class GUIElement implements InputListener{
 	 * @param yOrigin - the origin for the y Axis (ORIGIN_TOP,ORIGIN_CENTER,ORIGIN_BOTTOM)
 	 */
 	public void setPositioning(int x, int y, int xOrigin, int yOrigin){
-		if(this.ISROOT){
-			return;
-		}
+//		if(this.ISROOT){
+//			return;
+//		}
 		this.relativeX = x;
 		this.relativeY = y;
 		
 		this.originX = xOrigin;
 		this.originY = yOrigin;
 		
-		this.update();
+//		this.update();
 		
 	}
 	
@@ -418,9 +418,6 @@ public class GUIElement implements InputListener{
 		}
 		if(this.textureHover!=null) {
 			this.textureHover.destroy();
-		}
-		for(GUIElement child:children){
-			child.destroy();
 		}
 	}
 	

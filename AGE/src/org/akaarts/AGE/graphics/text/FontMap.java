@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.Texture2D;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -98,10 +99,16 @@ public class FontMap {
 	 */
 	public void draw(){
 		
+		// switch matrix mode
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
 		
 		GL11.glBegin(GL11.GL_QUADS);
-			GL11.glColor4f(1f,1f,0f,1f);
+			GL11.glColor4f(1f,0f,1f,1f);
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2i(0, 0);
 			GL11.glTexCoord2f(1, 0);
@@ -122,6 +129,12 @@ public class FontMap {
 	 * @param color - color of the font
 	 */
 	public void drawChar(int x, int y ,String character, int fontSize, Color4f color){
+		
+		// switch matrix mode
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
 		
