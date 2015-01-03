@@ -28,5 +28,12 @@ public class GUI {
 		 ROOT.destroy();
 		 Console.info("Hud destroyed");
 	 }
+	 
+//	 private static GUINode rootFactory() {
+//		 
+//		 GUINode root = new GUINode();
+//		 
+//		 return root;
+//	 }
 	
 }

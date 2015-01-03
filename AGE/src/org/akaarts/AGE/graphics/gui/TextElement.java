@@ -44,6 +44,11 @@ public class TextElement {
 
 	}
 	
+	public void setPosition(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	public void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;

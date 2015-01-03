@@ -60,11 +60,12 @@ public class Engine {
 		Engine.setup();
 		Engine.setupGL();
 		
-		//TODO output all display modes, remove later or move to debugging
-		Console.info("Availble DisplayModes:");
-		for(DisplayMode mode:getDisplayModes()){
-			Console.info(mode.getWidth()+"x"+mode.getHeight()+" @ "+mode.getFrequency()+" Hz with "+mode.getBitsPerPixel()+" bpp");
-		}
+//		//TODO output all display modes, remove later or move to debugging
+//		Console.info("Available DisplayModes:");
+//		for(DisplayMode mode:getDisplayModes()){
+//			Console.info(mode.getWidth()+"x"+mode.getHeight()+" @ "+mode.getFrequency()+" Hz with "+mode.getBitsPerPixel()+" bpp");
+//		}
+		
 		// go to the loop and stop after
 		Engine.loop();
 		Engine.stop();		
@@ -81,31 +82,32 @@ public class Engine {
 		try {
 			Display.setDisplayMode(new DisplayMode(DEF_WIDTH, DEF_HEIGHT));
 		} catch (LWJGLException e) {
-			Console.error("Error at setting DisplayMode");
 			e.printStackTrace();
+			Engine.crashGracefully(e.getMessage() + "\r\n^ Error at setting DisplayMode");
 		}
 		
-		//TODO output desktop display mode in console, remove later or move to debugging
-		DisplayMode desktop = Display.getDesktopDisplayMode();
-		Console.info("Current Desktop Resolution: "+desktop.getWidth()+"x"+desktop.getHeight()+" @"+desktop.getFrequency()+" Hz with "+desktop.getBitsPerPixel()+" bits per pixel");
+//		//TODO output desktop display mode in console, remove later or move to debugging
+//		DisplayMode desktop = Display.getDesktopDisplayMode();
+//		Console.info("Current Desktop Resolution: "+desktop.getWidth()+"x"+desktop.getHeight()+" @"+desktop.getFrequency()+" Hz with "+desktop.getBitsPerPixel()+" bits per pixel");
 		
 		// set the initial Title
-		setTitle("AGE - Launcher");
+		Engine.setTitle("AGE - Launcher");
 		// set the initial LOGO
-		setIcons(new String[]{"/assets/AGE_128.png","/assets/AGE_32.png","/assets/AGE_16.png"});
+		Engine.setIcons(new String[]{"/assets/AGE_128.png","/assets/AGE_32.png","/assets/AGE_16.png"});
 		
 		// try to create the Display
 		try {
 			Display.create();
 		} catch (LWJGLException e) {
-			Console.error("Error at creating Display");
 			e.printStackTrace();
+			Engine.crashGracefully(e.getMessage() + "\r\n^ Error at creating Display");
 		}
 		
 		GUINode container = new GUINode();
 		container.setPositioning(0, 0, GUINode.ORIGIN_CENTER, GUINode.ORIGIN_CENTER);
 		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
+		container.setBackgroundColor(new Color4f(1, 1, 1, 1));
 		container.setText("Hallo Welt!",60);
 		GUI.ROOT.addChild(container);
 		
@@ -161,10 +163,10 @@ public class Engine {
 			//execute all queued commands
 			Console.executeQueue();
 			
+			GUI.update();
+			
 			//draw GUI
 			GUI.draw();
-			
-			FontManager.getFont("DEFAULT").drawString(60, 60, "Hello, this is \r\nthe default font!", 32, new Color4f(1,1,1,1));
 			
 			checkGLError();
 			

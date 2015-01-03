@@ -16,12 +16,17 @@ import org.akaarts.AGE.utils.UVMap4;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
-public class GUINode implements NodeStructure,InputListener {
+public class GUINode implements InputListener {
 
 	private GUINode parent;
-	private ArrayList<NodeStructure> children = new ArrayList<NodeStructure>();
+	private ArrayList<GUINode> children = new ArrayList<GUINode>();
 	
-private int width,height;
+	private int effectiveWidth,effectiveHeight;
+	
+	private float widthPercent, heightPercent;
+	private boolean widthIsPercent, heightIsPercent;
+	
+	private boolean isRoot;
 	
 	private int originX,originY;
 	private int positionX,positionY,relativeX,relativeY;
@@ -63,58 +68,47 @@ private int width,height;
 		this.update();
 		
 	}
-	
-	/*
-	 * 
-	 * 
-	 * 
-	 * TODO move all of GUIElement into GUINode, rename TextElement to TextNode
-	 * node is an element (empty by default)
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
 
 	/**
 	 * Draws this.element and all children
 	 */
 	public void draw() {
 
-		if (this.backgroundColor!=null) {
-			
-			if (this.isActive && this.textureActive != null) {
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureActive.ID);
-			} else if (this.isHovered && this.textureHover != null) {
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureHover.ID);
-			} else if (this.texture != null) {
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
-			} else {
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-			}
-			
-			UVMap4 uvMap4 = this.uv;
-			
-			GL11.glBegin(GL11.GL_QUADS);
-			
-			GL11.glColor4f(
-					this.backgroundColor.R,
-					this.backgroundColor.G,
-					this.backgroundColor.B,
-					this.backgroundColor.A
-					);
-			GL11.glTexCoord2f(uvMap4.U[0], uvMap4.V[0]);
-			GL11.glVertex2i(this.positionX, this.positionY);
-			GL11.glTexCoord2f(uvMap4.U[1], uvMap4.V[1]);
-			GL11.glVertex2i(this.positionX + this.width, this.positionY);
-			GL11.glTexCoord2f(uvMap4.U[2], uvMap4.V[2]);
-			GL11.glVertex2i(this.positionX + this.width, this.positionY
-					+ this.height);
-			GL11.glTexCoord2f(uvMap4.U[3], uvMap4.V[3]);
-			GL11.glVertex2i(this.positionX, this.positionY + this.height);
-			
-			GL11.glEnd();
+		if (this.isActive && this.textureActive != null) {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureActive.ID);
+		} else if (this.isHovered && this.textureHover != null) {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureHover.ID);
+		} else if (this.texture != null) {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.ID);
+		} else {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		}
+
+		UVMap4 uvMap4 = this.uv;
+
+		GL11.glBegin(GL11.GL_QUADS);
+
+		GL11.glColor4f(
+				this.backgroundColor.R,
+				this.backgroundColor.G,
+				this.backgroundColor.B,
+				this.backgroundColor.A
+				);
+		
+		GL11.glTexCoord2f(uvMap4.U[0], uvMap4.V[0]);
+		GL11.glVertex2i(this.positionX, this.positionY);
+		
+		GL11.glTexCoord2f(uvMap4.U[1], uvMap4.V[1]);
+		GL11.glVertex2i(this.positionX + this.effectiveWidth, this.positionY);
+		
+		GL11.glTexCoord2f(uvMap4.U[2], uvMap4.V[2]);
+		GL11.glVertex2i(this.positionX + this.effectiveWidth, this.positionY + this.effectiveHeight);
+		
+		GL11.glTexCoord2f(uvMap4.U[3], uvMap4.V[3]);
+		GL11.glVertex2i(this.positionX, this.positionY + this.effectiveHeight);
+
+		GL11.glEnd();
+
 		if(this.text != null) {
 			this.text.draw(this.backgroundColor.A);
 		}
@@ -150,8 +144,8 @@ private int width,height;
 			Console.queueCommands(onLeave);
 		}
 		
-		for (NodeStructure child : this.children) {
-			((GUINode) child).draw();
+		for (GUINode child : this.children) {
+			child.draw();
 		}
 	}
 
@@ -161,49 +155,63 @@ private int width,height;
 	public void update() {
 
 		//TODO update here...
-				if(this.parent!=null) {
-					
-					// update x position relative to parent			switch(this.originX) {
-					switch(this.originX) {
-					case GUIElement.ORIGIN_CENTER:
-						this.positionX = ((this.parent.width/2+this.relativeX)-this.width/2)+this.parent.positionX;
-						break;
-					case GUIElement.ORIGIN_RIGHT:
-						this.positionX = (this.parent.width-(this.relativeX+this.width))+this.parent.positionX;
-						break;
-					default:
-						this.positionX = this.relativeX + this.parent.positionX;
-						break;
-					}
-					
-					// update y position relative to parent
-					switch(this.originY) {
-					case GUIElement.ORIGIN_CENTER:
-						this.positionY = ((this.parent.height/2+this.relativeY)-this.height/2)+this.parent.positionY;
-						break;
-					case GUIElement.ORIGIN_BOTTOM:
-						this.positionY = (this.parent.height-(this.relativeY+this.height))+this.parent.positionY;
-						break;
-					default:
-						this.positionY = this.relativeY + this.parent.positionY;
-						break;
-					}
-					
-				}else {
-					//only root
-					this.width = Display.getWidth();
-					this.height = Display.getHeight();
-					
-					this.positionX = 0;
-					this.positionY = 0;
-					
+		if(this.parent!=null) {
+			if(this.widthIsPercent) {
+				this.effectiveWidth = (int) Math.floor(this.parent.effectiveWidth*this.widthPercent);
+			}
+
+			if(this.heightIsPercent) {
+				this.effectiveHeight = (int) Math.floor(this.parent.effectiveHeight*this.heightPercent);
+			}
+			
+			// update x position relative to parent
+			switch(this.originX) {
+				case GUIElement.ORIGIN_CENTER:
+					this.positionX = ((this.parent.effectiveWidth/2+this.relativeX)-this.effectiveWidth/2)+this.parent.positionX;
+					break;
+				case GUIElement.ORIGIN_RIGHT:
+					this.positionX = (this.parent.effectiveWidth-(this.relativeX+this.effectiveWidth))+this.parent.positionX;
+					break;
+				default:
+					this.positionX = this.relativeX + this.parent.positionX;
+					break;
 				}
+						
+				// update y position relative to parent
+				switch(this.originY) {
+				case GUIElement.ORIGIN_CENTER:
+					this.positionY = ((this.parent.effectiveHeight/2+this.relativeY)-this.effectiveHeight/2)+this.parent.positionY;
+					break;
+				case GUIElement.ORIGIN_BOTTOM:
+					this.positionY = (this.parent.effectiveHeight-(this.relativeY+this.effectiveHeight))+this.parent.positionY;
+					break;
+				default:
+					this.positionY = this.relativeY + this.parent.positionY;
+					break;
+			}
+			
+		}else {
+			if(this.widthIsPercent) {
+				this.effectiveWidth = Display.getWidth();
+			}
+
+			if(this.heightIsPercent) {
+				this.effectiveHeight = Display.getHeight();
+			}
+			
+			this.positionX = 0;
+			this.positionY = 0;
+		}
 				
-				this.aabb = new Rectangle(this.positionX,this.positionY,this.width,this.height);
-				
+			this.aabb = new Rectangle(this.positionX,this.positionY,this.effectiveWidth,this.effectiveHeight);
+			
+			if(this.text!=null) {
+				this.text.setPosition(this.positionX, this.positionY);
+			}
+			
 		
-		for (NodeStructure child : this.children) {
-			((GUINode) child).update();
+		for (GUINode child : this.children) {
+			child.update();
 		}
 	}
 	
@@ -212,9 +220,6 @@ private int width,height;
 	 */
 	private void applyDefaultStyle(){
 		this.setDimensions(1f, 1f);
-		
-		this.originX = ORIGIN_LEFT;
-		this.originY = ORIGIN_TOP;
 		
 		this.setPositioning(0, 0, ORIGIN_LEFT, ORIGIN_TOP);
 		
@@ -228,11 +233,12 @@ private int width,height;
 	 * @param h - new height
 	 */
 	public void setDimensions(int w, int h){
-		if(this.parent==null){
-			return;
-		}
-		this.width = w;
-		this.height = h;
+		
+		this.widthIsPercent = false;
+		this.heightIsPercent = false;
+		
+		this.effectiveWidth = w;
+		this.effectiveHeight = h;
 		
 		this.update();
 	}
@@ -243,12 +249,13 @@ private int width,height;
 	 * @param hPercent - percent of parents width (0.00 to 1.00)
 	 */
 	public void setDimensions(float wPercent, float hPercent){
-		if(this.parent==null){
-			return;
-		}
-		this.width = (int) Math.floor(this.parent.width*wPercent);
-		this.height = (int) Math.floor(this.parent.height*hPercent);
+
+		this.widthIsPercent = true;
+		this.heightIsPercent = true;
 		
+		this.widthPercent = wPercent;
+		this.heightPercent = hPercent;
+			
 		this.update();
 	}
 	
@@ -275,7 +282,7 @@ private int width,height;
 	 * @return - the width in pixels
 	 */
 	public int getWidth() {
-		return this.width;
+		return this.effectiveWidth;
 	}
 	
 	/**
@@ -283,7 +290,7 @@ private int width,height;
 	 * @return - the height in pixels
 	 */
 	public int getHeight() {
-		return this.height;
+		return this.effectiveHeight;
 	}
 	
 	/**
@@ -401,19 +408,19 @@ private int width,height;
 	 * @param text - the new text or null for none
 	 */
 	public void setText(String text) {
-		this.setText(text, "DEFAULT",TextElement.STDSIZE, Font.PLAIN);
+		this.setText(text, TextElement.STDSIZE, Font.PLAIN, "DEFAULT");
 	}
 	
-	public void setText(String text, int size) {
-		this.setText(text, "DEFAULT", size, Font.PLAIN);
+	public void setText(String text, int fontSize) {
+		this.setText(text, fontSize, Font.PLAIN, "DEFAULT");
 	}
 	
-	public void setText(String text, String fontName, int fontSize, int fontStyle) {
+	public void setText(String text, int fontSize, int fontStyle, String fontName) {
 		if(text==null||text.isEmpty()) {
 			this.text = null;
 			return;
 		}
-		this.text = new TextElement(this.positionX, this.positionY, this.width, this.height);
+		this.text = new TextElement(this.positionX, this.positionY, this.effectiveWidth, this.effectiveHeight);
 		this.text.setText(text);
 		this.text.setFont(FontManager.getFont(fontName));
 		this.text.setSize(fontSize);
@@ -433,8 +440,8 @@ private int width,height;
 			this.textureHover.destroy();
 		}
 		
-		for (NodeStructure child : this.children) {
-			((GUINode) child).destroy();
+		for (GUINode child : this.children) {
+			child.destroy();
 		}
 	}
 	
@@ -508,52 +515,71 @@ private int width,height;
 		
 	}
 
-	@Override
-	public ArrayList<NodeStructure> getChildren() {
+	/**
+	 * Returns all child elements as ArrayList
+	 * @return - all childs
+	 */
+	public ArrayList<GUINode> getChildren() {
 		return this.children;
 	}
 
-	@Override
-	public void addChild(NodeStructure child) {
+	/**
+	 * Adds the given child to this.children and sets itself as parent of the child
+	 * @param child - the child to add
+	 */
+	public void addChild(GUINode child) {
 		
-		GUINode formerParent = (GUINode) child.getParent();
+		if(!this.children.contains(child)) {
 		
-		this.children.add(child);
-		if(formerParent!=this&&formerParent!=null){
-			child.getParent().removeChild(child);
+			GUINode formerParent = child.getParent();
+			
+			if(formerParent!=this&&formerParent!=null){
+				child.getParent().removeChild(child);
+			}
+			
+			this.children.add(child);
+			
 			child.setParent(this);
+			
 		}
 		
 	}
-
-	@Override
-	public void removeChild(NodeStructure child) {
+	
+	/**
+	 * Removes the given child from this.children<br>
+	 * Don't forget to destroy unreferenced children, otherwise memLeaks will be created!!
+	 * @param child - the child
+	 */
+	public void removeChild(GUINode child) {
 		this.children.remove(child);
-		
-		/*
-		 * 
-		 * 
-		 * 
-		 * 
-		 * TODO Leak save remove
-		 * 
-		 * 
-		 */
 	};
 
-	@Override
-	public NodeStructure getParent() {
+	/**
+	 * returns the parent of this element
+	 * @return - the parent
+	 */
+	public GUINode getParent() {
 		return this.parent;
 	}
+	
+	/**
+	 * Sets this elements new parent and removes this element from former parents children
+	 * @param parent
+	 */
+	public void setParent(GUINode parent) {
+		
+		if(this.parent!=parent) {
 
-	@Override
-	public void setParent(NodeStructure parent) {
-		parent.addChild(this);
-		if(!parent.getChildren().contains(this)){
-			// TODO ??????
+			if(this.parent!=null){
+				this.parent.removeChild(this);
+			}
+
+			parent.addChild(this);
+			
+			this.parent = parent;
+			
 		}
 		
-		this.parent = (GUINode) parent;
-
 	}
+
 }
