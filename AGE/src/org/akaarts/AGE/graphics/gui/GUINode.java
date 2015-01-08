@@ -371,16 +371,12 @@ public class GUINode implements InputListener {
 	 * @param filter - the GL_filter to use (Nearest or Linear)
 	 * @param uvs - an UVMap4 to use with the selected state
 	 */
-	public void setBackgroundImage(String path, int state, int filter, UVMap4 uvs){
+	public void setBackgroundImage(String path, int state, int minFilter, int magFilter, int wrapU, int wrapV, UVMap4 uvs){
 		
 		Texture2D tmp = null;
 		
-		if(!(filter==GL11.GL_NEAREST||filter==GL11.GL_LINEAR)){
-			filter = GL11.GL_NEAREST;
-		}
-		
 		if(path!=null){
-			tmp = Texture2D.loadTexture2d(path);
+			tmp = Texture2D.loadTexture2d(path, wrapU, wrapV, magFilter, minFilter, false);
 		}
 		
 		switch(state){

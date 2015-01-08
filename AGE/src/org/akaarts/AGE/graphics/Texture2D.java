@@ -21,6 +21,8 @@ import org.lwjgl.opengl.GL30;
  */
 public class Texture2D {
 	
+	private static int activeTextures = 0;
+	
 	public final int ID;
 	
 	public final boolean usesMipmap;
@@ -52,7 +54,18 @@ public class Texture2D {
         // set wrapping/clamping
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapU);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapV);
+        
+        Texture2D.activeTextures++;
                 
+	}
+	
+	/**
+	 * basic method for texture loading. UV wrapping are GL_REPEAT, min/mag filters are GL_NEAREST and mipmapping is disabled
+	 * @param path - the path to the file
+	 * @return
+	 */
+	public static Texture2D loadTexture2d(String path) {
+		return Texture2D.loadTexture2d(path, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_NEAREST, GL11.GL_NEAREST, false);
 	}
 	
 	/** Loads a Texture form an image file (preferably PNG) with the given parameters as setting.
@@ -64,7 +77,7 @@ public class Texture2D {
 	 * @param useMipmaps - true for using mipmaps
 	 * @return a Texture2D object
 	 */
-	public static Texture2D loadTexture(String path, int wrapU, int wrapV, int magFilter, int minFilter, boolean useMipmaps) {
+	public static Texture2D loadTexture2d(String path, int wrapU, int wrapV, int magFilter, int minFilter, boolean useMipmaps) {
 		BufferedImage img = null;
 		try {
 		    img = ImageIO.read(Engine.class.getResourceAsStream(path));
@@ -106,15 +119,6 @@ public class Texture2D {
         buffer.flip();
         
         return new Texture2D(img.getWidth(), img.getHeight(), buffer, wrapU, wrapV, minFilter, magFilter, useMipmaps);
-	}
-	
-	/**
-	 * basic method for texture loading. UV wrapping are GL_REPEAT, min/mag filters are GL_NEAREST and mipmapping is disabled
-	 * @param path - the path to the file
-	 * @return
-	 */
-	public static Texture2D loadTexture2d(String path) {
-		return Texture2D.loadTexture(path, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_NEAREST, GL11.GL_NEAREST, false);
 	}
 	
 	/**
@@ -163,6 +167,9 @@ public class Texture2D {
 	 */
 	public void destroy() {
 		GL11.glDeleteTextures(ID);
+		if(!this.isDestroyed) {
+			Texture2D.activeTextures--;
+		}
 		this.isDestroyed = true;
 		Console.info("Released a texture");
 	}
@@ -173,6 +180,22 @@ public class Texture2D {
 	 */
 	public boolean isDestroyed() {
 		return this.isDestroyed;
+	}
+	
+	/**
+	 * Returns a informational status-String
+	 * @return - A string containing informations of the actual status
+	 */
+	public static String getStatus() {
+		return Texture2D.activeTextures+" loaded Textures right now.";
+	}
+
+	public static void checkUndestroyed() {
+		
+		if(Texture2D.activeTextures > 0) {
+			Console.error("There are " + Texture2D.activeTextures + " undetroyed textures! Please prevent memoryLeaks");
+		}
+		
 	}
 	
 }

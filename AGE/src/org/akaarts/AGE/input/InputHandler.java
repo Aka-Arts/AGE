@@ -55,8 +55,12 @@ public class InputHandler {
 	 * @param listener - the new listener
 	 */
 	
-	public static void addListener(InputListener listener){	
-		listeners.add(listener);
+	public static void addListener(InputListener listener){
+		if(!listeners.contains(listener)) {
+			listeners.add(listener);
+		}else {
+			Console.warning("Prevented 2nd addition of identical inputListener");
+		}
 		Console.info("InputHandler - Status: "+listeners.size()+" listeners");
 	}
 	

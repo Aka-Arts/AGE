@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Color4f;
+import org.akaarts.AGE.graphics.Texture2D;
 import org.akaarts.AGE.graphics.gui.GUI;
 import org.akaarts.AGE.graphics.gui.GUIElement;
 import org.akaarts.AGE.graphics.gui.GUINode;
@@ -104,11 +105,11 @@ public class Engine {
 		}
 		
 		GUINode container = new GUINode();
-		container.setPositioning(0, 0, GUINode.ORIGIN_CENTER, GUINode.ORIGIN_CENTER);
+		container.setPositioning(0, 0, GUINode.ORIGIN_LEFT, GUINode.ORIGIN_TOP);
 		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
 		container.setBackgroundColor(new Color4f(1, 1, 1, 1));
-		container.setText("Hallo Welt!",60);
+		container.setText("AGE!",60);
 		GUI.ROOT.addChild(container);
 		
 	}
@@ -195,6 +196,9 @@ public class Engine {
 		
 		// destroy the display
 		Display.destroy();
+		
+		Texture2D.checkUndestroyed();
+		
 		Console.info("Bye!");
 	}
 	
