@@ -7,7 +7,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
 
-import org.akaarts.AGE.CLI.Console;
 import org.akaarts.AGE.graphics.Color4f;
 import org.akaarts.AGE.graphics.Texture2D;
 import org.lwjgl.opengl.Display;
@@ -90,7 +89,7 @@ public class FontMap {
 			j++;
 		}
 		
-		this.texture = Texture2D.loadTexture2d(img, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_NEAREST, GL11.GL_NEAREST, false);
+		this.texture = Texture2D.loadTexture2d(img, GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR, false);
 		
 	}
 	

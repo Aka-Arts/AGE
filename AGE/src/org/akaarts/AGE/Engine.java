@@ -105,11 +105,11 @@ public class Engine {
 		}
 		
 		GUINode container = new GUINode();
-		container.setPositioning(0, 0, GUINode.ORIGIN_LEFT, GUINode.ORIGIN_TOP);
+		container.setPositioning(0, 0, GUINode.ORIGIN_CENTER, GUINode.ORIGIN_TOP);
 		container.setDimensions(128, 128);
 		container.setBackgroundImage("/assets/defaults/AGE.png");
 		container.setBackgroundColor(new Color4f(1, 1, 1, 1));
-		container.setText("AGE!",60);
+		container.setText("AGE!",40);
 		GUI.ROOT.addChild(container);
 		
 	}

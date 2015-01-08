@@ -118,7 +118,7 @@ public class Texture2D {
 
         buffer.flip();
         
-        return new Texture2D(img.getWidth(), img.getHeight(), buffer, wrapU, wrapV, minFilter, magFilter, useMipmaps);
+        return new Texture2D(img.getWidth(), img.getHeight(), buffer, wrapU, wrapV, magFilter, minFilter, useMipmaps);
 	}
 	
 	/**
@@ -159,7 +159,7 @@ public class Texture2D {
 
         buffer.flip();
         
-        return new Texture2D(img.getWidth(), img.getHeight(), buffer, wrapU, wrapV, minFilter, magFilter, useMipmaps);
+        return new Texture2D(img.getWidth(), img.getHeight(), buffer, wrapU, wrapV, magFilter, minFilter, useMipmaps);
 	}
 	
 	/**
