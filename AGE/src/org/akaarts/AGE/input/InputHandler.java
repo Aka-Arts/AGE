@@ -35,6 +35,7 @@ public class InputHandler {
 			Console.info("Key:"+key+"/"+state);
 			
 		}
+		
 		// check mouse buffer
 		while (Mouse.next()) {
 			int x = Mouse.getEventX();
