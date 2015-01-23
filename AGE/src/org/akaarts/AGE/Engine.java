@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.akaarts.AGE.graphics.Color3f;
 import org.akaarts.AGE.graphics.GraphicUtils;
-import org.akaarts.AGE.input.InputHandler;
+import org.akaarts.AGE.input.MouseInputController;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -87,7 +87,7 @@ public class Engine {
 			long delta = getDelta();
 
 			// internal updates
-			InputHandler.update();
+			MouseInputController.pollAndBroadcast();
 
 			// public loop
 			loop(delta);
