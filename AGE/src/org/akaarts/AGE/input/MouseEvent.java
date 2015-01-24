@@ -24,4 +24,14 @@ public class MouseEvent extends Event {
 		
 	}
 		
+	public String toString() {
+		
+		return "x: " + this.x +
+				", y: " + this.y +
+				", button: " + this.button +
+				", buttonPressed: " + this.buttonPressed +
+				", wheel: " + this.wheel;
+		
+	}
+	
 }

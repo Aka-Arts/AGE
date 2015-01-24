@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.akaarts.AGE.graphics.Color3f;
 import org.akaarts.AGE.graphics.GraphicUtils;
+import org.akaarts.AGE.input.KeyInputController;
 import org.akaarts.AGE.input.MouseInputController;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -56,6 +57,7 @@ public class Engine {
 	 * plain constructor
 	 */
 	public Engine() {
+		
 	}
 
 	// public immutable functions
@@ -64,7 +66,9 @@ public class Engine {
 	 * Simple start method if you don't want to pass arguments
 	 */
 	public final void start() {
+		
 		this.start(null);
+	
 	}
 
 	/**
@@ -87,6 +91,7 @@ public class Engine {
 			long delta = getDelta();
 
 			// internal updates
+			KeyInputController.pollAndBroadcast();
 			MouseInputController.pollAndBroadcast();
 
 			// public loop
@@ -98,7 +103,9 @@ public class Engine {
 
 			// if windowExit was requested
 			if (Display.isCloseRequested()) {
+				
 				exitRequested = true;
+				
 			}
 
 		}
@@ -112,7 +119,9 @@ public class Engine {
 	 * Requests the engine to exit the main loop
 	 */
 	public final void exit() {
+		
 		this.exitRequested = true;
+		
 	}
 
 	// internal methods
@@ -127,12 +136,16 @@ public class Engine {
 
 		// try to setup the display
 		try {
+			
 			Display.setDisplayMode(new DisplayMode(settingWindowWidth,
 					settingWindowHeight));
+			
 		} catch (LWJGLException e) {
+			
 			e.printStackTrace();
 			Console.error("Failed to initialize display");
 			System.exit(-1);
+			
 		}
 
 		// apply window settings
@@ -147,12 +160,18 @@ public class Engine {
 
 		// try to create the Display
 		try {
+			
 			Display.create();
+			
 		} catch (LWJGLException e) {
+			
 			e.printStackTrace();
 			Console.error("Failed to create display");
 			System.exit(-1);
+			
 		}
+		
+		KeyInputController.init();
 
 		initInternalGL();
 
@@ -181,6 +200,7 @@ public class Engine {
 			buffers[counter] = GraphicUtils.getByteBufferFromPNG(path);
 
 			counter++;
+			
 		}
 
 		return buffers;

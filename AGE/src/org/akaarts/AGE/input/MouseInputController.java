@@ -1,11 +1,9 @@
 package org.akaarts.AGE.input;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.akaarts.AGE.Console;
-import org.akaarts.earlyalpha.AGE.input.InputListener;
-import org.lwjgl.input.Keyboard;
+import org.akaarts.AGE.gui.Gui;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -32,10 +30,24 @@ public class MouseInputController {
 					Mouse.getEventButtonState(),
 					Mouse.getEventDWheel());
 
-			// broadcast
+			// broadcast internal listeners
+			
+			if(Gui.SELF.onMouseEvent(e)) {
+				
+				Console.info("Gui stopped an event propagation: " + e.toString());
+				
+				continue;
+				
+			}
+			
+			// broadcast external listeners
 			for (MouseEventListener l : listeners) {
 
-				l.onMouseEvent(e);
+				if(l.onMouseEvent(e)) {
+					
+					break;
+					
+				}
 				
 			}
 
@@ -49,22 +61,35 @@ public class MouseInputController {
 	 */
 	
 	public static void addListener(MouseEventListener listener){
+		
 		if(!listeners.contains(listener)) {
+			
 			listeners.add(listener);
+			
 		}else {
-			Console.warning("Prevented 2nd addition of identical inputListener");
+			
+			Console.warning("Prevented 2nd addition of identical MouseEventListener");
+			
 		}
+		
 		Console.info("MouseInputController - Status: "+listeners.size()+" listeners");
+		
 	}
 	
 	public static void clearListeners(){
+		
 		listeners.clear();
+		
 		Console.info("MouseInputController - Status: "+listeners.size()+" listeners");
+		
 	}
 
 	public static void removeListener(MouseEventListener listener) {
+		
 		listeners.remove(listener);
+		
 		Console.info("MouseInputController - Status: "+listeners.size()+" listeners");
+		
 	}
 
 }
