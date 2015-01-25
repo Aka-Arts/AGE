@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard;
 
 public class KeyInputController {
 		
-	private static ArrayList<KeyEventListener> listeners = new ArrayList<KeyEventListener>(4);
+	private static ArrayList<KeyEventListener> listeners = new ArrayList<KeyEventListener>();
 	
 	private static boolean ctrlPressed = false;
 	private static boolean altPressed = false;
@@ -73,7 +73,7 @@ public class KeyInputController {
 			
 			// broadcast internal listeners
 			
-			if(Gui.SELF.onKeyEvent(e)) {
+			if(Gui.SINGLETON.onKeyEvent(e)) {
 				
 				Console.info("Gui stopped an event propagation: " + e.toString());
 				

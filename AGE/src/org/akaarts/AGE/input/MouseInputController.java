@@ -9,7 +9,7 @@ import org.lwjgl.opengl.Display;
 
 public class MouseInputController {
 
-	private static ArrayList<MouseEventListener> listeners = new ArrayList<MouseEventListener>(4);
+	private static ArrayList<MouseEventListener> listeners = new ArrayList<MouseEventListener>();
 
 	/**
 	 * Internal public method, do not call in your code!<br>
@@ -32,7 +32,7 @@ public class MouseInputController {
 
 			// broadcast internal listeners
 			
-			if(Gui.SELF.onMouseEvent(e)) {
+			if(Gui.SINGLETON.onMouseEvent(e)) {
 				
 				Console.info("Gui stopped an event propagation: " + e.toString());
 				
