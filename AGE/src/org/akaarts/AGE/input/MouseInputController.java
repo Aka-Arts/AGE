@@ -3,7 +3,7 @@ package org.akaarts.AGE.input;
 import java.util.ArrayList;
 
 import org.akaarts.AGE.Console;
-import org.akaarts.AGE.gui.Gui;
+import org.akaarts.AGE.gui.ViewManager;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -32,7 +32,7 @@ public class MouseInputController {
 
 			// broadcast internal listeners
 			
-			if(Gui.SINGLETON.onMouseEvent(e)) {
+			if(ViewManager.INSTANCE.onMouseEvent(e)) {
 				
 				Console.info("Gui stopped an event propagation: " + e.toString());
 				

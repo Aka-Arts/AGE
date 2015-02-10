@@ -3,8 +3,8 @@ package org.akaarts.AGE.input;
 import java.util.ArrayList;
 
 import org.akaarts.AGE.Console;
-import org.akaarts.AGE.gui.Gui;
 import org.akaarts.AGE.gui.View;
+import org.akaarts.AGE.gui.ViewManager;
 import org.lwjgl.input.Keyboard;
 
 
@@ -74,7 +74,7 @@ public class KeyInputController {
 			
 			// broadcast internal listeners
 			
-			if(View.onKeyEvent(e)) {
+			if(ViewManager.INSTANCE.onKeyEvent(e)) {
 				
 				Console.info("Gui stopped an event propagation: " + e.toString());
 				
