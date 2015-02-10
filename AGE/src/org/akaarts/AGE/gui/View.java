@@ -1,22 +1,19 @@
 package org.akaarts.AGE.gui;
 
-import org.akaarts.AGE.Console;
 import org.akaarts.AGE.input.KeyEvent;
 import org.akaarts.AGE.input.KeyEventListener;
 import org.akaarts.AGE.input.MouseEvent;
 import org.akaarts.AGE.input.MouseEventListener;
 
-public class Gui implements MouseEventListener, KeyEventListener{
-
-	public static final Gui SINGLETON = new Gui();
+public abstract class View implements MouseEventListener, KeyEventListener{
 	
-	public final GuiElement ROOT;
+	public final ViewElement ROOT;
 		
-	private GuiElement focus;
+	private ViewElement focus;
 	
-	private Gui() {
+	public View() {
 		
-		this.ROOT = new GuiElement() {
+		this.ROOT = new ViewElement() {
 
 			@Override
 			public boolean onClick(MouseEvent e) {
@@ -29,26 +26,18 @@ public class Gui implements MouseEventListener, KeyEventListener{
 				// TODO Auto-generated method stub
 				return false;
 			}
-
-			@Override
-			public boolean onKey(KeyEvent e) {
-				
-				return false;
-			}
-		
-			
 			
 		};
 		
 	}
 	
-	public void setFocusOn(GuiElement e) {
+	public final void setFocusOn(ViewElement e) {
 		
 		this.focus = e;
 		
 	}
 	
-	public GuiElement getFocus() {
+	public final ViewElement getFocus() {
 		
 		return focus;
 		
@@ -57,14 +46,8 @@ public class Gui implements MouseEventListener, KeyEventListener{
 	@Override
 	public boolean onKeyEvent(KeyEvent e) {
 		
-		if(e.keyName.equals("F4") && e.altPressed) {
-			
-			System.exit(-1);
-			
-		}
+		return false;
 		
-		return ROOT.onKeyInternal(e);
-
 	}
 
 	@Override
