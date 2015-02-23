@@ -13,7 +13,7 @@ public class MouseInputController {
 
 	/**
 	 * Internal public method, do not call in your code!<br>
-	 * 
+	 * Gets called if mouse is not grabbed.
 	 * Processes all inputs.
 	 * 
 	 */
@@ -26,9 +26,12 @@ public class MouseInputController {
 			MouseEvent e = new MouseEvent(
 					Mouse.getEventX(),
 					Display.getHeight() - Mouse.getEventY(),
+					Mouse.getEventDX(),
+					-Mouse.getEventDY(),
 					Mouse.getEventButton(),
 					Mouse.getEventButtonState(),
-					Mouse.getEventDWheel());
+					Mouse.getEventDWheel(),
+					Mouse.isGrabbed());
 
 			// broadcast internal listeners
 			

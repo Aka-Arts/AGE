@@ -11,6 +11,8 @@ public class ViewManager implements KeyEventListener, MouseEventListener {
 	
 	private View currentView;
 	
+	private boolean mouseListening = true;
+	
 	private ViewManager(){
 		
 		this.currentView = null;
@@ -56,5 +58,11 @@ public class ViewManager implements KeyEventListener, MouseEventListener {
 		return this.currentView;
 		
 	}
-
+	
+	public void setMouseListening(boolean shouldListen){
+		
+		this.mouseListening = shouldListen;
+		
+	}
+	
 }

@@ -26,6 +26,12 @@ public abstract class View implements MouseEventListener, KeyEventListener{
 				// TODO Auto-generated method stub
 				return false;
 			}
+
+			@Override
+			public boolean onWheel(MouseEvent e) {
+				// TODO Auto-generated method stub
+				return false;
+			}
 			
 		};
 		
@@ -53,19 +59,26 @@ public abstract class View implements MouseEventListener, KeyEventListener{
 	@Override
 	public boolean onMouseEvent(MouseEvent e) {
 
-		if(e.button == -1) {
+		// if mouse moved without button pressed or wheel touched
+		if(e.button == -1 && e.wheel == 0) {
 			
 			return ROOT.onHoverInternal(e);
 			
 		}
 		
+		// if mouse clicked
 		if(e.button != -1 && !e.buttonPressed) {
 			
 			return ROOT.onClickInternal(e);
 			
 		}
-		
-		// TODO WHEEL
+
+		// if mouse wheel moved
+		if(e.wheel != 0){
+			
+			return ROOT.onWheelInternal(e);
+			
+		}
 		
 		return false;
 		

@@ -175,6 +175,32 @@ public abstract class ViewElement implements ViewEventListener{
 	
 	}
 	
+	boolean onWheelInternal(MouseEvent e) {
+
+		if(this.aabb.contains(e.x, e.y)) {
+			
+			if(this.onWheel(e)) {
+				
+				return true;
+				
+			}
+			
+		}
+		
+		for(ViewElement child : this.children) {
+			
+			if(child.onWheelInternal(e)) {
+				
+				return true;
+				
+			}
+				
+		}
+		
+		return false;
+	
+	}
+	
 	// internal helper
 
 	private void computeAABB() {

@@ -7,5 +7,7 @@ public interface ViewEventListener {
 	public boolean onClick(MouseEvent e);
 	
 	public boolean onHover(MouseEvent e);
+	
+	public boolean onWheel(MouseEvent e);
 
 }
