@@ -1,0 +1,16 @@
+{
+	"STYLE":{
+		"logo":{
+			"background-image":"assets/AGE_128.png",
+			"width":"100px",
+			"height":"100px"
+		}
+	},
+	"STRUCTURES":{
+		"HOME":{
+			"logo":{
+			
+			}
+		}
+	}
+}

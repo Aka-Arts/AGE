@@ -1,0 +1,49 @@
+This file is the definition for JSON HUD Files of AGE
+
+Every JSON HUD file has these base objects:
+
+- SYTLE
+- STRUCTURES
+
+ALL DATA ARE STRINGS, UNLESS OTHERWISE NOTED!
+
+
+>>>> The object SYTLE contains all styling informations for the elements in STRUCTURE. <<<<
+
+The name of an object inside of the STYLE has to be unique and is allowed to be one of the following:
+
+- the exact unique name of an element in STRUCTURE
+- the exact class name of an elements class property
+- the exact id name of an elements id property
+
+Every style block contains properties
+Supported properties:
+
+- originX 	(left|center|right)
+- originY	(top|center|bottom)
+- positionX	(px)
+- positionY	(px)
+- width		(px|%)
+- height	(px|%)
+
+- background-
+--	color	(#rrggbb[aa])
+--	image	(path)
+--	filter	(linear|nearest)
+--	UV-
+---  TL
+---	 BL
+---  BR
+---  TR
+--	repeat	(none|clamp|repeat|repeat-x|repeat-y)
+
+- font-
+--	color	(#rrggbb[aa])
+--	name	(path)
+--	size	(px)
+
+>>>> The object STRUCTURES has to contain all essential HUD "scenes" <<<<
+
+Every scene object has a predefined name from within the AGE.
+Every scene contains predefined, possible nested objects.
+Every of these subobjects must have a unique name and may contain a class / id name String child.
