@@ -2,9 +2,9 @@ package org.akaarts.AGE.input;
 
 import java.util.ArrayList;
 
-import org.akaarts.AGE.Console;
 import org.akaarts.AGE.gui.View;
 import org.akaarts.AGE.gui.ViewManager;
+import org.akaarts.AGE.main.Console;
 import org.lwjgl.input.Keyboard;
 
 

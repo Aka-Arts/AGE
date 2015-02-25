@@ -1,4 +1,4 @@
-package org.akaarts.AGE;
+package org.akaarts.AGE.main;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

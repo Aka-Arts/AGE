@@ -1,7 +1,5 @@
 package org.akaarts.proto;
 
-import org.akaarts.AGE.Console;
-import org.akaarts.AGE.Engine;
 import org.akaarts.AGE.gui.View;
 import org.akaarts.AGE.gui.ViewElement;
 import org.akaarts.AGE.gui.ViewManager;
@@ -9,6 +7,8 @@ import org.akaarts.AGE.input.KeyEvent;
 import org.akaarts.AGE.input.MouseEvent;
 import org.akaarts.AGE.input.MouseEventListener;
 import org.akaarts.AGE.input.MouseInputController;
+import org.akaarts.AGE.main.Console;
+import org.akaarts.AGE.main.Engine;
 import org.lwjgl.input.Mouse;
 
 public class Game extends Engine{
